@@ -22,7 +22,8 @@ def candidate(tmp_path):
         file.parent.mkdir(parents=True, exist_ok=True)
         file.write_text('source ' + group)
         inputs[group] = {relative: lane.sha(file)}
-    compiler = tmp_path / 'compiler'
+    compiler = tmp_path / 'toolchain/bin/compiler'
+    compiler.parent.mkdir(parents=True)
     compiler.write_bytes(b'isolated compiler fixture')
     library = tmp_path / 'libfixture.a'
     library.write_bytes(b'isolated runtime archive fixture')
@@ -47,7 +48,8 @@ def candidate(tmp_path):
               'open_dependencies': ['physical qualification'], 'input_roots': {k: str(v) for k, v in roots.items()},
               'inputs': inputs, 'linked_objects': objects,
               'artefacts': {p.name: lane.sha(p) for p in output.iterdir() if p.suffix in ('.elf', '.map')}}
-    facts = {'source': {'core_commit': 'pinned-commit', 'core_tag': 'pinned-tag'}}
+    facts = {'source': {'core_commit': 'pinned-commit', 'core_tag': 'pinned-tag',
+                       'tracked_files': ['src/application.cpp', 'deps/PRISM-Core/music/runtime.cpp']}}
     return record, output, source, facts
 
 
@@ -70,6 +72,40 @@ def test_multiple_vendor_roots_and_target_compilers_are_bound(candidate):
     lane.validate_product_receipt(record, output, source, 'titan', facts)
     record['inputs']['toolchain']['target_b']['compiler_sha256'] = 'wrong'
     with pytest.raises(RuntimeError):
+        lane.validate_product_receipt(record, output, source, 'titan', facts)
+
+
+@pytest.mark.parametrize('group,relative', [('lane','vendor/palettes/__pycache__/generate.pyc'),
+                                          ('lane','src/untracked.cpp'), ('core','music/untracked.cpp')])
+def test_existing_hashed_untracked_product_inputs_are_rejected(candidate, group, relative):
+    record, output, source, facts = candidate
+    file = Path(record['input_roots'][group]) / relative
+    file.parent.mkdir(parents=True, exist_ok=True)
+    file.write_bytes(b'actual but uncommitted product input')
+    record['inputs'][group][relative] = lane.sha(file)
+    with pytest.raises(RuntimeError, match='absent from bound lane commit'):
+        lane.validate_product_receipt(record, output, source, 'titan', facts)
+
+
+def test_selected_system_header_hash_is_verified(candidate):
+    record, output, source, facts = candidate
+    header = source.parent / 'toolchain/include/cstdint'
+    header.parent.mkdir(parents=True)
+    header.write_text('isolated selected toolchain header')
+    record['inputs']['toolchain']['system_headers'] = {str(header): lane.sha(header)}
+    lane.validate_product_receipt(record, output, source, 'titan', facts)
+    header.write_text('changed standard header')
+    with pytest.raises(RuntimeError, match='Toolchain header missing or changed'):
+        lane.validate_product_receipt(record, output, source, 'titan', facts)
+
+
+def test_foreign_file_cannot_be_disguised_as_toolchain_header(candidate):
+    record, output, source, facts = candidate
+    header = source.parent / 'K1-DualMCU/foreign.h'
+    header.parent.mkdir()
+    header.write_text('foreign lane source')
+    record['inputs']['toolchain']['system_headers'] = {str(header): lane.sha(header)}
+    with pytest.raises(RuntimeError, match='escaped compiler package'):
         lane.validate_product_receipt(record, output, source, 'titan', facts)
 
 

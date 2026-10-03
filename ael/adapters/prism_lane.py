@@ -269,6 +269,9 @@ def validate_product_receipt(record, output, source, lane, facts):
             and Path(roots.get('core', '')).resolve() == (source / 'deps/PRISM-Core').resolve(),
             'Product lane/Core roots mismatch')
     bound_sources = {}
+    tracked = facts['source'].get('tracked_files')
+    require(isinstance(tracked, list) and tracked, 'Missing tracked product source identity')
+    tracked = set(tracked)
     input_groups = []
     for group, root in roots.items():
         rows = inputs.get(group)
@@ -297,6 +300,9 @@ def validate_product_receipt(record, output, source, lane, facts):
                     'Reference source in product input inventory')
             file = safe_file(root, name)
             require(sha(file) == digest, 'Product input changed: ' + group + '/' + name)
+            if group in ('lane', 'core'):
+                tracked_name = name if group == 'lane' else 'deps/PRISM-Core/' + name
+                require(tracked_name in tracked, 'Product input absent from bound lane commit: ' + tracked_name)
             bound_sources[prefix + name] = digest
     toolchains = inputs.get('toolchain', {})
     require(isinstance(toolchains, dict) and toolchains, 'Missing compiler inventory')
@@ -306,6 +312,18 @@ def validate_product_receipt(record, output, source, lane, facts):
         compiler = Path(toolchain.get('compiler_path', ''))
         require(compiler.is_file() and sha(compiler) == toolchain.get('compiler_sha256')
                 and toolchain.get('compiler_version'), 'Compiler identity missing or changed')
+        headers = toolchain.get('system_headers', {})
+        require(isinstance(headers, dict), 'Invalid toolchain header inventory')
+        for name, digest in headers.items():
+            header = Path(name)
+            require(header.is_absolute() and header.is_file() and not header.is_symlink()
+                    and sha(header) == digest, 'Toolchain header missing or changed')
+            require(header.resolve().is_relative_to(compiler.resolve().parent.parent),
+                    'Toolchain header escaped compiler package')
+            require(not any(old in str(header.resolve()) for old in ('SpectraSynq_K1_Firmware',
+                        'SpectraSynq-K1-DualMCU-Firmware', 'SpectraSynq-K1-RA8P1-Firmware'))
+                    and not any(part in header.resolve().parts for part in ('bench', 'reference')),
+                    'Toolchain header depends on donor/reference source')
         libraries = toolchain.get('linked_libraries')
         require(isinstance(libraries, dict) and libraries, 'Missing linked runtime library inventory')
         for name, digest in libraries.items():
