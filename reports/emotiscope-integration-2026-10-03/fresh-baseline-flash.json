@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "bash",
+    "scripts/agent/k1-flash-verified.sh",
+    "k1_emotiscope_live",
+    "--port",
+    "/dev/cu.usbmodem12201"
+  ],
+  "returncode": 1,
+  "elapsed_s": 0.1261281967163086,
+  "source": "b05cbd2c"
+}

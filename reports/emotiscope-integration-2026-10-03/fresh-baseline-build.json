@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "pio",
+    "run",
+    "-e",
+    "k1_emotiscope_live"
+  ],
+  "returncode": 0,
+  "elapsed_s": 24.538937091827393,
+  "source": "b05cbd2c",
+  "build_dir": "/Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build"
+}

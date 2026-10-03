@@ -1,0 +1,697 @@
+Processing k1_emotiscope_live (platform: https://github.com/pioarduino/platform-espressif32/releases/download/54.03.20/platform-espressif32.zip; board: esp32-s3-devkitc1-n16r8; framework: arduino)
+--------------------------------------------------------------------------------
+Verbose mode can be enabled via `-v, --verbose` option
+[k1-score-math] -fno-associative-math applied to: k1_bloom_return_core.cpp, k1_chromatic_score_core.cpp, k1_chromatic_score_output.cpp, k1_chromatic_score_owner.cpp, k1_chromatic_score_interpret.cpp
+[k1-build-provenance] env=k1_emotiscope_live git=b05cbd2c epoch=1790997233
+[k1-live-div] -fno-fast-math applied to k1_live_div.cpp
+[k1-live-vm] effective -O3, strict floating point; SDK/DSP unchanged
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/esp32-s3-devkitc1-n16r8.html
+PLATFORM: Espressif 32 (54.3.20) > Espressif ESP32-S3-DevKitC-1-N16R8V (16 MB Flash Quad, 8 MB PSRAM Octal)
+HARDWARE: ESP32S3 240MHz, 320KB RAM, 16MB Flash
+DEBUG: Current (esp-builtin) On-board (esp-builtin) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.2.0 
+ - framework-arduinoespressif32-libs @ 5.4.0+sha.2f7dcd862a 
+ - tool-esptoolpy @ 4.8.9 
+ - tool-mklittlefs @ 3.2.0 
+ - tool-riscv32-esp-elf-gdb @ 14.2.0+20240403 
+ - tool-xtensa-esp-elf-gdb @ 14.2.0+20240403 
+ - toolchain-riscv32-esp @ 14.2.0+20241119 
+ - toolchain-xtensa-esp-elf @ 14.2.0+20241119
+Converting SPECTRASYNQ_K1_FIRMWARE.ino
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 44 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- FastLED @ 3.10.3
+|-- FixedPoints @ 1.1.2
+|-- M5ROTATE8 @ 0.4.1
+|-- FS @ 3.2.0
+|-- LittleFS @ 3.2.0
+|-- Ticker @ 3.2.0
+|-- Wire @ 3.2.0
+Building in release mode
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/SPECTRASYNQ_K1_FIRMWARE.ino.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_audio_frame.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_audio_snapshot.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_authored_source.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_chord_detect.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_gdft_core.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_mic_health.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_musical_saliency.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_onset_beat.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_prsm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_score_capture.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_score_event_channel.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_score_evidence.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_semantic_state.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_stereo_probe.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_stm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_stm_fft512_bench.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_tempo.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/audio/k1_vp_audio_access.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/control/k1_command_channels.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/control/k1_control_facade.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/control/k1_effect_queue.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/control/k1_noise_cal_arm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/control/k1_show_state.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/control/k1_wireless_control.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/director/k1_edgemixer.cpp.o
+SPECTRASYNQ_K1_FIRMWARE/audio/k1_gdft_core.cpp:123:29: warning: ignoring attribute 'section (".iram1.4")' because it conflicts with previous 'section (".iram1.2")' [-Wattributes]
+  123 | void IRAM_ATTR process_GDFT() {
+      |                             ^
+In file included from SPECTRASYNQ_K1_FIRMWARE/audio/k1_gdft_core.cpp:30:
+SPECTRASYNQ_K1_FIRMWARE/audio/k1_gdft_core.h:28:16: note: previous declaration here
+   28 | void IRAM_ATTR process_GDFT();
+      |                ^~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/director/k1_mode_selection.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/director/k1_palette_edge_bridge.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/director/k1_smart_director.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/director/k1_visual_hooks.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_aurora.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_bloom.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_chroma_constellation.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/control/k1_control_facade.cpp:17:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_chromagram_dots.cpp.o
+In file included from /Users/spectrasynq/SpectraSynq_K1_Firmware/SPECTRASYNQ_K1_FIRMWARE/SPECTRASYNQ_K1_FIRMWARE.ino:40:
+SPECTRASYNQ_K1_FIRMWARE/audio/i2s_audio.h: In function 'void acquire_sample_chunk(uint32_t)':
+SPECTRASYNQ_K1_FIRMWARE/audio/i2s_audio.h:595:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+  595 |     g_emo_i2s_short++;
+      |     ^~~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/audio/i2s_audio.h:604:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+  604 |     g_emo_i2s_ok++;
+      |     ^~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/audio/i2s_audio.h:605:33: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+  605 |     if (g_emo_last_wait < 200u) g_emo_i2s_ready++;
+      |                                 ^~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_chromagram_gradient.cpp.o
+In file included from /Users/spectrasynq/SpectraSynq_K1_Firmware/SPECTRASYNQ_K1_FIRMWARE/SPECTRASYNQ_K1_FIRMWARE.ino:44:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_comet.cpp.o
+In file included from /Users/spectrasynq/SpectraSynq_K1_Firmware/SPECTRASYNQ_K1_FIRMWARE/SPECTRASYNQ_K1_FIRMWARE.ino:49:
+SPECTRASYNQ_K1_FIRMWARE/system/system.h: In function 'void check_current_function()':
+SPECTRASYNQ_K1_FIRMWARE/system/system.h:68:28: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+   68 |   function_hits[function_id]++;
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~^
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_dense_forge.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_dense_forge_chord.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_ember.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_ember_v2.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_aurora.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_gdft.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_kaleidoscope.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_bloom.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_chroma_constellation.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_chromagram_dots.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_chromagram_gradient.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_comet.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_percussion_burst.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_pulse_prism.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_dense_forge.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_quantum_collapse.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_dense_forge_chord.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_river_surge.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_ember.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_ember_v2.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_snapwave.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_spectrum_river.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_spectrum_river_v2.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_gdft.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_kaleidoscope.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_tempo_comet.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_tempo_comet_anticipate.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_tempo_river.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_tempo_river_walk.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_percussion_burst.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_pulse_prism.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_vu.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_vu_dot.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_waveform.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_quantum_collapse.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_river_surge.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_waveform_fast.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_waveform_hybrid.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_snapwave.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_spectrum_river.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_spectrum_river_v2.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_waveform_hybrid_k1.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_waveform_tempo.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_tempo_comet.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/effects/light_mode_wfhyb_k1_variants.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_tempo_river.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/live/k1_emo_io.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/live/k1_emo_waveforms.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_tempo_river_walk.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_tempo_comet_anticipate.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_vu.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/live/k1_live_bench.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_vu_dot.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_waveform.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/live/k1_live_div.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/live/k1_live_vm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/persistence/k1_persistence_request.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/serial/k1_ap_capture_telemetry.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_waveform_fast.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/live/k1_live_vm.cpp:146:28: warning: comparison between 'enum<unnamed>' and 'enum<unnamed>' [-Wenum-compare]
+  146 | static_assert(K1_MATH_DIV0 == K1_ERR_DIV0, "math div0");
+      |               ~~~~~~~~~~~~~^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/live/k1_live_vm.cpp:147:27: warning: comparison between 'enum<unnamed>' and 'enum<unnamed>' [-Wenum-compare]
+  147 | static_assert(K1_MATH_NUM == K1_ERR_NUM, "math num");
+      |               ~~~~~~~~~~~~^~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/serial/k1_scheduling_trace_telemetry.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_waveform_hybrid.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/serial/serial_cmd_handlers.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/serial/serial_menu.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/serial/serial_parse_helpers.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/serial/serial_tx.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/serial/serial_typed_dispatch.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_waveform_tempo.cpp:66:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_waveform_hybrid_k1.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/system/globals.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/system/globals_config.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/system/k1_startup_ratchet.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_wfhyb_k1_variants.cpp:1:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from SPECTRASYNQ_K1_FIRMWARE/visual/lightshow_modes.h:6,
+                 from SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_waveforms.cpp:2:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/Palettes.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/k1_bloom_return_core.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/k1_chromatic_score_core.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/k1_chromatic_score_interpret.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/k1_chromatic_score_output.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/k1_chromatic_score_owner.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/k1_colour_lab.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/k1_i2s_emit.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/k1_render_trace.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/src/visual/render_params.cpp.o
+Building /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/bootloader.bin
+Generating partitions /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/partitions.bin
+In file included from SPECTRASYNQ_K1_FIRMWARE/serial/serial_typed_dispatch.cpp:13:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib0c0/SPI/SPI.cpp.o
+In file included from SPECTRASYNQ_K1_FIRMWARE/serial/serial_menu.cpp:84:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+esptool.py v4.8.9
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libda8/FS/FS.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libda8/FS/vfs_api.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libd0c/SD/SD.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libd0c/SD/sd_diskio.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libd0c/SD/sd_diskio_crc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/FastLED.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/bitswap.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/cled_controller.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/colorpalettes.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/crgb.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/allocator.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/async.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib0c0/libSPI.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/audio.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib0c0/libSPI.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/audio_input.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/audio_reactive.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/bitset.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/blur.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/bytestreammemory.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/colorutils.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/corkscrew.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/crgb_hsv16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/downscale.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/ease.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libda8/libFS.a
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libda8/libFS.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/engine_events.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/fetch.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/fft.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libd0c/libSD.a
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libd0c/libSD.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/fft_impl.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/file_system.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/fill.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/gamma.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/gradient.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/hsv16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/id_tracker.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/io.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/istream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/json.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/leds.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/line_simplification.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/noise_woryley.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/ostream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/ptr.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/random.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/raster_sparse.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/rectangular_draw_buffer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/referent.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/rgbw.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/screenmap.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/sin32.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/splat.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/str.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/str_ui.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/strstream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/stub_main.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/task.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/tile2x2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/time.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/time_alpha.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/transform.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/type_traits.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/ui.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/upscale.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/wave_simulation.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/wave_simulation_real.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/xmap.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/xymap.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/xypath.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/xypath_impls.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fl/xypath_renderer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/2d/blend.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/2d/luminova.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/2d/noisepalette.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/2d/scale_up.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/2d/wave.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/detail/fx_layer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/frame.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/fx_engine.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/time.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/video.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/video/frame_interpolator.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/video/frame_tracker.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/video/pixel_stream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/fx/video/video_impl.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/hsv2rgb.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/lib8tion.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/noise.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/adafruit/clockless.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/arm/k20/clockless_objectfled.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/arm/mgm240/fastpin_arm_mgm240.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/compile_test.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/audio/audio.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/audio/sound_util.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/clockless_i2s_esp32s3.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/i2s/i2s_esp32dev.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/rmt_4/idf4_rmt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/rmt_4/idf4_rmt_impl.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/rmt_5/idf5_rmt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/rmt_5/strip_rmt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/esp/32/spi_ws2812/strip_spi.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/stub/Arduino.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/stub/led_sysdefs_stub.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/stub/time_stub.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/active_strip_data.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/engine_listener.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/entry_point.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/fastspi_wasm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/fs_wasm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/js.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/js_bindings.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/js_fetch.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/timer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/platforms/wasm/ui.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/power_mgt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/sensors/button.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/sensors/digital_pin.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/sensors/pir.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/simplex.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/third_party/cq_kernel/cq_kernel.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/third_party/cq_kernel/kiss_fft.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/third_party/cq_kernel/kiss_fftr.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/third_party/espressif/led_strip/src/led_strip_api.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/third_party/espressif/led_strip/src/led_strip_rmt_dev.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/third_party/espressif/led_strip/src/led_strip_rmt_encoder.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/third_party/espressif/led_strip/src/led_strip_spi_dev.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/third_party/object_fled/src/OjectFLED.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/transpose8x1_noinline.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/FastLED/wiring.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib6b4/Wire/Wire.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib65c/M5ROTATE8/m5rotate8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib69c/LittleFS/LittleFS.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libe38/Ticker/Ticker.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/ColorFormat.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/Esp.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/FirmwareMSC.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/FunctionalInterrupt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/HEXBuilder.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/HWCDC.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/HardwareSerial.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/IPAddress.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/MD5Builder.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libe38/libTicker.a
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libe38/libTicker.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/MacAddress.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/Print.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib6b4/libWire.a
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/libFastLED.a
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib6b4/libWire.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/SHA1Builder.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib65c/libM5ROTATE8.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/Stream.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib65c/libM5ROTATE8.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/StreamString.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/Tone.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib8c7/libFastLED.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/USB.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/USBCDC.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/USBMSC.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/WMath.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/WString.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/base64.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib69c/libLittleFS.a
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/lib69c/libLittleFS.a
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/cbuf.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/chip-debug-report.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-adc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-bt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-dac.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-i2c-ng.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-misc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-periman.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-psram.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-spi.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-time.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-timer.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-touch-ng.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-touch.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/esp32-hal-uart.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/firmware_msc_fat.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/freertos_stats.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/libb64/cdecode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/libb64/cencode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/main.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/stdlib_noniso.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/wiring_pulse.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/FrameworkArduino/wiring_shift.c.o
+Archiving /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libFrameworkArduino.a
+Indexing /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/libFrameworkArduino.a
+Linking /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/firmware.elf
+Retrieving maximum program size /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/firmware.elf
+Checking size /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=====     ]  48.6% (used 159252 bytes from 327680 bytes)
+Flash: [===       ]  30.7% (used 1024974 bytes from 3342336 bytes)
+Building /Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build/k1_emotiscope_live/firmware.bin
+esptool.py v4.8.9
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+========================= [SUCCESS] Took 24.04 seconds =========================
+
+Environment         Status    Duration
+------------------  --------  ------------
+k1_emotiscope_live  SUCCESS   00:00:24.043
+========================= 1 succeeded in 00:00:24.043 =========================

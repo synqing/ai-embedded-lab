@@ -1,0 +1,190 @@
+[
+  {
+    "id": "AEL-01",
+    "disposition": "ADOPT",
+    "title": "Deterministic runner, retry budgets and result contracts",
+    "status": "PENDING",
+    "reason": "Run guarded build/flash/physical checks in declared order. Disable automatic side-effect retries.",
+    "acceptance": "Runner returns failure for planted identity, CRC and timeout faults; live pack passes.",
+    "source_paths": [
+      "ael/runner.py",
+      "ael/run_contract.py",
+      "ael/recovery_policy.py",
+      "ael/failure_recovery.py"
+    ],
+    "files": 4
+  },
+  {
+    "id": "AEL-02",
+    "disposition": "ADOPT",
+    "title": "Evidence and run artefacts",
+    "status": "PENDING",
+    "reason": "Use existing evidence schema and JSON pack loading; preserve raw output, hashes and source identity.",
+    "acceptance": "Every physical check references a raw log and typed facts; no absent data passes.",
+    "source_paths": [
+      "ael/evidence.py",
+      "ael/run_manager.py",
+      "ael/pack_loader.py"
+    ],
+    "files": 3
+  },
+  {
+    "id": "AEL-03",
+    "disposition": "ADAPT",
+    "title": "UART observation and boot diagnostics",
+    "status": "PENDING",
+    "reason": "Use AEL evaluator with Emotiscope serial line settings and one ROM marker per boot. Keep pre-existing PSRAM errors visible.",
+    "acceptance": "Repeated boot/readback, saved-program preservation and crash detection on the identified device.",
+    "source_paths": [
+      "ael/adapters/observe_uart_log.py",
+      "ael/adapters/observe_log.py",
+      "ael/adapters/post_flash_verify.py",
+      "ael/post_flash/"
+    ],
+    "files": 5
+  },
+  {
+    "id": "AEL-04",
+    "disposition": "REPLACE",
+    "title": "Build and flash integration",
+    "status": "PENDING",
+    "reason": "Existing IDF/CMake/STM32/Zephyr adapters do not build this Arduino/PlatformIO application. Add narrow adapter calling the existing verified-flash script.",
+    "acceptance": "Clean source build, host gate, guarded flash, correct post-flash source identity and return to saved program.",
+    "source_paths": [
+      "ael/adapters/build_",
+      "ael/adapters/flash_",
+      "ael/backends/"
+    ],
+    "files": 13
+  },
+  {
+    "id": "AEL-05",
+    "disposition": "REPLACE",
+    "title": "Target configuration, serial ownership and reset",
+    "status": "PENDING",
+    "reason": "Thread locks cannot exclude other processes. Bind exact USB VID/PID/serial and source env; hold an OS file lock, check port owners, use supported S3 USB reset.",
+    "acceptance": "Wrong device and concurrent owner are refused before writes; repeated physical reset returns saved program.",
+    "source_paths": [
+      "ael/resource_locks.py",
+      "ael/adapters/control_",
+      "ael/probe_binding.py"
+    ],
+    "files": 4
+  },
+  {
+    "id": "AEL-06",
+    "disposition": "ADAPT",
+    "title": "Physical checks and failure attribution",
+    "status": "PENDING",
+    "reason": "Mailbox/edge-count checks cannot prove music visualisation. Use existing Emotiscope command protocol and independent frame CRC decoder; measure telemetry and save-state preservation.",
+    "acceptance": "Live/native control tests, valid changing LED buffers, rejection paths, bounded soak, source-matched timing/resource evidence.",
+    "source_paths": [
+      "ael/check_eval.py",
+      "ael/adapters/check_mailbox_verify.py",
+      "ael/default_verification.py",
+      "ael/verification_model.py"
+    ],
+    "files": 4
+  },
+  {
+    "id": "AEL-07",
+    "disposition": "REJECT",
+    "title": "Generic orchestration, natural language planner, auto-repair and nightly jobs",
+    "status": "REJECTED",
+    "reason": "Planner is rule-based, noop fallback exists, repair modules are placeholders. Existing orchestrator owns diagnosis; autonomous background flashing/git writes add risk without product capability.",
+    "acceptance": "Source review: planner._noop_runplan and placeholder repair functions; no unattended service adopted.",
+    "source_paths": [
+      "ael_controlplane/",
+      "ael/nl_parser.py",
+      "ael/git_ops.py",
+      "tools/agents/"
+    ],
+    "files": 20
+  },
+  {
+    "id": "AEL-08",
+    "disposition": "NOT APPLICABLE",
+    "title": "External instruments, GDB, mailbox, meters, FPGA and logic analyser",
+    "status": "NOT APPLICABLE",
+    "reason": "Designated setup is native USB Emotiscope with no connected instrument/wiring authority. Software frame evidence cannot substitute electrical measurements.",
+    "acceptance": "Inventory confirms native USB target. Unrelated Titan is excluded.",
+    "source_paths": [
+      "ael/instruments/",
+      "ael/verification/",
+      "ael/la_check.py",
+      "ael/gdb_server_registry.py",
+      "ael/adapters/instrument_",
+      "ael/adapters/esp32s3_dev_c_meter_tcp.py",
+      "ael/adapters/observe_gpio_pin.py",
+      "ael/adapters/observe_fpga_counter_freq.py",
+      "ael/adapters/observe_litex_csr.py"
+    ],
+    "files": 78
+  },
+  {
+    "id": "AEL-09",
+    "disposition": "REJECT",
+    "title": "Firmware templates, peripheral demos and PCNT loopback",
+    "status": "REJECTED",
+    "reason": "Demo firmware replaces functioning product and assumes different pins/wiring. Existing microphone/DMA/LED application is the useful regression workload.",
+    "acceptance": "Source shows PCNT requires jumper and target-specific pin pairs; no functional product increment from transplant.",
+    "source_paths": [
+      "firmware/",
+      "configs/firmware_templates/",
+      "ael/patterns/loopback/"
+    ],
+    "files": 3613
+  },
+  {
+    "id": "AEL-10",
+    "disposition": "NOT APPLICABLE",
+    "title": "Embedded web UI browser pattern",
+    "status": "NOT APPLICABLE",
+    "reason": "Current device uses USB PRISM Surface and has no embedded HTTP control UI. Preserve existing studio, no duplicate dashboard/browser dependency.",
+    "acceptance": "Current source handover and browser_automation.py HTTP/browser assumptions.",
+    "source_paths": [
+      "ael/patterns/webui/"
+    ],
+    "files": 3
+  },
+  {
+    "id": "AEL-11",
+    "disposition": "REJECT",
+    "title": "Civilization Engine, cloud APIs, notifications, remote queues",
+    "status": "REJECTED",
+    "reason": "Optional external knowledge/service integrations are not needed for deterministic local bench proof; CE is unavailable in accepted baseline.",
+    "acceptance": "Local tests and source evidence suffice; no new server or outgoing messages.",
+    "source_paths": [
+      "ael/civilization",
+      "ael/notifiers/",
+      "configs/civilization",
+      "configs/cloud"
+    ],
+    "files": 11
+  },
+  {
+    "id": "AEL-12",
+    "disposition": "REJECT",
+    "title": "Generic discovery, connection planning and alternate-board pack catalogues",
+    "status": "REJECTED",
+    "reason": "Retain upstream utilities unchanged. Existing USB identity manifest/source registry already provide exact target authority; no broad new configuration graph or example pins. Narrow Emotiscope pack uses runner directly.",
+    "acceptance": "Specific selected functionality is AEL-01..06; remaining generic catalogues would duplicate established product infrastructure.",
+    "source_paths": [
+      "ael/",
+      "configs/",
+      "packs/",
+      "tools/"
+    ],
+    "files": 290
+  },
+  {
+    "id": "AEL-13",
+    "disposition": "NOT APPLICABLE",
+    "title": "ML model assets, embedded inference and tensor preprocessing",
+    "status": "NOT APPLICABLE",
+    "reason": "No model binaries, inference engine, training pipeline or tensor preprocessing exists in this pinned source; AI refers to host agent workflow. Do not invent a model integration.",
+    "acceptance": "Tracked filename and source import scan recorded in component-inventory.json; model.py files describe DUT/instrument metadata.",
+    "source_paths": [],
+    "files": 0
+  }
+]
