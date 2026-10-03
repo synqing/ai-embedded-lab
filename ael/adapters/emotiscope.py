@@ -17,12 +17,13 @@ import sys
 import time
 
 from ael import evidence
-from ael.adapters.observe_uart_log import _evaluate_capture
+from ael.adapters.observe_uart_log import _evaluate_capture, _default_patterns
 
 USB_SERIAL = 'DC:54:75:EA:36:14'
 ENV = 'k1_emotiscope_live'
 CONTROLS = ('palette', 'position', 'brightness', 'saturation', 'mirror', 'speed', 'contrast')
 MODES = {'live': 0, 'waveform_tempo': 18, 'waveform_hybrid': 11, 'waveform_hybrid_k1': 32}
+UART_ERROR = re.compile('|'.join(_default_patterns('espidf')['errors']), re.IGNORECASE)
 FATAL = re.compile(r'Guru Meditation|abort\(\)|assert failed|Brownout|Task watchdog|TWDT|KLV boot=fail|KLV fault=|LoadProhibited|StoreProhibited|IllegalInstruction')
 
 
@@ -142,6 +143,7 @@ class Link:
                 lines.append(line)
                 require(not FATAL.search(line), 'Runtime fault: ' + line)
                 require(self.allow_boot or 'ESP-ROM:' not in line, 'Unexpected reset: ' + line)
+                require(self.allow_boot or not UART_ERROR.search(line), 'Unexpected UART error: ' + line)
         return lines
 
     def command(self, value, seconds=.45):
@@ -353,6 +355,7 @@ class EmotiscopeAdapter:
                  'qualification': 'target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification'}
         ok, error = False, ''
         try:
+            require(cfg.get('usb_serial') == USB_SERIAL and cfg.get('environment') == ENV, 'Pack target identity mismatch')
             facts['source'] = source_identity(cfg['source'])
             action = cfg['action']
             if action in ('build', 'flash'):

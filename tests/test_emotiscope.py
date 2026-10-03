@@ -69,7 +69,7 @@ class EmotiscopeTests(unittest.TestCase):
 
     def test_failure_evidence_no_retry(self):
         with tempfile.TemporaryDirectory() as d, patch('ael.adapters.emotiscope.source_identity', side_effect=RuntimeError('dirty')):
-            plan = {'steps': [{'name':'guard','type':'load.emotiscope','retry_budget':5,'inputs':{'source':d,'action':'flash'}}]}
+            plan = {'steps': [{'name':'guard','type':'load.emotiscope','retry_budget':5,'inputs':{'source':d,'action':'flash','usb_serial':'DC:54:75:EA:36:14','environment':'k1_emotiscope_live'}}]}
             result = run_plan(plan, Path(d), AdapterRegistry())
             self.assertFalse(result['ok']); self.assertEqual(len(result['steps']), 1)
             self.assertTrue((Path(d)/'artifacts/emotiscope-flash.json').exists())
@@ -98,7 +98,7 @@ class EmotiscopeTests(unittest.TestCase):
             with self.assertRaises(RuntimeError): boot_diagnostics(changed, '/dev/example', 'raw.log')
 
     def test_fatal_serial_and_unexpected_reset(self):
-        for data in (b'Guru Meditation\n', b'ESP-ROM:esp32s3\n'):
+        for data in (b'Guru Meditation\n', b'ESP-ROM:esp32s3\n', b'E (3) DMA failure\n'):
             link = object.__new__(Link)
             link.ser = SimpleNamespace(in_waiting=len(data),read=lambda _: data)
             link.raw=io.BytesIO();link.pending=b'';link.allow_boot=False
