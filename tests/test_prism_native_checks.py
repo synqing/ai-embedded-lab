@@ -34,13 +34,18 @@ def checks(request, tmp_path):
                                  'run_returncode': 1, 'detected': True,
                                  'log': fault.name, 'log_sha256': lane.sha(fault)}]}
     else:
+        binary = output / 'fixture'
+        mutant = output / 'mutant'
+        binary.write_bytes(b'isolated positive executable fixture')
+        mutant.write_bytes(b'isolated mutated executable fixture')
         record = {**common, 'schema': 'prism-titan-native-checks.v1', 'classification': 'HOST_QUALIFICATION_ONLY',
                   'inputs': {'src/application.cpp': inputs['src/application.cpp']},
                   'core_root': str(source / 'deps/PRISM-Core'),
                   'core_inputs': {'music/runtime.cpp': inputs['deps/PRISM-Core/music/runtime.cpp']},
-                  'results': [{'case': 'application compile', 'argv': ['clang++', 'fixture.cpp'], 'exit_code': 0},
-                              {'case': 'application sanitised', 'argv': ['fixture'], 'exit_code': 0},
-                              {'case': 'fixture planted fault', 'argv': ['mutant'], 'exit_code': 1}]}
+                  'results': [{'case': 'application compile', 'argv': ['clang++', 'fixture.cpp', '-o', str(binary)], 'exit_code': 0},
+                              {'case': 'application sanitised', 'argv': [str(binary)], 'exit_code': 0},
+                              {'case': 'mutant compile', 'argv': ['clang++', 'mutant.cpp', '-o', str(mutant)], 'exit_code': 0},
+                              {'case': 'fixture planted fault', 'argv': [str(mutant)], 'exit_code': 1}]}
     return kind, record, output, source, facts
 
 
@@ -90,4 +95,21 @@ def test_changed_dual_fault_log_is_rejected(checks):
     if kind != 'dualmcu': pytest.skip('Dual receipt binds external command logs')
     (output / 'fault.log').write_text('replaced failure log')
     with pytest.raises(RuntimeError, match='log missing or changed'):
+        lane.validate_native_checks(record, output, source, kind, facts)
+
+
+@pytest.mark.parametrize('fault', ['compile_absent', 'compiler_marker', 'wrong_output',
+                                  'compile_after_run', 'missing_binary', 'reused_fault'])
+def test_titan_fault_requires_its_actual_compiled_output(checks, fault):
+    kind, original, output, source, facts = checks
+    if kind != 'titan':
+        pytest.skip('Titan ordered command receipt')
+    record = copy.deepcopy(original)
+    if fault == 'compile_absent': record['results'].pop(2)
+    if fault == 'compiler_marker': record['results'][2]['argv'][0] = 'echo'
+    if fault == 'wrong_output': record['results'][2]['argv'][-1] = str(output / 'other')
+    if fault == 'compile_after_run': record['results'][2:] = list(reversed(record['results'][2:]))
+    if fault == 'missing_binary': (output / 'mutant').unlink()
+    if fault == 'reused_fault': record['results'].append(copy.deepcopy(record['results'][-1]))
+    with pytest.raises(RuntimeError):
         lane.validate_native_checks(record, output, source, kind, facts)
