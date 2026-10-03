@@ -457,7 +457,7 @@ def validate_native_checks(record, output, source, lane, facts):
                     'Native check Core input unbound or changed')
         operations = record.get('results')
         require(isinstance(operations, list) and operations, 'Missing observed native checks')
-        positives, faults, compiled_outputs, fault_artifacts = [], [], {}, []
+        positives, faults, compiled_outputs, fault_artifacts, executions = [], [], {}, [], []
         for row in operations:
             require(isinstance(row.get('argv'), list) and row['argv']
                     and type(row.get('exit_code')) is int and row.get('case'), 'Invalid native check operation')
@@ -481,10 +481,19 @@ def validate_native_checks(record, output, source, lane, facts):
                     binary = Path(argv[argv.index('-o') + 1]).resolve()
                     require(binary.is_relative_to(output.resolve()), 'Native compiler output escapes checks')
                     compiled_outputs[binary] = argv
+                else:
+                    require(len(row['argv']) == 1, 'Native positive must execute its compiled binary')
+                    binary = Path(row['argv'][0]).resolve()
+                    require(binary in compiled_outputs, 'Native positive lacks its successful compilation')
+                    require(binary.is_relative_to(output.resolve()), 'Native positive binary escapes check output')
+                    artifact = safe_file(output, str(binary.relative_to(output.resolve())))
+                    executions.append({'case': row['case'], 'binary': str(binary),
+                                       'sha256': sha(artifact), 'compile_argv': compiled_outputs[binary]})
                 positives.append(row['case'])
-        require(positives and faults and any(case.endswith(' compile') for case in positives),
+        require(executions and faults and any(case.endswith(' compile') for case in positives),
                 'Native checks require actual compilation, positive execution and compiled faults')
         facts['compiled_fault_artifacts'] = fault_artifacts
+        facts['compiled_positive_artifacts'] = executions
     else:
         require(record.get('schema') == 'prism.native-host-test.v1'
                 and record.get('classification') == 'PRODUCT_CANDIDATE'

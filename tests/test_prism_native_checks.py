@@ -113,3 +113,19 @@ def test_titan_fault_requires_its_actual_compiled_output(checks, fault):
     if fault == 'reused_fault': record['results'].append(copy.deepcopy(record['results'][-1]))
     with pytest.raises(RuntimeError):
         lane.validate_native_checks(record, output, source, kind, facts)
+
+
+@pytest.mark.parametrize('fault', ['execution_absent', 'compile_after_execution',
+                                  'wrong_binary', 'extra_argument', 'missing_binary'])
+def test_titan_positive_requires_observed_compiled_execution(checks, fault):
+    kind, original, output, source, facts = checks
+    if kind != 'titan':
+        pytest.skip('Titan ordered command receipt')
+    record = copy.deepcopy(original)
+    if fault == 'execution_absent': record['results'].pop(1)
+    if fault == 'compile_after_execution': record['results'][:2] = list(reversed(record['results'][:2]))
+    if fault == 'wrong_binary': record['results'][1]['argv'][0] = str(output / 'other')
+    if fault == 'extra_argument': record['results'][1]['argv'].append('PASS')
+    if fault == 'missing_binary': (output / 'fixture').unlink()
+    with pytest.raises(RuntimeError):
+        lane.validate_native_checks(record, output, source, kind, facts)
