@@ -1740,6 +1740,7 @@ class _InstrumentSimHttpAdapter:
 class AdapterRegistry:
     def __init__(self):
         from ael.adapters.emotiscope import EmotiscopeAdapter
+        from ael.adapters.prism_lane import PrismLaneAdapter
         self._instrument_backends = _InstrumentBackendRegistry()
         self._capability_map = {
             "measure.voltage": _InstrumentAipHttpAdapter("measure.voltage"),
@@ -1757,6 +1758,7 @@ class AdapterRegistry:
             "build.emotiscope": EmotiscopeAdapter(),
             "load.emotiscope": EmotiscopeAdapter(),
             "check.emotiscope": EmotiscopeAdapter(),
+            "check.prism_lane": PrismLaneAdapter(),
             "build.idf": _BuildAdapter("idf"),
             "build.arm_debug": _BuildAdapter("arm_debug"),
             "build.cmake": _BuildAdapter("cmake"),

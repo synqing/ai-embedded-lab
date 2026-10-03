@@ -1,0 +1,6 @@
+{
+  "name": "prism_lane_checks",
+  "recovery_policy": {"enabled": false},
+  "timeout_s": 2000,
+  "steps": []
+}

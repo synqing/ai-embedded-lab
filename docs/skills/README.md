@@ -29,6 +29,7 @@ Use this order:
 | New board and pack work | `new_board_bringup_skill.md`, `new_pack_closeout_and_skill_capture.md`, `capability_expansion_skill_v0_1.md` |
 | Default verification | `default_verification_repeat_mode.md`, `default_verification_repeat_skill.md`, `default_verification_single_run_triage.md` |
 | Emotiscope USB bench | `emotiscope_guarded_bench.md` |
+| PRISM scaffold/donor and Titan owner bench | `prism_lane_bench.md` |
 | Degraded instruments and bench drift | `degraded_instrument_handling.md`, `bench_drift_vs_degraded_instrument.md`, `bench_resource_drift_interpretation.md` |
 | Resource locking and concurrency | `worker_resource_locking.md`, `probe_fallback_policy.md` |
 | User projects | `user_project_creation_skill.md`, `connection_contract_retrieval.md` |

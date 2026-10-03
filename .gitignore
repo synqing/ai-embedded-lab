@@ -42,3 +42,7 @@ stream.cfg
 
 # Local bench recovery images and transient measurements (may include device configuration)
 _scratch/
+reports/lanes-2026-10-03/**/core-stage/
+reports/lanes-2026-10-03/**/build/
+reports/lanes-2026-10-03/**/pio-workspace/
+reports/lanes-2026-10-03/**/pio-libdeps/
