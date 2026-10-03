@@ -1,0 +1,23 @@
+{
+  "bootloader.bin": {
+    "offset": 0,
+    "bytes": 20208,
+    "matches": true,
+    "build_sha256": "841b874f41f0561e700fb7c0995cc9ff2102fa759cfdf7e249b749a867362418",
+    "device_sha256": "841b874f41f0561e700fb7c0995cc9ff2102fa759cfdf7e249b749a867362418"
+  },
+  "partitions.bin": {
+    "offset": 32768,
+    "bytes": 3072,
+    "matches": true,
+    "build_sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c",
+    "device_sha256": "1d9cca96de0fe07ad7fc0648b9878ddecd9ce565e38b589ad20fea698ed4c80c"
+  },
+  "firmware.bin": {
+    "offset": 65536,
+    "bytes": 1025376,
+    "matches": true,
+    "build_sha256": "aeed36746adcec8822f85ce2fe73a4c6cc1ce7fcdc1265a6126c4dd6322bbaf7",
+    "device_sha256": "aeed36746adcec8822f85ce2fe73a4c6cc1ce7fcdc1265a6126c4dd6322bbaf7"
+  }
+}

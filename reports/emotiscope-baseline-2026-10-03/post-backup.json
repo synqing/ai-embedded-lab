@@ -1,0 +1,6 @@
+{
+  "build": "sbr{{\r\nBUILD: version=40103 git=45470057 epoch=1790965821 env=k1_emotiscope_live\r\n}}\r\n",
+  "klv_status": "KLV image bytes=3351 crc=62851093\nKLV vm=up origin=saved saved=1 err=0 px=128 frames=8781\nKLV renderer=live mode=0\nKLV heap free=18476 big=7156\nKLV us=1937 fps=94 err=0 vu=0.01 sp=0.252 bt=0\nKLVT show=1719/2266 dly=2734/8484 frm=10614/16714 n=95\nKLVA wt=1938/6867 act=4903/6736 gd=1606/2278 dl=561 n=135\nKLVB pre=263/1546 acq=3014/8313 vu=144/843\nKLVC pg=224/548 nov=86/737 snp=342/1136\nKLVD onsKLVE pub=365/1213 tail=88/200 rsec=3805/6503\nKLVF live=2651/5502 fill=2103/2421 show=0/0\nKLVG a1=100/194 a2=246/918 a3=284/1006\nKLVH a4=413/1235 cs=104/771 va=490/748\nKLVI vb=31/50 vc=82/131 vd=91/142\n",
+  "klv_get=brightness": "KLV value=brightness n=600\n",
+  "klv_get=palette": "KLV value=palette n=43\nKLV us=1953 fps=90 err=0 vu=0.00 sp=0.239 bt=0\nKLVT show=1747/2297 dly=3189/8463 frm=11080/16707 n=91\nKLVA wt=2066/6912 act=4793/6815 gd=1565/2264 dl=563 n=135\nKLVB pre=251/990 acq=3118/8346 vu=158/839\nKLVC pg=213/571 nov=82/330 snp=329/1127\nKLVD ons=203/941 sal=76/703 tmp=296/1509\nKLVE pub=358/1214 tail=84/178 rsec=3794/6459\nKLVF live=2665/5418 fill=2103/2381 show=0/0\nKLVG a1=101/185 a2=242/917 a3=259/567\nKLVH a4=413/1076 cs=106/771 va=473/735\nKLVI vb=30/46 vc=77/130 vd=92/314\n"
+}

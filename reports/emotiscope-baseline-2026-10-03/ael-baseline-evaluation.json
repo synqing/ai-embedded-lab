@@ -1,0 +1,41 @@
+{
+  "ok": false,
+  "bytes": 8580,
+  "lines": 185,
+  "port": "/dev/tty.usbmodem12201",
+  "baud": 115200,
+  "crash_detected": false,
+  "reboot_loop_suspected": false,
+  "errors": [
+    {
+      "pattern": "\\bE\\s*\\(",
+      "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+      "lineno": 34
+    },
+    {
+      "pattern": "\\bERROR\\b",
+      "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+      "lineno": 34
+    }
+  ],
+  "errors_truncated": 0,
+  "warnings": [],
+  "warnings_truncated": 0,
+  "matched": {
+    "expect": {
+      "KLV boot=saved": 1
+    },
+    "forbid": {},
+    "boot": {
+      "count": 1,
+      "patterns": [
+        "ESP-ROM:"
+      ]
+    }
+  },
+  "missing_expect": [],
+  "forbid_matched": [],
+  "raw_log_path": "_scratch/emotiscope-baseline/serial-passive.bin",
+  "error_summary": "UART error patterns detected",
+  "download_mode_detected": false
+}

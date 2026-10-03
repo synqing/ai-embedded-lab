@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/Users/spectrasynq/.platformio/penv/bin/python",
+    "-u",
+    "-m",
+    "esptool",
+    "--chip",
+    "esp32s3",
+    "--port",
+    "/dev/cu.usbmodem12201",
+    "--baud",
+    "921600",
+    "read_flash",
+    "0",
+    "ALL",
+    "_scratch/emotiscope-baseline/flash-backup.bin"
+  ],
+  "exit_code": 0,
+  "elapsed_s": 104.04803266690578,
+  "usb_serial": "DC:54:75:EA:36:14",
+  "previous_attempt": "Operator interrupted silent buffered read; no flash writes performed",
+  "bytes": 8388608,
+  "sha256": "beab0249db4fc98df4fcf593f5a9001790627ceaafcbe195274b0f020e8f335d"
+}

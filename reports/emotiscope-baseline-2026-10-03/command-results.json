@@ -1,0 +1,59 @@
+[
+  {
+    "label": "ael-host-tests",
+    "argv": [
+      "/Users/spectrasynq/.platformio/penv/bin/python",
+      "-m",
+      "unittest",
+      "tests.test_evidence_contract",
+      "tests.test_runner_retry_policy",
+      "tests.test_observe_uart_download_mode_wrapper",
+      "tests.test_control_reset_serial"
+    ],
+    "exit_code": 0,
+    "output": "_scratch/emotiscope-baseline/ael-host-tests.log",
+    "sha256": "dce7026c77f7d18118557e8978f689685e97bf1afa8b68aa3198504cc92692e5"
+  },
+  {
+    "label": "ael-revision",
+    "argv": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "output": "_scratch/emotiscope-baseline/ael-revision.log",
+    "sha256": "e499a76f3345bbe7d00fad48b2da4eff47cbcc33c7cf18a878d9931ee26bb1df"
+  },
+  {
+    "label": "firmware-revision",
+    "argv": [
+      "git",
+      "-C",
+      "/Users/spectrasynq/SpectraSynq_K1_Firmware",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "output": "_scratch/emotiscope-baseline/firmware-revision.log",
+    "sha256": "c00cab3530c983f6a74404fe287da01fa3231aa2d8150cd4b0eafe16e347d9c4"
+  },
+  {
+    "label": "live-source-equivalence",
+    "argv": [
+      "git",
+      "-C",
+      "/Users/spectrasynq/SpectraSynq_K1_Firmware",
+      "diff",
+      "--exit-code",
+      "45470057",
+      "HEAD",
+      "--",
+      "SPECTRASYNQ_K1_FIRMWARE",
+      "platformio.ini"
+    ],
+    "exit_code": 0,
+    "output": "_scratch/emotiscope-baseline/live-source-equivalence.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

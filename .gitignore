@@ -39,3 +39,6 @@ vivado*.log
 webtalk*.jou
 webtalk*.log
 stream.cfg
+
+# Local bench recovery images and transient measurements (may include device configuration)
+_scratch/

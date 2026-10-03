@@ -1,0 +1,7 @@
+{
+  "device": "/dev/cu.usbmodem12201",
+  "serial": "DC:54:75:EA:36:14",
+  "vid": 12346,
+  "pid": 4097,
+  "location": "0-1.2.2"
+}
