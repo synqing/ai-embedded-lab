@@ -1,0 +1,13 @@
+{
+  "suggest": "provider_disabled; mandatory spectrasynq-workflow loaded",
+  "workflow_verify": {
+    "exit_code": 2,
+    "error": "Verification project outside configured workspace"
+  },
+  "direct_verification": "passed",
+  "workflow_accept": "not attempted: no successful workflow verification receipt or bound registry",
+  "workflow_gate": {
+    "registry_bound": false,
+    "coverage": "No task ledger bound; this is not a completion certificate"
+  }
+}

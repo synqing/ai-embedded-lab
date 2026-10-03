@@ -1,0 +1,31 @@
+{
+  "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001",
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/build_scalar.py",
+    "--output",
+    "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-titan-build/arm-palette-003-rebuild",
+    "--optimisation",
+    "o2",
+    "--dcache",
+    "disabled",
+    "--pdm-target",
+    "--palette-runtime",
+    "--palette-autostart",
+    "--palette-morph",
+    "--palette-ws2816-gpt-pair",
+    "--dmac-priority",
+    "fixed",
+    "--dmac-lane-map",
+    "led-first",
+    "--emotiscope-port",
+    "--tempo-field",
+    "--live-runtime",
+    "--live-emit",
+    "--live-defaults",
+    "docs/contracts/titan-emotiscope-spectrum-defaults-v1.json"
+  ],
+  "exit_code": 0,
+  "note": "Output must be absent; existing builder refuses overwrite. Flags reconstructed from latest arm-palette-003 receipt."
+}

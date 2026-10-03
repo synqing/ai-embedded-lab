@@ -1,0 +1,74 @@
+{
+  "scope": "HOST fresh build and file readback only; no hardware access",
+  "source_root": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001",
+  "head": "119ba2c498054fb0206e453cf38f6968222431c9",
+  "tracked_clean": true,
+  "source_files": 194,
+  "source_hashes_match_recorded_and_current": true,
+  "build_id": "becb0186f0a66fbb04b0e0f4a79c0480b8b963db0fe3f518a91af9bb2dd2b5c7",
+  "recorded_receipt": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/docs/emotiscope-port-001/evidence/arm-palette-003/receipt.json",
+  "fresh_receipt": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-titan-build/arm-palette-003-rebuild/receipt.json",
+  "binary_comparison": {
+    "elf_equal": false,
+    "changed_bytes": 6,
+    "offsets": [
+      316329,
+      316331,
+      316332,
+      316334,
+      316335,
+      316345
+    ],
+    "only_compile_banner_changed": true,
+    "old_banner": "17:08:33    Oct  1 2026",
+    "new_banner": "15:30:49    Oct  3 2026",
+    "map_equal": true
+  },
+  "artifacts": {
+    "symbols.txt": {
+      "sha256": "0bd8b123059b8b7a78f9c1878761171372fb82f15e35127bb41ccb241b4bd9d9",
+      "bytes": 82704
+    },
+    "emotiscope-object-undefined.txt": {
+      "sha256": "01d06b0415fcfc8414670cc221760ee2ed6e4a5d045c69ab4acf0408c60f43fe",
+      "bytes": 723
+    },
+    "rtthread.hex": {
+      "sha256": "72a6d73cc85aca1e4ed0563adf06f9be12d00e87ba1850c90d72d4019b760b7c",
+      "bytes": 937952
+    },
+    "attributes.txt": {
+      "sha256": "ce76819135f29f3724d087b8b1e2a11564dd9bb77f16f1b6c74db9e7b6f5fb7e",
+      "bytes": 486
+    },
+    "rtthread.map": {
+      "sha256": "4d36c21d033298e64c157358df3999b53720b372d85f70d6539c602aa5600a2a",
+      "bytes": 1372381
+    },
+    "disassembly.txt": {
+      "sha256": "629aef10a83fb753ceefeba7e4c53bccda61ee2c70aa563152f312be35a936de",
+      "bytes": 3047310
+    },
+    "rtthread.elf": {
+      "sha256": "7f4f3cff2e8d6bf92786139a7fb088073373b8100ab43d883804f7d56bb7cf4e",
+      "bytes": 488576
+    },
+    "compiler-macros.txt": {
+      "sha256": "87901f6f17a82320bff7273514841b3b1d20328809a96ec61fa67576a52b68f0",
+      "bytes": 17010
+    },
+    "receipt.json": {
+      "sha256": "b8d49fbc26754fa3921dc1be5d3534360ba61dc89cd83a1e16fb797ead07743a",
+      "bytes": 36702
+    },
+    "build.log": {
+      "sha256": "09c43b77e180bc0d6c06150a22f35db0c46c22a91f009e5dc382a45c613c984c",
+      "bytes": 391331
+    }
+  },
+  "live_boot_brightness": 100,
+  "live_emit_default": "on",
+  "npu_enabled": false,
+  "size": "   text\t   data\t    bss\t    dec\t    hex\tfilename\n 209652\t 123768\t 347892\t 681312\t  a6560\t/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-titan-build/arm-palette-003-rebuild/rtthread.elf\n",
+  "verification": "all assertions passed"
+}
