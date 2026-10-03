@@ -2,6 +2,26 @@
 
 This extends the existing AEL runner, adapter registry, evidence writer and zero-retry policy. It does not install a second test framework. Results distinguish the named PRISM scaffold from externally referenced donor firmware. See the [validated three-lane report](../reports/lanes-2026-10-03/README.md) and [reusable procedure](skills/prism_lane_bench.md).
 
+## Native product candidates
+
+`product-build` executes the lane's recorded `scripts/build.py` against its
+canonical tagged Core pin. It creates fresh native images and dependency maps,
+then verifies source, object, compiler, runtime-library and image hashes. Donor
+and sibling-lane sources, reference archives, development Core overrides and
+source changes during compilation are rejected. The result is classified
+`PRODUCT_CANDIDATE`: native compilation does not close missing musical/effect
+behaviour, controls, timing or physical qualification.
+
+```bash
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane dualmcu --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU --action product-build --out _scratch/prism-dualmcu-product
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane titan --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan --action product-build --out _scratch/prism-titan-product
+```
+
+Each lane must have committed its owned source and pin before these commands;
+each `--out` must be unused. No serial connection, programming, reset or recovery
+occurs. Existing `build`, `flash` and `recover` refusal guards remain until the
+corresponding product and deployment admission requirements are met.
+
 ## PRISM-owned reference builds — migration increment
 
 The migration adds `bench-build`, `regression` and read-only `diagnose` to the

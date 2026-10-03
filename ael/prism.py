@@ -12,7 +12,7 @@ def main():
     p.add_argument('--lane', required=True, choices=('dualmcu', 'titan'))
     p.add_argument('--source', required=True, type=Path)
     p.add_argument('--core-source', type=Path)
-    p.add_argument('--action', required=True, choices=('discover', 'core-test', 'donor-build', 'donor-recover', 'observe', 'bench-build', 'regression', 'diagnose', 'build', 'flash', 'recover'))
+    p.add_argument('--action', required=True, choices=('discover', 'core-test', 'donor-build', 'donor-recover', 'observe', 'bench-build', 'product-build', 'regression', 'diagnose', 'build', 'flash', 'recover'))
     p.add_argument('--target', choices=('rt1062_production', 'rt1062_k1_migration_t40_ws2812_128', 's3_radio_bridge_ble'))
     p.add_argument('--donor-source', type=Path)
     p.add_argument('--build-receipt', type=Path)

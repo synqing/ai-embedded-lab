@@ -12,6 +12,7 @@ from pathlib import Path
 import shutil
 import shlex
 import signal
+import struct
 import subprocess
 import sys
 import time
@@ -222,16 +223,156 @@ def lane_diagnosis(cfg, facts):
     source = Path(cfg['source']).resolve()
     facts['capabilities'] = {
         'locked_bench_entry': (source / 'scripts/bench.py').is_file(),
+        'native_product_build': 'scripts/build.py' in facts['source'].get('tracked_files', []),
         'migration_manifest': (source / 'docs/migration').is_dir(),
         'core_tag': facts['source']['core_tag'],
         'native_product_deployment': False,
     }
     facts['qualification'] = 'Read-only capability inventory; no firmware, electrical or optical acceptance'
     facts['remaining'] = [
-        'Admit or independently implement the required audio and visual engine with recorded provenance',
-        'Build and verify the clean product target independently of bench source',
+        'Close the full required audio, effect and control inventory against frozen expectations',
+        'Verify the native product receipt and actual linked source independently of bench source',
         'Identify and qualify the intended physical target before deployment',
     ]
+
+
+def safe_file(root, relative):
+    """Bind a regular file inside its declared root without symlink escapes."""
+    name = Path(relative)
+    require(name.parts and not name.is_absolute() and '..' not in name.parts,
+            'Unsafe product file path: ' + str(relative))
+    root = Path(root).resolve()
+    file = root / name
+    require(file.is_file() and not any((root / Path(*name.parts[:i])).is_symlink()
+                                     for i in range(1, len(name.parts) + 1)),
+            'Product file missing or symlinked: ' + str(relative))
+    require(file.resolve().is_relative_to(root), 'Product file escaped declared root')
+    return file
+
+
+def validate_product_receipt(record, output, source, lane, facts):
+    """Validate actual candidate images; this grants no deployment admission."""
+    require(record.get('schema') == 'prism-product-build.v1', 'Wrong product receipt schema')
+    require(record.get('classification') == 'PRODUCT_CANDIDATE', 'Wrong product classification')
+    require(type(record.get('exit_code')) is int and record.get('exit_code') == 0 and record.get('hardware_access') is False
+            and record.get('product_admitted') is False, 'Invalid candidate execution scope')
+    require(record.get('development_core', False) is False, 'Development Core is not an independent pinned build')
+    require(record.get('lane') == lane, 'Product receipt lane mismatch')
+    require(record.get('core_commit') == facts['source']['core_commit']
+            and record.get('core_tag') == facts['source']['core_tag'], 'Product Core pin mismatch')
+    require(isinstance(record.get('native_application'), (str, dict)) and record['native_application']
+            and isinstance(record.get('implemented_behaviours'), list) and record['implemented_behaviours']
+            and isinstance(record.get('open_dependencies'), list), 'Missing application/dependency account')
+    roots, inputs = record.get('input_roots'), record.get('inputs')
+    require(isinstance(roots, dict) and isinstance(inputs, dict), 'Missing product input inventory')
+    require(Path(roots.get('lane', '')).resolve() == source.resolve()
+            and Path(roots.get('core', '')).resolve() == (source / 'deps/PRISM-Core').resolve(),
+            'Product lane/Core roots mismatch')
+    bound_sources = {}
+    input_groups = []
+    for group, root in roots.items():
+        rows = inputs.get(group)
+        if isinstance(root, dict) and group.startswith('vendor'):
+            require(root and isinstance(rows, dict) and rows, 'Empty vendor input inventory')
+            for label, base in root.items():
+                require(label and '/' not in label, 'Invalid vendor root label')
+                prefix = label + '/'
+                selected = {name[len(prefix):]: digest for name, digest in rows.items() if name.startswith(prefix)}
+                input_groups.append((group, base, selected, group + '/' + prefix))
+            require(all(name.split('/', 1)[0] in root for name in rows), 'Unbound vendor input root')
+        else:
+            input_groups.append((group, root, rows, group + '/'))
+    for group, root, rows, prefix in input_groups:
+        require(group == 'lane' or group == 'core' or group.startswith('vendor'), 'Unsupported product input group')
+        require(not any(old in str(root) for old in ('SpectraSynq_K1_Firmware',
+                    'SpectraSynq-K1-DualMCU-Firmware', 'SpectraSynq-K1-RA8P1-Firmware')),
+                'Product input depends on donor checkout')
+        if group.startswith('vendor'):
+            siblings = [name for name in LANES.values() if name != source.name]
+            require(not any(part in Path(root).resolve().parts for part in siblings),
+                    'Vendor input depends on another product lane')
+        require(isinstance(rows, dict) and rows, 'Empty product input group')
+        for name, digest in rows.items():
+            require(not any(part in Path(name).parts for part in ('bench', '_scratch', 'reference')),
+                    'Reference source in product input inventory')
+            file = safe_file(root, name)
+            require(sha(file) == digest, 'Product input changed: ' + group + '/' + name)
+            bound_sources[prefix + name] = digest
+    toolchains = inputs.get('toolchain', {})
+    require(isinstance(toolchains, dict) and toolchains, 'Missing compiler inventory')
+    identities = [toolchains] if 'compiler_path' in toolchains else list(toolchains.values())
+    for toolchain in identities:
+        require(isinstance(toolchain, dict), 'Invalid compiler inventory')
+        compiler = Path(toolchain.get('compiler_path', ''))
+        require(compiler.is_file() and sha(compiler) == toolchain.get('compiler_sha256')
+                and toolchain.get('compiler_version'), 'Compiler identity missing or changed')
+        libraries = toolchain.get('linked_libraries')
+        require(isinstance(libraries, dict) and libraries, 'Missing linked runtime library inventory')
+        for name, digest in libraries.items():
+            library = Path(name)
+            require(library.is_absolute() and library.is_file() and sha(library) == digest,
+                    'Linked runtime library missing or changed')
+            require(not any(old in str(library.resolve()) for old in ('SpectraSynq_K1_Firmware',
+                        'SpectraSynq-K1-DualMCU-Firmware', 'SpectraSynq-K1-RA8P1-Firmware'))
+                    and not any(part in library.resolve().parts for part in ('bench', 'reference')),
+                    'Linked runtime library depends on donor/reference source')
+            require(not any(part in library.resolve().parts for part in LANES.values()
+                            if part != source.name), 'Linked runtime library depends on another product lane')
+    objects = record.get('linked_objects')
+    require(isinstance(objects, list) and objects, 'Missing linked object inventory')
+    named_objects = set()
+    for row in objects:
+        require(row.get('source') in bound_sources
+                and row.get('source_sha256') == bound_sources[row['source']], 'Unbound linked object source')
+        file = safe_file(output, row.get('object', ''))
+        require(file.suffix == '.o' and sha(file) == row.get('sha256'), 'Linked object missing or changed')
+        require(row['object'] not in named_objects, 'Duplicate linked object')
+        named_objects.add(row['object'])
+    actual_objects = {p.relative_to(output).as_posix() for p in output.rglob('*.o') if p.is_file()}
+    require(actual_objects == named_objects, 'Product object inventory incomplete')
+    declared = record.get('artefacts')
+    require(isinstance(declared, dict) and declared, 'Missing product image hashes')
+    for name, digest in declared.items():
+        require(sha(safe_file(output, name)) == digest, 'Product artefact missing or changed: ' + name)
+    images = [p for p in output.rglob('*') if p.is_file() and p.suffix in ('.elf', '.hex', '.bin', '.map')]
+    require(any(p.suffix == '.elf' for p in images) and any(p.suffix == '.map' for p in images),
+            'Product requires native ELF and dependency map')
+    require({p.relative_to(output).as_posix() for p in images}.issubset(declared), 'Unbound product image')
+    for executable in (p for p in images if p.suffix == '.elf'):
+        header = executable.read_bytes()[:52]
+        require(len(header) == 52 and header[:7] == b'\x7fELF\x01\x01\x01',
+                'Product image is not a little-endian ELF32 executable')
+        image_type, machine, version, entry = struct.unpack_from('<HHII', header, 16)
+        require(image_type == 2 and version == 1 and entry != 0
+                and machine in ((40,) if lane == 'titan' else (40, 94)),
+                'Product ELF architecture or execution identity mismatch')
+    require(any('Runtime' in p.read_text(errors='replace') and 'prism' in p.read_text(errors='replace')
+                for p in images if p.suffix == '.map'), 'Native image lacks Core runtime composition')
+    require(any(name.startswith('core/music/') for name in bound_sources), 'Product lacks shared musical runtime input')
+    facts.update(product_receipt=record,
+                 qualification='PRODUCT_CANDIDATE: independent native compilation; full behaviour and physical gates remain open',
+                 binaries=[{'path': str(p), 'bytes': p.stat().st_size, 'sha256': sha(p)} for p in sorted(images)])
+
+
+def lane_product_build(cfg, ctx, facts):
+    source = Path(cfg['source']).resolve()
+    script = safe_file(source, 'scripts/build.py')
+    require('scripts/build.py' in facts['source']['tracked_files'], 'Product builder must be recorded in lane')
+    before = donor_identity(source)
+    run_key = hashlib.sha256(str(ctx.run_dir.resolve()).encode()).hexdigest()[:16]
+    output = source / '_scratch/ael-product' / run_key
+    require(not output.exists(), 'Fresh product output required')
+    command = [sys.executable, '-B', str(script), '--output', str(output)]
+    log = ctx.logs_dir / 'lane-product-build.log'
+    facts.update(argv=command, cwd=str(source), lane_identity=before, lane_output=str(output))
+    with log.open('w') as out:
+        proc = run_command(command, cwd=source, stdout=out, timeout=1200)
+    facts.update(returncode=proc.returncode, log=str(log), log_sha256=sha(log))
+    require(proc.returncode == 0, 'Lane product build failed; ' + str(log))
+    require(donor_identity(source) == before, 'Lane source changed during product build')
+    receipt = safe_file(output, 'receipt.json')
+    validate_product_receipt(json.loads(receipt.read_text()), output, source, cfg['lane'], facts)
+    facts['lane_receipts'] = [{'path': str(receipt), 'sha256': sha(receipt)}]
 
 
 def validate_titan(row, expected_build, now):
@@ -401,6 +542,8 @@ class PrismLaneAdapter:
                 raise RuntimeError('No native firmware/deployment profile admitted in this PRISM lane; bench operations, donor observation and core-test are separate capabilities')
             elif action in ('bench-build', 'regression'):
                 lane_bench(cfg, ctx, facts)
+            elif action == 'product-build':
+                lane_product_build(cfg, ctx, facts)
             elif action == 'diagnose':
                 lane_diagnosis(cfg, facts)
             elif action == 'discover':
