@@ -39,8 +39,8 @@ def candidate(tmp_path):
     header = bytearray(52)
     header[:7] = b'\x7fELF\x01\x01\x01'
     struct.pack_into('<HHII', header, 16, 2, 40, 1, 0x02000001)
-    (output / 'image.elf').write_bytes(header)
-    (output / 'image.map').write_text('prism::music::Runtime::process_i16')
+    (output / 'titan-native.elf').write_bytes(header)
+    (output / 'titan-native.map').write_text('prism::music::Runtime::process_i16')
     record = {'schema': 'prism-product-build.v1', 'classification': 'PRODUCT_CANDIDATE',
               'exit_code': 0, 'hardware_access': False, 'product_admitted': False, 'lane': 'titan',
               'core_commit': 'pinned-commit', 'core_tag': 'pinned-tag',
@@ -58,6 +58,64 @@ def test_candidate_is_native_compilation_without_deployment_admission(candidate)
     lane.validate_product_receipt(record, output, source, 'titan', facts)
     assert len(facts['binaries']) == 2
     assert facts['product_receipt']['product_admitted'] is False
+    assert facts['executable_targets']['m85']['machine'] == 40
+
+
+def dual_candidate(candidate):
+    record, output, source, facts = candidate
+    record['lane'] = 'dualmcu'
+    record['native_application'] = {'rt1062': 'capture/AP/VP/output', 's3': 'BLE/control/SPI'}
+    header = (output / 'titan-native.elf').read_bytes()
+    (output / 'titan-native.elf').unlink()
+    (output / 'titan-native.map').unlink()
+    for role, (relative, machine, owns_runtime) in lane.PRODUCT_TARGETS['dualmcu'].items():
+        elf = output / relative
+        elf.parent.mkdir(parents=True, exist_ok=True)
+        binary = bytearray(header)
+        struct.pack_into('<H', binary, 18, machine)
+        elf.write_bytes(binary)
+        elf.with_suffix('.map').write_text('prism::music::Runtime::process_i16' if owns_runtime else 'radio BLE SPI')
+    record['artefacts'] = {p.relative_to(output).as_posix(): lane.sha(p)
+                           for p in output.rglob('*') if p.suffix in ('.elf', '.map')}
+    return record, output, source, facts
+
+
+def test_dual_requires_both_bound_processor_applications(candidate):
+    record, output, source, facts = dual_candidate(candidate)
+    lane.validate_product_receipt(record, output, source, 'dualmcu', facts)
+    assert set(facts['executable_targets']) == {'rt1062', 's3_radio'}
+    assert facts['executable_targets']['rt1062']['owns_musical_runtime'] is True
+    assert facts['executable_targets']['s3_radio']['owns_musical_runtime'] is False
+
+
+@pytest.mark.parametrize('fault', ['missing_radio', 'missing_rt', 'swapped_architectures',
+                                  'radio_arm', 'extra_application', 'radio_runtime',
+                                  'rt_stub', 'missing_radio_map', 'swapped_maps'])
+def test_dual_wrong_processor_binding_is_rejected(candidate, fault):
+    record, output, source, facts = dual_candidate(candidate)
+    rt = output / lane.PRODUCT_TARGETS['dualmcu']['rt1062'][0]
+    radio = output / lane.PRODUCT_TARGETS['dualmcu']['s3_radio'][0]
+    if fault == 'missing_radio': radio.unlink()
+    if fault == 'missing_rt': rt.unlink()
+    if fault == 'swapped_architectures':
+        rt_bytes, radio_bytes = rt.read_bytes(), radio.read_bytes()
+        rt.write_bytes(radio_bytes)
+        radio.write_bytes(rt_bytes)
+    if fault == 'radio_arm': radio.write_bytes(rt.read_bytes())
+    if fault == 'extra_application': (output / 'extra.elf').write_bytes(rt.read_bytes())
+    if fault == 'radio_runtime': radio.with_suffix('.map').write_text('prism::music::Runtime::process_i16')
+    if fault == 'rt_stub': rt.with_suffix('.map').write_text('stub AP VP')
+    if fault == 'missing_radio_map': radio.with_suffix('.map').unlink()
+    if fault == 'swapped_maps':
+        rt_map, radio_map = rt.with_suffix('.map'), radio.with_suffix('.map')
+        a, b = rt_map.read_text(), radio_map.read_text()
+        rt_map.write_text(b)
+        radio_map.write_text(a)
+    # Bind modified bytes honestly so hash checking cannot mask role checking.
+    record['artefacts'] = {p.relative_to(output).as_posix(): lane.sha(p)
+                           for p in output.rglob('*') if p.suffix in ('.elf', '.map')}
+    with pytest.raises(RuntimeError):
+        lane.validate_product_receipt(record, output, source, 'dualmcu', facts)
 
 
 def test_multiple_vendor_roots_and_target_compilers_are_bound(candidate):
@@ -115,7 +173,8 @@ def test_foreign_file_cannot_be_disguised_as_toolchain_header(candidate):
                                   'input_symlink', 'escape', 'compiler_drift', 'donor_root', 'reference_input',
                                   'development_core', 'sibling_root', 'library_drift', 'missing_libraries', 'boolean_exit',
                                   'donor_library', 'sibling_library', 'reference_library',
-                                  'fake_elf', 'wrong_architecture', 'non_executable'])
+                                  'fake_elf', 'wrong_architecture', 'non_executable',
+                                  'unrelated_runtime'])
 def test_broken_product_receipts_are_rejected(candidate, fault):
     original, output, source, facts = candidate
     record = copy.deepcopy(original)
@@ -129,13 +188,16 @@ def test_broken_product_receipts_are_rejected(candidate, fault):
     if fault == 'object_drift': (output / 'core.o').write_bytes(b'changed')
     if fault == 'object_omitted': record['linked_objects'].pop()
     if fault == 'extra_object': (output / 'unbound.o').write_bytes(b'extra')
-    if fault == 'missing_elf': (output / 'image.elf').unlink()
-    if fault == 'image_drift': (output / 'image.elf').write_bytes(b'changed')
+    if fault == 'missing_elf': (output / 'titan-native.elf').unlink()
+    if fault == 'image_drift': (output / 'titan-native.elf').write_bytes(b'changed')
     if fault == 'extra_image': (output / 'unbound.bin').write_bytes(b'extra')
-    if fault == 'missing_map': (output / 'image.map').unlink()
+    if fault == 'missing_map': (output / 'titan-native.map').unlink()
     if fault == 'stub_map':
-        (output / 'image.map').write_text('stub renderer')
-        record['artefacts']['image.map'] = lane.sha(output / 'image.map')
+        (output / 'titan-native.map').write_text('stub renderer')
+        record['artefacts']['titan-native.map'] = lane.sha(output / 'titan-native.map')
+    if fault == 'unrelated_runtime':
+        (output / 'titan-native.map').write_text('prism control codec; unrelated::Runtime::start')
+        record['artefacts']['titan-native.map'] = lane.sha(output / 'titan-native.map')
     if fault == 'input_symlink':
         file = source / 'src/application.cpp'
         target = source / 'application-original.cpp'
@@ -151,12 +213,12 @@ def test_broken_product_receipts_are_rejected(candidate, fault):
     if fault == 'missing_libraries': record['inputs']['toolchain'].pop('linked_libraries')
     if fault == 'boolean_exit': record['exit_code'] = False
     if fault in ('fake_elf', 'wrong_architecture', 'non_executable'):
-        image = bytearray((output / 'image.elf').read_bytes())
+        image = bytearray((output / 'titan-native.elf').read_bytes())
         if fault == 'fake_elf': image[:4] = b'TEXT'
         if fault == 'wrong_architecture': struct.pack_into('<H', image, 18, 62)
         if fault == 'non_executable': struct.pack_into('<H', image, 16, 1)
-        (output / 'image.elf').write_bytes(image)
-        record['artefacts']['image.elf'] = lane.sha(output / 'image.elf')
+        (output / 'titan-native.elf').write_bytes(image)
+        record['artefacts']['titan-native.elf'] = lane.sha(output / 'titan-native.elf')
     if fault in ('donor_library', 'sibling_library', 'reference_library'):
         directory = {'donor_library': 'SpectraSynq-K1-RA8P1-Firmware',
                      'sibling_library': 'K1-DualMCU', 'reference_library': 'bench'}[fault]

@@ -22,6 +22,15 @@ from ael.adapters.emotiscope import git, require, sha
 
 TITAN_UID = '545433931bd25436593630352d068363'
 LANES = {'dualmcu': 'K1-DualMCU', 'titan': 'Kx-Titan'}
+# These are the current lane-owned product entry points, separate from donor targets.
+# Architecture alone cannot identify which processor application an ELF replaces.
+PRODUCT_TARGETS = {
+    'dualmcu': {
+        'rt1062': ('build/prism_rt1062/prism_rt1062/firmware.elf', 40, True),
+        's3_radio': ('build/prism_s3_ble/prism_s3_ble/firmware.elf', 94, False),
+    },
+    'titan': {'m85': ('titan-native.elf', 40, True)},
+}
 DUAL_TARGETS = ('rt1062_production', 'rt1062_k1_migration_t40_ws2812_128', 's3_radio_bridge_ble')
 TITAN_FLAGS = ['--optimisation', 'o2', '--dcache', 'disabled', '--pdm-target', '--palette-runtime',
                '--palette-autostart', '--palette-morph', '--palette-ws2816-gpt-pair',
@@ -250,6 +259,42 @@ def safe_file(root, relative):
     return file
 
 
+def validate_product_targets(output, declared, lane):
+    """Bind native processor roles to immutable image/map bytes, without hardware access.
+
+    This is one part of candidate build validation. It establishes neither full
+    source admission nor timing, deployment permission or observed device identity.
+    """
+    targets = PRODUCT_TARGETS[lane]
+    actual = {p.relative_to(output).as_posix() for p in output.rglob('*.elf') if p.is_file()}
+    require(actual == {spec[0] for spec in targets.values()}, 'Product application target set mismatch')
+    executable_targets = {}
+    for role, (relative, expected_machine, owns_runtime) in targets.items():
+        executable = safe_file(output, relative)
+        require(relative in declared and sha(executable) == declared[relative],
+                'Product application image missing or changed')
+        header = executable.read_bytes()[:52]
+        require(len(header) == 52 and header[:7] == b'\x7fELF\x01\x01\x01',
+                'Product image is not a little-endian ELF32 executable')
+        image_type, machine, version, entry = struct.unpack_from('<HHII', header, 16)
+        require(image_type == 2 and version == 1 and entry != 0 and machine == expected_machine,
+                'Product ELF architecture or execution identity mismatch')
+        map_relative = str(Path(relative).with_suffix('.map'))
+        require(map_relative in declared, 'Product application lacks its bound dependency map')
+        dependency_map_file = safe_file(output, map_relative)
+        require(sha(dependency_map_file) == declared[map_relative], 'Product application map changed')
+        dependency_map = dependency_map_file.read_text(errors='replace')
+        has_runtime = ('prism::music::Runtime::' in dependency_map
+                       or '_ZN5prism5music7Runtime' in dependency_map)
+        require(has_runtime == owns_runtime,
+                'Product processor runtime ownership mismatch: ' + role)
+        executable_targets[role] = {'elf': relative, 'elf_sha256': sha(executable),
+                                   'map': map_relative, 'map_sha256': declared[map_relative],
+                                   'machine': machine, 'entry': entry,
+                                   'owns_musical_runtime': owns_runtime}
+    return executable_targets
+
+
 def validate_product_receipt(record, output, source, lane, facts):
     """Validate actual candidate images; this grants no deployment admission."""
     require(record.get('schema') == 'prism-product-build.v1', 'Wrong product receipt schema')
@@ -356,18 +401,9 @@ def validate_product_receipt(record, output, source, lane, facts):
     require(any(p.suffix == '.elf' for p in images) and any(p.suffix == '.map' for p in images),
             'Product requires native ELF and dependency map')
     require({p.relative_to(output).as_posix() for p in images}.issubset(declared), 'Unbound product image')
-    for executable in (p for p in images if p.suffix == '.elf'):
-        header = executable.read_bytes()[:52]
-        require(len(header) == 52 and header[:7] == b'\x7fELF\x01\x01\x01',
-                'Product image is not a little-endian ELF32 executable')
-        image_type, machine, version, entry = struct.unpack_from('<HHII', header, 16)
-        require(image_type == 2 and version == 1 and entry != 0
-                and machine in ((40,) if lane == 'titan' else (40, 94)),
-                'Product ELF architecture or execution identity mismatch')
-    require(any('Runtime' in p.read_text(errors='replace') and 'prism' in p.read_text(errors='replace')
-                for p in images if p.suffix == '.map'), 'Native image lacks Core runtime composition')
+    executable_targets = validate_product_targets(output, declared, lane)
     require(any(name.startswith('core/music/') for name in bound_sources), 'Product lacks shared musical runtime input')
-    facts.update(product_receipt=record,
+    facts.update(product_receipt=record, executable_targets=executable_targets,
                  qualification='PRODUCT_CANDIDATE: independent native compilation; full behaviour and physical gates remain open',
                  binaries=[{'path': str(p), 'bytes': p.stat().st_size, 'sha256': sha(p)} for p in sorted(images)])
 
