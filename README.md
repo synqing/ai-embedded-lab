@@ -1317,3 +1317,7 @@ You are free to:
 - extend it for internal tooling
 
 Third-party components and vendor code remain under their respective original licenses.
+
+## Emotiscope bench integration
+
+The identity-guarded PRISM K1-S3 bench pack, reproduction commands and physical evidence are documented in [docs/emotiscope-bench.md](docs/emotiscope-bench.md).

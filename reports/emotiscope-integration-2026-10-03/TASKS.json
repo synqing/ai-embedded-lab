@@ -20,7 +20,16 @@
         ],
         "files": 4
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "PASS",
+      "execution_evidence": [
+        "integration-host-tests-final.log",
+        "lane-build/result.json",
+        "lane-flash/result.json",
+        "live-03/result.json",
+        "live-03/logs/emotiscope.raw.log"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-02",
@@ -41,7 +50,16 @@
         ],
         "files": 3
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "PASS",
+      "execution_evidence": [
+        "integration-host-tests-final.log",
+        "lane-build/result.json",
+        "lane-flash/result.json",
+        "live-03/result.json",
+        "live-03/logs/emotiscope.raw.log"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-03",
@@ -63,7 +81,16 @@
         ],
         "files": 5
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "PASS",
+      "execution_evidence": [
+        "integration-host-tests-final.log",
+        "lane-build/result.json",
+        "lane-flash/result.json",
+        "live-03/result.json",
+        "live-03/logs/emotiscope.raw.log"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-04",
@@ -84,7 +111,16 @@
         ],
         "files": 13
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "PASS",
+      "execution_evidence": [
+        "integration-host-tests-final.log",
+        "lane-build/result.json",
+        "lane-flash/result.json",
+        "live-03/result.json",
+        "live-03/logs/emotiscope.raw.log"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-05",
@@ -105,7 +141,17 @@
         ],
         "files": 4
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "PASS",
+      "execution_evidence": [
+        "integration-host-tests-final.log",
+        "lane-build/result.json",
+        "lane-flash/result.json",
+        "live-03/result.json",
+        "live-03/logs/emotiscope.raw.log",
+        "concurrent-refusal/result.json"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-06",
@@ -127,7 +173,16 @@
         ],
         "files": 4
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "PASS",
+      "execution_evidence": [
+        "integration-host-tests-final.log",
+        "lane-build/result.json",
+        "lane-flash/result.json",
+        "live-03/result.json",
+        "live-03/logs/emotiscope.raw.log"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-07",
@@ -149,7 +204,13 @@
         ],
         "files": 20
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "REJECTED",
+      "execution_evidence": [
+        "component-inventory.json",
+        "AUTHORITY.md"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-08",
@@ -176,7 +237,13 @@
         ],
         "files": 78
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "NOT APPLICABLE",
+      "execution_evidence": [
+        "component-inventory.json",
+        "AUTHORITY.md"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-09",
@@ -197,7 +264,13 @@
         ],
         "files": 3613
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "REJECTED",
+      "execution_evidence": [
+        "component-inventory.json",
+        "AUTHORITY.md"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-10",
@@ -216,7 +289,13 @@
         ],
         "files": 3
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "NOT APPLICABLE",
+      "execution_evidence": [
+        "component-inventory.json",
+        "AUTHORITY.md"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-11",
@@ -238,7 +317,13 @@
         ],
         "files": 11
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "REJECTED",
+      "execution_evidence": [
+        "component-inventory.json",
+        "AUTHORITY.md"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-12",
@@ -260,7 +345,13 @@
         ],
         "files": 290
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "REJECTED",
+      "execution_evidence": [
+        "component-inventory.json",
+        "AUTHORITY.md"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
     {
       "id": "AEL-13",
@@ -277,7 +368,13 @@
         "source_paths": [],
         "files": 0
       },
-      "dependencies": []
+      "dependencies": [],
+      "execution_disposition": "NOT APPLICABLE",
+      "execution_evidence": [
+        "component-inventory.json",
+        "AUTHORITY.md"
+      ],
+      "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     }
   ]
 }

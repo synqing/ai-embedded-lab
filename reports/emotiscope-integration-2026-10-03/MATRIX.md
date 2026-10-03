@@ -4,7 +4,7 @@ Authoritative derived checklist following Captain’s 3 October continuation. Th
 
 ## AEL-01 — Deterministic runner, retry budgets and result contracts
 
-Disposition: **ADOPT**. Execution: **PENDING**.
+Disposition: **ADOPT**. Execution: **PASS**.
 
 Evidence / reasoning: Run guarded build/flash/physical checks in declared order. Disable automatic side-effect retries.
 
@@ -14,7 +14,7 @@ Source coverage: 4 files; paths in inventory. Host-side integration adds no devi
 
 ## AEL-02 — Evidence and run artefacts
 
-Disposition: **ADOPT**. Execution: **PENDING**.
+Disposition: **ADOPT**. Execution: **PASS**.
 
 Evidence / reasoning: Use existing evidence schema and JSON pack loading; preserve raw output, hashes and source identity.
 
@@ -24,7 +24,7 @@ Source coverage: 3 files; paths in inventory. Host-side integration adds no devi
 
 ## AEL-03 — UART observation and boot diagnostics
 
-Disposition: **ADAPT**. Execution: **PENDING**.
+Disposition: **ADAPT**. Execution: **PASS**.
 
 Evidence / reasoning: Use AEL evaluator with Emotiscope serial line settings and one ROM marker per boot. Keep pre-existing PSRAM errors visible.
 
@@ -34,7 +34,7 @@ Source coverage: 5 files; paths in inventory. Host-side integration adds no devi
 
 ## AEL-04 — Build and flash integration
 
-Disposition: **REPLACE**. Execution: **PENDING**.
+Disposition: **REPLACE**. Execution: **PASS**.
 
 Evidence / reasoning: Existing IDF/CMake/STM32/Zephyr adapters do not build this Arduino/PlatformIO application. Add narrow adapter calling the existing verified-flash script.
 
@@ -44,7 +44,7 @@ Source coverage: 13 files; paths in inventory. Host-side integration adds no dev
 
 ## AEL-05 — Target configuration, serial ownership and reset
 
-Disposition: **REPLACE**. Execution: **PENDING**.
+Disposition: **REPLACE**. Execution: **PASS**.
 
 Evidence / reasoning: Thread locks cannot exclude other processes. Bind exact USB VID/PID/serial and source env; hold an OS file lock, check port owners, use supported S3 USB reset.
 
@@ -54,7 +54,7 @@ Source coverage: 4 files; paths in inventory. Host-side integration adds no devi
 
 ## AEL-06 — Physical checks and failure attribution
 
-Disposition: **ADAPT**. Execution: **PENDING**.
+Disposition: **ADAPT**. Execution: **PASS**.
 
 Evidence / reasoning: Mailbox/edge-count checks cannot prove music visualisation. Use existing Emotiscope command protocol and independent frame CRC decoder; measure telemetry and save-state preservation.
 
@@ -132,3 +132,8 @@ Acceptance / evaluation: Tracked filename and source import scan recorded in com
 
 Source coverage: 0 files; paths in inventory. Host-side integration adds no device model, tensor arena, tasks, interrupts or DMA. Dependencies remain the existing Python/pyserial and firmware PlatformIO stack.
 
+## Final execution evidence
+
+All six selected components passed the integrated physical run `live-03/result.json`; `lane-build/result.json` and `lane-flash/result.json` cover the actual native runner build/deployment paths. `integration-host-tests-final.log` covers 24 host tests with planted faults. `concurrent-refusal/result.json` is an expected physical-port ownership refusal while `observe-final` owns the device. Earlier failures remain in live-01 and live-02. Full paths and resource impact are in matrix.json.
+
+PASS here means the declared bench capability passed its tests. It does not relabel the known upstream PSRAM diagnostic FAIL, promise uninterrupted output through reset, certify optical/wire performance, qualify the greenfield K1 product, or assert a governance admission. No embedded ML item was invented.

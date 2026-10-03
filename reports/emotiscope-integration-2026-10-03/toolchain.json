@@ -1,0 +1,8 @@
+{
+  "python": "3.11.7",
+  "platform": "macOS-26.1-arm64-arm-64bit",
+  "node": "v26.5.0",
+  "clang": "Apple clang version 17.0.0 (clang-1700.6.3.2)",
+  "host_requirements": "../../requirements-emotiscope.txt",
+  "device_toolchain": "fresh-baseline-build.log and lane build logs"
+}

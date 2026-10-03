@@ -1,0 +1,47 @@
+{
+  "error_summary": "Firmware source identity mismatch",
+  "failure_kind": "unknown",
+  "finished_at": "2026-10-03T03:26:09.105906Z",
+  "ok": false,
+  "recovery": [],
+  "started_at": "2026-10-03T03:26:07.039861Z",
+  "steps": [
+    {
+      "attempt": 1,
+      "effective_retry_budget": 0,
+      "name": "emotiscope-test",
+      "ok": false,
+      "result": {
+        "error_summary": "Firmware source identity mismatch",
+        "evidence": [
+          {
+            "artifacts": {
+              "result": "reports/emotiscope-integration-2026-10-03/live-01/artifacts/emotiscope-test.json"
+            },
+            "facts": {
+              "action": "test",
+              "psram_bytes": 0,
+              "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+              "source": {
+                "branch": "wip/emotiscope-perf",
+                "git": "719af686ffcd2eba170974e5bb71078b05325686",
+                "platformio_sha256": "41e859dcd63a37f66fcb88aa09c3eaca889b4778ee1265021962d29b3aae3803",
+                "root": "/Users/spectrasynq/SpectraSynq_K1_Firmware"
+              },
+              "usb_serial": "DC:54:75:EA:36:14"
+            },
+            "kind": "emotiscope.test",
+            "source": "ael.adapters.emotiscope",
+            "status": "fail",
+            "summary": "Firmware source identity mismatch"
+          }
+        ],
+        "ok": false,
+        "retryable": false
+      },
+      "type": "check.emotiscope"
+    }
+  ],
+  "termination": "fail",
+  "timeout_s": 4000.0
+}

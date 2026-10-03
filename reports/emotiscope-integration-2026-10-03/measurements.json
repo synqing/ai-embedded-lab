@@ -1,0 +1,62 @@
+{
+  "firmware_git": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+  "initial_firmware_git": "45470057",
+  "fresh_legacy_git": "b05cbd2c",
+  "flash_size_bytes": 8388608,
+  "before_static_ram_bytes": 159252,
+  "after_static_ram_bytes": 159252,
+  "static_ram_delta_bytes": 0,
+  "before_app_flash_bytes": 1024974,
+  "after_app_flash_bytes": 1024974,
+  "app_flash_delta_bytes": 0,
+  "firmware_bin_bytes": 1025376,
+  "firmware_sha256": "a676991b476030938f6f867b242e964ddd9e4a66ebe770fba5fc092a0ab294ef",
+  "psram_bytes": 0,
+  "model_bytes": 0,
+  "inference_latency": "NOT APPLICABLE: no embedded ML in upstream",
+  "initialisation": "Boot readiness checked during 10-second windows; no precise initialisation latency instrumented",
+  "stack_headroom": "Not exposed by adopted telemetry; no new device tasks or stacks",
+  "before": {
+    "audio_active_avg_us_median": 5512,
+    "audio_active_max_us": 8242,
+    "fps_median": 82,
+    "fps_min": 78,
+    "frame_avg_us_median": 12148.0,
+    "frame_max_us": 16937,
+    "samples": 59,
+    "vu_max": 0.19
+  },
+  "after": {
+    "audio_active_avg_us_median": 5616,
+    "audio_active_max_us": 8254,
+    "fps_median": 92,
+    "fps_min": 85,
+    "frame_avg_us_median": 10900.0,
+    "frame_max_us": 16919,
+    "samples": 59,
+    "vu_max": 0.17
+  },
+  "soak_start": {
+    "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+    "frames": 1456,
+    "heap_free": 18608,
+    "heap_largest": 7156,
+    "mode": 0,
+    "saved": {
+      "bytes": 3351,
+      "crc": "62851093"
+    }
+  },
+  "soak_end": {
+    "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+    "frames": 7160,
+    "heap_free": 18608,
+    "heap_largest": 7156,
+    "mode": 0,
+    "saved": {
+      "bytes": 3351,
+      "crc": "62851093"
+    }
+  },
+  "qualification": "Live telemetry under operator-confirmed changing real music; not a controlled fixed-waveform performance comparison, optical proof or 120 FPS qualification"
+}

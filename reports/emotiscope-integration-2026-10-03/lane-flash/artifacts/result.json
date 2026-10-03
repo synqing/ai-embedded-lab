@@ -1,0 +1,60 @@
+{
+  "error_summary": "",
+  "failure_kind": "",
+  "finished_at": "2026-10-03T03:32:17.272554Z",
+  "ok": true,
+  "recovery": [],
+  "started_at": "2026-10-03T03:31:32.000430Z",
+  "steps": [
+    {
+      "attempt": 1,
+      "effective_retry_budget": 0,
+      "name": "emotiscope-flash",
+      "ok": true,
+      "result": {
+        "error_summary": "",
+        "evidence": [
+          {
+            "artifacts": {
+              "result": "reports/emotiscope-integration-2026-10-03/lane-flash/artifacts/emotiscope-flash.json"
+            },
+            "facts": {
+              "action": "flash",
+              "argv": [
+                "/Users/spectrasynq/.platformio/penv/bin/python",
+                "scripts/flash.py"
+              ],
+              "binary": {
+                "bytes": 1025376,
+                "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3/_scratch/bench/cc2c022cebdb8b97/project/.pio/build/k1_emotiscope_live/firmware.bin",
+                "sha256": "a676991b476030938f6f867b242e964ddd9e4a66ebe770fba5fc092a0ab294ef"
+              },
+              "log": "reports/emotiscope-integration-2026-10-03/lane-flash/logs/flash.log",
+              "log_sha256": "52d87edc38320cf94c196340c431549207e8c87163dd8ca90faea2c89cc1d3fd",
+              "psram_bytes": 0,
+              "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+              "returncode": 0,
+              "source": {
+                "branch": "main",
+                "git": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+                "lane": true,
+                "platformio_sha256": "1fe23e304ed49a5830680a25b3d425d95c4e1b970ca7d9cea0e4c23d0de96475",
+                "root": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3"
+              },
+              "usb_serial": "DC:54:75:EA:36:14"
+            },
+            "kind": "emotiscope.flash",
+            "source": "ael.adapters.emotiscope",
+            "status": "pass",
+            "summary": "Completed declared checks"
+          }
+        ],
+        "ok": true,
+        "retryable": false
+      },
+      "type": "load.emotiscope"
+    }
+  ],
+  "termination": "pass",
+  "timeout_s": 4000.0
+}

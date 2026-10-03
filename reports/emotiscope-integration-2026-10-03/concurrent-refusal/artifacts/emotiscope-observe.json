@@ -1,0 +1,18 @@
+{
+  "error": "Emotiscope already owned by another AEL process",
+  "facts": {
+    "action": "observe",
+    "expected_firmware": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+    "psram_bytes": 0,
+    "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+    "source": {
+      "branch": "main",
+      "git": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+      "lane": true,
+      "platformio_sha256": "1fe23e304ed49a5830680a25b3d425d95c4e1b970ca7d9cea0e4c23d0de96475",
+      "root": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3"
+    },
+    "usb_serial": "DC:54:75:EA:36:14"
+  },
+  "ok": false
+}

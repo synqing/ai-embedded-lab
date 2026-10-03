@@ -1,0 +1,8 @@
+lane-build: PASS
+lane-flash: PASS
+live-03: PASS
+observe-final: PASS
+observe-reviewed: PASS
+concurrent-refusal: expected refusal, no serial file
+d4c3282 baseline/recovery evidence: unchanged
+matrix: 13/13 terminal dispositions, 4048 unique upstream source paths

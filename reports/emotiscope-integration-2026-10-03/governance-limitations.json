@@ -1,0 +1,18 @@
+{
+  "session": "be47f8dffe6aab2ea822f47d",
+  "bind_error": "Project outside configured workspace roots",
+  "verify_error": "Verification project outside configured workspace",
+  "gate": {
+    "registry_bound": false,
+    "completed_ids": [],
+    "can_normal_stop": true,
+    "coverage": "No task ledger bound; this is not a completion certificate"
+  },
+  "diagnosis_provider": {
+    "request_id": "req_01a0ffd1f6167fb1bfe28542aca4c6a4",
+    "input_tokens": 738,
+    "output_tokens": 130,
+    "selected_read": "read-native-status"
+  },
+  "formal_acceptance": false
+}

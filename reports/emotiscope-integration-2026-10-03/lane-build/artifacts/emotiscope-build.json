@@ -1,0 +1,30 @@
+{
+  "error": "",
+  "facts": {
+    "action": "build",
+    "argv": [
+      "/Users/spectrasynq/.platformio/penv/bin/python",
+      "scripts/bench.py",
+      "build"
+    ],
+    "binary": {
+      "bytes": 1025376,
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3/_scratch/bench/cc2c022cebdb8b97/project/.pio/build/k1_emotiscope_live/firmware.bin",
+      "sha256": "a676991b476030938f6f867b242e964ddd9e4a66ebe770fba5fc092a0ab294ef"
+    },
+    "log": "reports/emotiscope-integration-2026-10-03/lane-build/logs/build.log",
+    "log_sha256": "af4fcefc1a76afcc46fdc19d7ee551ff030ab155935003c62e488b311119c9a9",
+    "psram_bytes": 0,
+    "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+    "returncode": 0,
+    "source": {
+      "branch": "main",
+      "git": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+      "lane": true,
+      "platformio_sha256": "1fe23e304ed49a5830680a25b3d425d95c4e1b970ca7d9cea0e4c23d0de96475",
+      "root": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3"
+    },
+    "usb_serial": "DC:54:75:EA:36:14"
+  },
+  "ok": true
+}

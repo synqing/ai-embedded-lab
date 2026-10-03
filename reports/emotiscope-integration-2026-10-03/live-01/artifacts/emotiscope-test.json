@@ -1,0 +1,16 @@
+{
+  "error": "Firmware source identity mismatch",
+  "facts": {
+    "action": "test",
+    "psram_bytes": 0,
+    "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+    "source": {
+      "branch": "wip/emotiscope-perf",
+      "git": "719af686ffcd2eba170974e5bb71078b05325686",
+      "platformio_sha256": "41e859dcd63a37f66fcb88aa09c3eaca889b4778ee1265021962d29b3aae3803",
+      "root": "/Users/spectrasynq/SpectraSynq_K1_Firmware"
+    },
+    "usb_serial": "DC:54:75:EA:36:14"
+  },
+  "ok": false
+}
