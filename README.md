@@ -1,5 +1,8 @@
 # AEL — AI-Driven Embedded Engineering
 
+SpectraSynq Emotiscope integration: **AEL COMPLETE**. See the
+[accepted closeout and separate OPEN PRISM implementation projects](reports/lanes-2026-10-03/AEL-CLOSEOUT.md).
+
 AEL (AI Embedded Lab) is a new way of doing embedded engineering.
 
 Instead of writing code, flashing firmware, and debugging manually,
