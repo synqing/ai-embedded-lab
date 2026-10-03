@@ -1,0 +1,26 @@
+{
+  "question": "Can SOURCE_DATE_EPOCH alone make existing donor builder bit reproducible without source change?",
+  "answer": "Not through the unchanged wrapper: epoch is already set, but SCons construction environment does not forward it.",
+  "builder_source": "scripts/build_scalar.py:927",
+  "builder_epoch": 1788912000,
+  "scons_source": "stage/SConstruct:22",
+  "compiler_check": {
+    "command": [
+      "arm-none-eabi-gcc",
+      "-E",
+      "-P",
+      "-x",
+      "c",
+      "-"
+    ],
+    "stdin": "__DATE__ __TIME__",
+    "environment": {
+      "SOURCE_DATE_EPOCH": "1788912000"
+    },
+    "exit_code": 0,
+    "stdout": "\"Sep  9 2026\" \"00:00:00\""
+  },
+  "inference": "Forwarding SOURCE_DATE_EPOCH into the disposable stage SCons ENV should remove the observed compile-banner nondeterminism; two rebuilt artefact comparisons are needed to prove complete reproducibility.",
+  "donor_changed": false,
+  "reproducibility_fix_implemented": false
+}

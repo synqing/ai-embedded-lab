@@ -1,0 +1,40 @@
+{
+  "label": "s3_radio_bridge_ble",
+  "argv": [
+    "/Users/spectrasynq/.platformio/penv/bin/pio",
+    "run",
+    "-e",
+    "s3_radio_bridge_ble"
+  ],
+  "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z",
+    "PLATFORMIO_BUILD_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build",
+    "PLATFORMIO_WORKSPACE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/workspace",
+    "PLATFORMIO_LIBDEPS_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/libdeps",
+    "PLATFORMIO_BUILD_CACHE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/cache"
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 34.122,
+  "log": "/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-build/s3_radio_bridge_ble.log",
+  "log_sha256": "d82f4e1aa525bb73614c5fa36cbbc53093f85e755ef91c3c8ed685c210ab8616",
+  "artifacts": [
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/s3_radio_bridge_ble/firmware.bin",
+      "sha256": "1dbcfee73f67facb2ad998770f18c4de68867a945f7a596aca10d5fb8cf9e906",
+      "size_bytes": 907376
+    },
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/s3_radio_bridge_ble/firmware.elf",
+      "sha256": "bb828c0e7476d1c6dddda4ac7ca68116ac106bf1cba1e5c73657f7e5d19e714a",
+      "size_bytes": 18620444
+    },
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/s3_radio_bridge_ble/firmware.map",
+      "sha256": "80cb9fabbdba7dcd4fa4663576a94a1d51eef2cb875e685fc500f2d503fb8d1d",
+      "size_bytes": 15770020
+    }
+  ]
+}

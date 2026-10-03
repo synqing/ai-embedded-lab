@@ -1,0 +1,14 @@
+{
+  "uid": "545433931bd25436593630352d068363",
+  "build": "becb0186f0a66fbb04b0e0f4a79c0480b8b963db0fe3f518a91af9bb2dd2b5c7",
+  "schema_sha256": "e40f6598e57c9493de6f3e6d19935d404d9f5cdbb35c064770fe365ad476a0bb",
+  "ops": [
+    "emotiscope_get",
+    "emotiscope_patch"
+  ],
+  "scope": "Admits donor GET and PATCH for the palette-primary image: with palettes 1-44 the palette is the only colour source (Colour, Colour range and Saturation inert; auto colour scrolls; background and screensaver from the palette; hue-preserving peak clip). Palette 0 unchanged. Boot palette 0, precision 0. Not a hardware pass, not an optical result.",
+  "hex_sha256": "8ecc9fba931ee2178cccf643efef8d132e144e764494614eeaf999f50e53c045",
+  "elf_sha256": "97923cbb8ff0b7ea80548e775b68765475da87b583d5b08a2683016e62a2b6e3",
+  "receipt": "docs/emotiscope-port-001/evidence/arm-palette-003/receipt.json",
+  "programme": "docs/emotiscope-port-001/evidence/programme-palette-003/receipt.json"
+}

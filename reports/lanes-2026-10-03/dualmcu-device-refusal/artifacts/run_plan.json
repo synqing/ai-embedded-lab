@@ -1,0 +1,25 @@
+{
+  "name": "prism_lane_checks",
+  "recovery_policy": {
+    "enabled": false
+  },
+  "steps": [
+    {
+      "inputs": {
+        "action": "observe",
+        "build_receipt": null,
+        "core_source": null,
+        "donor_source": null,
+        "lane": "dualmcu",
+        "owner_dir": "/private/tmp/titan-emotiscope-control",
+        "seconds": 30,
+        "source": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU",
+        "target": null
+      },
+      "name": "dualmcu-observe",
+      "retry_budget": 0,
+      "type": "check.prism_lane"
+    }
+  ],
+  "timeout_s": 2000
+}

@@ -1,0 +1,21 @@
+{
+  "starting_ael_commit": "35c4726660ebf15429456135db6bb54dee24fda1",
+  "tests": "82 passed",
+  "review": {
+    "reviewer": "review_prism_adapter",
+    "corrected": [
+      "Exact owner argv before recovery",
+      "Source/schema before recovery",
+      "Untracked/ignored code and docs/contracts identity",
+      "Terminate timeout children even if launcher exits and child ignores SIGTERM"
+    ],
+    "negative_tests": "tests/test_prism_lane.py"
+  },
+  "governance": {
+    "bind": "Project outside configured workspace roots",
+    "verify": "Verification project outside configured workspace",
+    "formal_admission": false
+  },
+  "firmware_changed": false,
+  "recovery_image_changed": false
+}

@@ -1,0 +1,35 @@
+{
+  "label": "rt1062_production",
+  "argv": [
+    "/Users/spectrasynq/.platformio/penv/bin/pio",
+    "run",
+    "-e",
+    "rt1062_production"
+  ],
+  "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z",
+    "PLATFORMIO_BUILD_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build",
+    "PLATFORMIO_WORKSPACE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/workspace",
+    "PLATFORMIO_LIBDEPS_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/libdeps",
+    "PLATFORMIO_BUILD_CACHE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/cache"
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 28.7,
+  "log": "/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-build/rt1062_production.log",
+  "log_sha256": "052f3593d4f99068c94e5b9c4787d85e77c651a6615b32bbb0e121d85a4ca18b",
+  "artifacts": [
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/rt1062_production/firmware.elf",
+      "sha256": "5f21a4d59b0f944eb13d25be1605bbd70698f0e4757c1da514e8f9194b82664b",
+      "size_bytes": 597120
+    },
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/rt1062_production/firmware.hex",
+      "sha256": "d345e6182f44a2d3c612991f7f99ab9365ccdf9fd0029598486f15cd15387f0f",
+      "size_bytes": 855544
+    }
+  ]
+}

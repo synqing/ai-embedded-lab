@@ -1,0 +1,84 @@
+BRIDGE_ROUNDTRIP=PASS TYPES=15
+BRIDGE_NEGATIVE=PASS BAD_VERSION=1 BAD_LENGTH=1 BAD_CRC=1 DUPLICATE_SEQ=1 OLD_SEQ=1 STALE=1 OVERFLOW=1 CLOCK_UNSYNCHRONISED=1 CLOCK_OFFSET=PASS FUTURE_TOLERANCE_MS=2 HEARTBEAT_DELAY_ISOLATION=PASS BIDIRECTIONAL_DRIFT=PASS CORRECTION_LIMIT_MS=2 STALE_HEARTBEAT=REJECTED HEARTBEAT_FUTURE_REANCHOR=PASS COMMAND_FUTURE_POISON_REANCHOR=PASS
+GXX_ENV=native_bridge_protocol RESULT=PASS EXIT=0 SOURCES=2 SOURCE_SHA256=3d51217cdac1fc92 COMPILER= GATE=HOST_GXX_NOT_PIO
+BRIDGE_TRANSPORT=PASS LOGICAL_SLOT_BYTES=82 PHYSICAL_DMA_BYTES=84 QUEUE_CAPACITY=4 FULL_DUPLEX=PASS DROP_NEWEST=PASS
+BRIDGE_TRANSPORT_NEGATIVE=PASS TX_DROP=1 RX_DROP=1 SLOT_CORRUPTION=1 SLOT_OVERFLOW=1 BAD_CRC=1 DUPLICATE=1 OLD=1 STALE=1 CLOCK_UNSYNCHRONISED=1
+BRIDGE_RESYNC=PASS PEER_RESET=2 LOCAL_RESET=1 SEQUENCE_GAPS=2 LIVENESS_DEGRADED=PASS HEARTBEAT_ONLY=PASS SAME_BOOT_RESTART=PASS
+BRIDGE_NONBLOCKING=PASS WOULD_BLOCK_RETAINED=1 HEAP_DELTA=0
+BRIDGE_FAILED_POLL=PASS TX_RETAINED_ON_INVALID=4 TX_RETIRED_ON_VALID=1
+GXX_ENV=native_bridge_transport RESULT=PASS EXIT=0 SOURCES=3 SOURCE_SHA256=da81c3dc71b7fd74 COMPILER= GATE=HOST_GXX_NOT_PIO
+S3_RADIO_CORE=PASS COMMANDS=BOUNDED CHANNELS=INDEPENDENT CONTROL_MAP=71 HEARTBEAT_RESERVED=1 LIVENESS=ANY_ACCEPTED_FRAME RESYNC=REVISION_STRICT ACK=REPEATED_UNTIL_PEER_HB HEARTBEAT_YIELDS_TO_ACK=PASS MIXED_REVISION=REJECTED REPLAY_RESTART=PASS RECOVERY=PASS HANDSHAKE=POST_COMMIT_HEARTBEAT LIVE_REPLAY_ACK=PASS ATOMIC_REPLAY=PASS INVALIDATION=PASS HELD_ACK=PASS TELEMETRY_EXPIRY=PASS CLOCK_WRAP=PASS SIGNAL_LABELS=PASS
+GXX_ENV=native_s3_radio_core RESULT=PASS EXIT=0 SOURCES=4 SOURCE_SHA256=a398c453a26700c0 COMPILER= GATE=HOST_GXX_NOT_PIO
+BLE_VECTOR id=0 path=primary.mode class=MODE value=3 rt=3 rev=1
+BLE_VECTOR id=1 path=primary.palette class=PALETTE value=1 rt=1 rev=2
+BLE_VECTOR id=2 path=primary.palette_mode class=CONTROL value=127 rt=127 rev=3
+BLE_VECTOR id=3 path=primary.photons class=PHOTONS value=8192 rt=8192 rev=4
+BLE_VECTOR id=4 path=primary.chroma class=CONTROL value=8192 rt=8192 rev=5
+BLE_VECTOR id=5 path=primary.mood class=CONTROL value=8192 rt=8192 rev=6
+BLE_VECTOR id=6 path=primary.saturation class=CONTROL value=8192 rt=8192 rev=7
+BLE_VECTOR id=7 path=primary.square_iter class=CONTROL value=8192 rt=8192 rev=8
+BLE_VECTOR id=8 path=primary.mirror class=CONTROL value=127 rt=127 rev=9
+BLE_VECTOR id=9 path=primary.auto_color_shift class=CONTROL value=127 rt=127 rev=10
+BLE_VECTOR id=10 path=primary.reverse_order class=CONTROL value=127 rt=127 rev=11
+BLE_VECTOR id=11 path=primary.incandescent_mode class=CONTROL value=127 rt=127 rev=12
+BLE_VECTOR id=12 path=primary.incandescent_filter class=CONTROL value=8192 rt=8192 rev=13
+BLE_VECTOR id=13 path=primary.bulb_opacity class=CONTROL value=8192 rt=8192 rev=14
+BLE_VECTOR id=14 path=primary.base_coat class=CONTROL value=127 rt=127 rev=15
+BLE_VECTOR id=15 path=primary.base_coat_intensity class=CONTROL value=8192 rt=8192 rev=16
+BLE_VECTOR id=16 path=primary.temporal_dithering class=CONTROL value=127 rt=127 rev=17
+BLE_VECTOR id=17 path=primary.prism_count class=CONTROL value=8192 rt=8192 rev=18
+BLE_VECTOR id=18 path=primary.preset class=CONTROL value=1 rt=1 rev=19
+BLE_VECTOR id=19 path=secondary.mode class=MODE value=21 rt=21 rev=20
+BLE_VECTOR id=20 path=secondary.palette class=PALETTE value=1 rt=1 rev=21
+BLE_VECTOR id=21 path=secondary.palette_mode class=CONTROL value=127 rt=127 rev=22
+BLE_VECTOR id=22 path=secondary.enabled class=CONTROL value=127 rt=127 rev=23
+BLE_VECTOR id=23 path=secondary.photons class=PHOTONS value=8192 rt=8192 rev=24
+BLE_VECTOR id=24 path=secondary.chroma class=CONTROL value=8192 rt=8192 rev=25
+BLE_VECTOR id=25 path=secondary.mood class=CONTROL value=8192 rt=8192 rev=26
+BLE_VECTOR id=26 path=secondary.saturation class=CONTROL value=8192 rt=8192 rev=27
+BLE_VECTOR id=27 path=secondary.mirror class=CONTROL value=127 rt=127 rev=28
+BLE_VECTOR id=28 path=secondary.incandescent_mode class=CONTROL value=127 rt=127 rev=29
+BLE_VECTOR id=29 path=secondary.incandescent_filter class=CONTROL value=8192 rt=8192 rev=30
+BLE_VECTOR id=30 path=secondary.base_coat class=CONTROL value=127 rt=127 rev=31
+BLE_VECTOR id=31 path=secondary.base_coat_intensity class=CONTROL value=8192 rt=8192 rev=32
+BLE_VECTOR id=32 path=secondary.auto_color_shift class=CONTROL value=127 rt=127 rev=33
+BLE_VECTOR id=33 path=secondary.reverse_order class=CONTROL value=127 rt=127 rev=34
+BLE_VECTOR id=34 path=global.sensitivity class=CONTROL value=8192 rt=8192 rev=35
+BLE_VECTOR id=35 path=global.standby_dimming class=CONTROL value=127 rt=127 rev=36
+BLE_VECTOR id=36 path=global.chroma_profile class=CONTROL value=1 rt=1 rev=37
+BLE_VECTOR id=37 path=global.chromagram_range class=CONTROL value=8192 rt=8192 rev=38
+BLE_VECTOR id=38 path=global.max_current_ma class=CONTROL value=8192 rt=8192 rev=39
+BLE_VECTOR id=39 path=global.master_brightness class=CONTROL value=8192 rt=8192 rev=40
+BLE_VECTOR id=40 path=director.enabled class=CONTROL value=127 rt=127 rev=41
+BLE_VECTOR id=41 path=director.assist class=CONTROL value=127 rt=127 rev=42
+BLE_VECTOR id=42 path=director.autonomy class=CONTROL value=127 rt=127 rev=43
+BLE_VECTOR id=43 path=director.confidence_floor class=CONTROL value=8192 rt=8192 rev=44
+BLE_VECTOR id=44 path=hooks.enabled class=CONTROL value=127 rt=127 rev=45
+BLE_VECTOR id=45 path=edge.enabled class=CONTROL value=127 rt=127 rev=46
+BLE_VECTOR id=46 path=edge.mode class=CONTROL value=2 rt=2 rev=47
+BLE_VECTOR id=47 path=edge.strength class=CONTROL value=8192 rt=8192 rev=48
+BLE_VECTOR id=48 path=scene.smart class=CONTROL value=1 rt=1 rev=49
+BLE_VECTOR id=49 path=vp.profile class=CONTROL value=1 rt=1 rev=50
+BLE_VECTOR id=50 path=vp.fix.agc_soft_knee class=CONTROL value=127 rt=127 rev=51
+BLE_VECTOR id=51 path=vp.fix.chroma_gate class=CONTROL value=127 rt=127 rev=52
+BLE_VECTOR id=52 path=vp.fix.prism_off class=CONTROL value=127 rt=127 rev=53
+BLE_VECTOR id=53 path=vp.fix.bloom_decay class=CONTROL value=127 rt=127 rev=54
+BLE_VECTOR id=54 path=vp.fix.hsv_source_sat class=CONTROL value=127 rt=127 rev=55
+BLE_VECTOR id=55 path=vp.fix.secondary_clean class=CONTROL value=127 rt=127 rev=56
+BLE_VECTOR id=56 path=vp.bloom.alpha class=CONTROL value=8192 rt=8192 rev=57
+BLE_VECTOR id=57 path=vp.bloom.shift_scale class=CONTROL value=8192 rt=8192 rev=58
+BLE_VECTOR id=58 path=vp.bloom.force_saturation class=CONTROL value=127 rt=127 rev=59
+BLE_VECTOR id=59 path=vp.waveform.shift_rate class=CONTROL value=8192 rt=8192 rev=60
+BLE_VECTOR id=60 path=vp.waveform.idle_fade class=CONTROL value=8192 rt=8192 rev=61
+BLE_VECTOR id=61 path=vp.waveform.raw_margin class=CONTROL value=8192 rt=8192 rev=62
+BLE_VECTOR id=62 path=vp.waveform.peak_floor class=CONTROL value=8192 rt=8192 rev=63
+BLE_VECTOR id=63 path=vp.waveform.active_fade class=CONTROL value=8192 rt=8192 rev=64
+BLE_VECTOR id=64 path=vp.waveform.chroma_blend_gain class=CONTROL value=8192 rt=8192 rev=65
+BLE_VECTOR id=65 path=vp.waveform.fallback_brightness class=CONTROL value=8192 rt=8192 rev=66
+BLE_VECTOR id=66 path=vp.waveform.vu_floor class=CONTROL value=8192 rt=8192 rev=67
+BLE_VECTOR id=67 path=calibration.noise.arm class=CALIBRATION value=1 rt=1 rev=68
+BLE_VECTOR id=68 path=calibration.noise.confirm class=CALIBRATION value=1 rt=1 rev=69
+BLE_VECTOR id=69 path=calibration.noise.status class=CALIBRATION value=0 rt=2 rev=70
+BLE_VECTOR id=70 path=calibration.noise.clear class=CALIBRATION value=16383 rt=16383 rev=71
+BLE_DUALMCU_HOST=PASS controls_tested=71 controls_passed=71 primary_secondary_isolation=PASS CC14_atomicity=PASS fake_ack_absent=PASS stale_command_replay=PASS seeded_canonical_replay=PASS map_hash=78fb9af986da36922fae33cb09de3b4b
+GXX_ENV=native_ble_dualmcu_host RESULT=PASS EXIT=0 SOURCES=11 SOURCE_SHA256=ba55a9b41ffc6ede COMPILER= GATE=HOST_GXX_NOT_PIO

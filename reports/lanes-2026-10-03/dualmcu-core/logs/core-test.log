@@ -1,0 +1,6 @@
+PASS v0.2.0 e9e6aebbc552 (40 files identical)
+compile_smoke: 16 lines
+HOST_OK
+HOST_VM_OK
+math_grid: JS and C++ identical (3695 lines)
+PRISM_CORE_HOST_OK

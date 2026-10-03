@@ -69,3 +69,7 @@ Governance `workflow_suggest` returned provider_disabled with spectrasynq-workfl
 1. Bind the AEL profile to this donor build command, exact schema/contract and output paths; preserve the existing single serial owner.
 2. Resolve AEL governance workspace admission through its supported configuration process if formal workflow acceptance is required.
 3. When the parent is authorised to perform runtime verification, require fresh identity/telemetry evidence. No waveform, optical continuity, current hardware health, PRISM VM or deployment claim follows from this host build.
+
+## Follow-up: reproducible date/time
+
+The existing builder already sets `SOURCE_DATE_EPOCH=1788912000` for SCons (`scripts/build_scalar.py:927`), but `stage/SConstruct:22` constructs its compiler environment without forwarding this variable. Direct preprocessing with the installed GCC and this epoch returned `"Sep  9 2026" "00:00:00"`, confirming compiler support. Setting an outer environment variable alone cannot fix this wrapper. A disposable-stage SCons environment injection is the smallest likely correction; it has not been applied or qualified. Two builds and full ELF/HEX comparison would decide whether that removes all nondeterminism. Exact check is recorded in `source-date-epoch.json`.

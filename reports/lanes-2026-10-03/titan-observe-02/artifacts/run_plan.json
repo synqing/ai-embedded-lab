@@ -1,0 +1,24 @@
+{
+  "name": "prism_lane_checks",
+  "recovery_policy": {
+    "enabled": false
+  },
+  "steps": [
+    {
+      "inputs": {
+        "action": "observe",
+        "build_receipt": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-titan-build/arm-palette-003-rebuild/receipt.json",
+        "core_source": null,
+        "donor_source": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001",
+        "lane": "titan",
+        "owner_dir": "/private/tmp/titan-emotiscope-control",
+        "seconds": 30,
+        "source": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan"
+      },
+      "name": "titan-observe",
+      "retry_budget": 0,
+      "type": "check.prism_lane"
+    }
+  ],
+  "timeout_s": 500
+}

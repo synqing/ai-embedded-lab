@@ -1,0 +1,25 @@
+{
+  "name": "prism_lane_checks",
+  "recovery_policy": {
+    "enabled": false
+  },
+  "steps": [
+    {
+      "inputs": {
+        "action": "donor-build",
+        "build_receipt": null,
+        "core_source": null,
+        "donor_source": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+        "lane": "dualmcu",
+        "owner_dir": "/private/tmp/titan-emotiscope-control",
+        "seconds": 30,
+        "source": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU",
+        "target": "rt1062_k1_migration_t40_ws2812_128"
+      },
+      "name": "dualmcu-donor-build",
+      "retry_budget": 0,
+      "type": "check.prism_lane"
+    }
+  ],
+  "timeout_s": 2000
+}

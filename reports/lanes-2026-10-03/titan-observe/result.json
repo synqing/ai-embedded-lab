@@ -1,0 +1,107 @@
+{
+  "started_at": "2026-10-03T07:36:41.855037Z",
+  "finished_at": "2026-10-03T07:36:41.948383Z",
+  "ok": false,
+  "termination": "fail",
+  "steps": [
+    {
+      "name": "titan-observe",
+      "type": "check.prism_lane",
+      "attempt": 1,
+      "effective_retry_budget": 0,
+      "ok": false,
+      "result": {
+        "ok": false,
+        "retryable": false,
+        "error_summary": "[Errno 2] No such file or directory: '/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/external/live_defaults.json'",
+        "evidence": [
+          {
+            "kind": "prism.lane",
+            "source": "ael.adapters.prism_lane",
+            "status": "fail",
+            "summary": "[Errno 2] No such file or directory: '/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/external/live_defaults.json'",
+            "facts": {
+              "source": {
+                "root": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan",
+                "commit": "87d9fac3ad2ceb4e22723255e8fd646ae92227df",
+                "tracked_files": [
+                  ".githooks/commit-msg",
+                  ".gitignore",
+                  "AGENTS.md",
+                  "CHANGELOG.md",
+                  "CLAUDE.md",
+                  "LICENSE",
+                  "NOTICE",
+                  "README.md",
+                  "deps/PRISM-Core/CHANGELOG.md",
+                  "deps/PRISM-Core/LICENSE",
+                  "deps/PRISM-Core/NOTICE",
+                  "deps/PRISM-Core/README.md",
+                  "deps/PRISM-Core/docs/provenance.md",
+                  "deps/PRISM-Core/live/compiler/compile.js",
+                  "deps/PRISM-Core/live/compiler/encode.js",
+                  "deps/PRISM-Core/live/compiler/isa.js",
+                  "deps/PRISM-Core/live/engine/k1_live_div.cpp",
+                  "deps/PRISM-Core/live/engine/k1_live_isa.h",
+                  "deps/PRISM-Core/live/engine/k1_live_math.h",
+                  "deps/PRISM-Core/live/engine/k1_live_vm.cpp",
+                  "deps/PRISM-Core/live/engine/k1_live_vm.h",
+                  "deps/PRISM-Core/live/klvc.mjs",
+                  "deps/PRISM-Core/live/package-lock.json",
+                  "deps/PRISM-Core/live/package.json",
+                  "deps/PRISM-Core/live/patterns/spectrum_bloom.js",
+                  "deps/PRISM-Core/live/test/compile_smoke.js",
+                  "deps/PRISM-Core/live/test/emit_cases.js",
+                  "deps/PRISM-Core/live/test/fixtures/legacy-k1/color_palettes_k1.js",
+                  "deps/PRISM-Core/live/test/fixtures/legacy-k1/k1_bloom.js",
+                  "deps/PRISM-Core/live/test/fixtures/legacy-k1/k1_ember_v2.js",
+                  "deps/PRISM-Core/live/test/fixtures/legacy-k1/k1_palettes.js",
+                  "deps/PRISM-Core/live/test/fixtures/legacy-k1/k1_pulse_prism.js",
+                  "deps/PRISM-Core/live/test/fixtures/legacy-k1/k1_tempo_river_walk.js",
+                  "deps/PRISM-Core/live/test/fixtures/legacy-k1/k1_waveform_fast.js",
+                  "deps/PRISM-Core/live/test/host_test.js",
+                  "deps/PRISM-Core/live/test/host_vm.cpp",
+                  "deps/PRISM-Core/live/test/math_grid.cpp",
+                  "deps/PRISM-Core/live/test/math_grid.js",
+                  "deps/PRISM-Core/live/test/run_host.sh",
+                  "deps/PRISM-Core/live/vm/jsvm.js",
+                  "deps/PRISM-Core/live/vm/math.js",
+                  "deps/PRISM-Core/studio/editor/index.html",
+                  "deps/PRISM-Core/studio/lib/k1link.js",
+                  "deps/PRISM-Core/studio/serve.sh",
+                  "deps/PRISM-Core/studio/surface/index.html",
+                  "deps/PRISM-Core/studio/tools/klv_send.py",
+                  "deps/PRISM-Core/studio/tools/prove_controls.py",
+                  "deps/PRISM-Core/tools/prism_core_pin.py",
+                  "deps/prism-core.lock.json",
+                  "docs/process/SPECTRASYNQ-GIT-DOCTRINE.md",
+                  "docs/process/SPECTRASYNQ-HOUSEKEEPING-DOCTRINE.md",
+                  "docs/process/claude-global-deny.json",
+                  "scripts/git_session_end.sh"
+                ],
+                "native_build_or_source": [],
+                "state": "SCAFFOLD",
+                "core_commit": "e9e6aebbc552186bffd53dbee3e14888b38e50b7",
+                "core_tag": "v0.2.0",
+                "lock_sha256": "cc50694039a4db00b85c28f4dea04034ed3b1c5c522c06c7c603ad2f310e6c9e"
+              },
+              "usb": {
+                "port": "/dev/cu.usbmodem00000000000011",
+                "vid": 1115,
+                "pid": 21264,
+                "serial": "0000000000001"
+              }
+            },
+            "artifacts": {
+              "result": "reports/lanes-2026-10-03/titan-observe/artifacts/prism-lane.json"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "recovery": [],
+  "error_summary": "[Errno 2] No such file or directory: '/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/external/live_defaults.json'",
+  "timeout_s": 500.0,
+  "failure_kind": "unknown"
+}

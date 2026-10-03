@@ -1,0 +1,601 @@
+Processing s3_radio_bridge_ble (platform: espressif32@6.12.0; board: k1-s3-n16r8; framework: arduino)
+--------------------------------------------------------------------------------
+Library Manager: Installing h2zero/NimBLE-Arduino @ 2.5.0
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: NimBLE-Arduino@2.5.0 has been installed!
+Library Manager: Installing moononournation/GFX Library for Arduino @ 1.5.6
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: GFX Library for Arduino@1.5.6 has been installed!
+Library Manager: Installing lvgl/lvgl @ ^8.4.0
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: lvgl@8.4.0 has been installed!
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/espressif32/k1-s3-n16r8.html
+PLATFORM: Espressif 32 (6.12.0) > SpectraSynq K1 ESP32-S3-WROOM N16R8
+HARDWARE: ESP32S3 240MHz, 320KB RAM, 16MB Flash
+DEBUG: Current (esp-builtin) On-board (esp-builtin) External (cmsis-dap, esp-bridge, esp-prog, iot-bus-jtag, jlink, minimodule, olimex-arm-usb-ocd, olimex-arm-usb-ocd-h, olimex-arm-usb-tiny-h, olimex-jtag-tiny, tumpa)
+PACKAGES: 
+ - framework-arduinoespressif32 @ 3.20017.241212+sha.dcc1105b 
+ - tool-esptoolpy @ 2.40900.250804 (4.9.0) 
+ - toolchain-riscv32-esp @ 8.4.0+2021r2-patch5 
+ - toolchain-xtensa-esp32s3 @ 8.4.0+2021r2-patch5
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 36 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- NimBLE-Arduino @ 2.5.0
+|-- GFX Library for Arduino @ 1.5.6
+|-- lvgl @ 8.4.0
+|-- Wire @ 2.0.0
+Building in release mode
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/bridge/bridge_transport.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/contract/bridge_protocol.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/contract/k1_deck_state_v1.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_ble/ble_midi_decoder.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_ble/ble_radio_session.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_ble/ble_remoted_central.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_ble/ble_state_replica.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_ble/main.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_bridge/radio_bridge_core.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_bridge/s3_display.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_bridge/s3_spi_slave.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/src/firmware/s3_bridge/s3_touch.cpp.o
+Building /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/bootloader.bin
+Generating partitions /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/partitions.bin
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLE2904.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEAddress.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEAdvertisedDevice.cpp.o
+esptool.py v4.9.0
+Creating esp32s3 image...
+Merged 1 ELF section
+Successfully created esp32s3 image.
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEAdvertisementData.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEAdvertising.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEAttValue.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEBeacon.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLECharacteristic.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEClient.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEDescriptor.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEDevice.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEEddystoneTLM.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEExtAdvertising.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEHIDDevice.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEL2CAPChannel.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEL2CAPServer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLERemoteCharacteristic.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLERemoteDescriptor.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLERemoteService.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLERemoteValueAttribute.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEScan.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEServer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEService.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEStream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEUUID.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/NimBLEUtils.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/esp_port/esp-hci/src/esp_nimble_hci.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/esp_port/esp-hci/src/na_hci_driver.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/esp_port/esp-hci/src/na_hci_transport.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/esp_port/port/src/exp_nimble_mem.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/aes_decrypt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/aes_encrypt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/cbc_mode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/ccm_mode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/cmac_mode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/ctr_mode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/ctr_prng.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/ecc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/ecc_dh.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/ecc_dsa.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/ecc_platform_specific.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/hmac.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/hmac_prng.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/sha256.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/ext/tinycrypt/src/utils.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_adv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_conn.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_conn_hci.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_crypto.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_ctrl.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_dtm.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_hci.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_hci_ev.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_hci_supp_cmd.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_hci_vs.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_iso.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_iso_big.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_isoal.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_pdu.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_rand.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_resolv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_rfmgmt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_scan.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_scan_aux.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_sched.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_sync.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_trace.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_utils.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/controller/src/ble_ll_whitelist.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/drivers/nrf51/src/ble_hw.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/drivers/nrf51/src/ble_phy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/drivers/nrf5x/src/ble_hw.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/drivers/nrf5x/src/ble_phy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/drivers/nrf5x/src/ble_phy_trace.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/drivers/nrf5x/src/nrf52/phy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/drivers/nrf5x/src/nrf53/phy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/access.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/adv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/adv_ext.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/adv_legacy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/aes-ccm.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/app_keys.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/beacon.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/cdb.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/cfg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/cfg_cli.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/cfg_srv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/crypto.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/friend.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/glue.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/health_cli.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/health_srv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/heartbeat.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/light_model.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/lpn.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/mesh.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/model_cli.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/model_srv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/msg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/net.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/pb_adv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/pb_gatt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/pb_gatt_srv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/prov.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/prov_device.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/provisioner.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/proxy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/proxy_msg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/proxy_srv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/rpl.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/settings.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/shell.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/subnet.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/testing.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/mesh/src/transport.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/services/gap/src/ble_svc_gap.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/services/gatt/src/ble_svc_gatt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_aes_ccm.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_att.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_att_clt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_att_cmd.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_att_svr.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_dtm.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_ead.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_eatt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_eddystone.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_gap.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_gattc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_gattc_cache.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_gattc_cache_conn.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_gatts.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_gatts_lcl.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_adv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_atomic.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_cfg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_conn.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_flow.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_hci.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_hci_cmd.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_hci_evt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_hci_util.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_id.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_log.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_mbuf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_misc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_mqueue.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_periodic_sync.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_pvcy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_resolv.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_shutdown.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_startup.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_hs_stop.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_ibeacon.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_l2cap.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_l2cap_coc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_l2cap_sig.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_l2cap_sig_cmd.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_sm.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_sm_alg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_sm_cmd.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_sm_lgcy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_sm_sc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_store.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_store_util.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/src/ble_uuid.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/store/config/src/ble_store_config.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/store/config/src/ble_store_config_conf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/store/config/src/ble_store_nvs.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/store/ram/src/ble_store_ram.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/host/util/src/addr.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/transport/common/hci_h4/src/hci_h4.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/transport/common/hci_ipc/src/hci_ipc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/transport/esp_ipc/src/hci_esp_ipc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/transport/esp_ipc_legacy/src/hci_esp_ipc_legacy.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/transport/nrf5340/src/nrf5340_ble_hci.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/nimble/transport/src/transport.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/endian.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/hal_timer.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/mem.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/nimble_port.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/os_cputime.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/os_cputime_pwr2.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/os_mbuf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/os_mempool.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/nimble/src/os_msys_init.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/npl/freertos/src/nimble_port_freertos.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/NimBLE-Arduino/nimble/porting/npl/freertos/src/npl_os_freertos.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/libe6a/SPI/SPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/liba7f/Wire/Wire.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/Arduino_DataBus.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/libNimBLE-Arduino.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/Arduino_G.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/Arduino_GFX.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/Arduino_GFX_Library.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/Arduino_TFT.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/Arduino_TFT_18bit.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/canvas/Arduino_Canvas.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/canvas/Arduino_Canvas_3bit.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/canvas/Arduino_Canvas_Indexed.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/canvas/Arduino_Canvas_Mono.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_AVRPAR16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_AVRPAR8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_DUEPAR16.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib402/libNimBLE-Arduino.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32DSIPanel.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/libe6a/libSPI.a
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/libe6a/libSPI.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32LCD16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32LCD8.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/liba7f/libWire.a
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/liba7f/libWire.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32PAR16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32PAR16Q.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32PAR16QQ.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32PAR8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32PAR8Q.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32PAR8QQ.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32PAR8QQQ.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32QSPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32RGBPanel.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32S2PAR16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32S2PAR16Q.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32S2PAR8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32S2PAR8Q.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32SPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP32SPIDMA.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_ESP8266SPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_HWSPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_NRFXSPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_RPiPicoPAR16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_RPiPicoPAR8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_RPiPicoSPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_RTLPAR8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_STM32PAR8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_SWPAR16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_SWPAR8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_SWSPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_UNOPAR8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_Wire.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_XCA9554SWSPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_XL9535SWSPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/databus/Arduino_mbedSPI.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_AXS15231B.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_CO5300.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_DSI_Display.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_GC9106.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_GC9107.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_GC9A01.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_HX8347C.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_HX8347D.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_HX8352C.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_HX8357A.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_HX8357B.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_HX8369A.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9225.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9331.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9341.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9342.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9481_18bit.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9486.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9486_18bit.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9488.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9488_18bit.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9488_3bit.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ILI9806.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_JBT6K71.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_JD9613.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_NT35310.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_NT35510.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_NT39125.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_NV3007.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_NV3023.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_NV3041A.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_OTM8009A.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_R61529.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_RGB_Display.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_RM67162.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_RM690B0.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_SEPS525.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_SH1106.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_SSD1283A.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_SSD1306.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_SSD1331.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_SSD1351.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ST7735.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ST7789.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ST77916.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_ST7796.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/GFX Library for Arduino/display/Arduino_WEA2012.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_disp.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_event.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_group.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_indev.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_indev_scroll.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_obj.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_obj_class.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_obj_draw.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_obj_pos.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_obj_scroll.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_obj_style.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_obj_style_gen.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_obj_tree.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_refr.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/core/lv_theme.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/arm2d/lv_gpu_arm2d.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_arc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_img.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_label.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_layer.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_line.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_mask.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_rect.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_transform.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_draw_triangle.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_img_buf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_img_cache.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/lv_img_decoder.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/pxp/lv_draw_pxp.c.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/libGFX Library for Arduino.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/pxp/lv_draw_pxp_blend.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/pxp/lv_gpu_nxp_pxp.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/pxp/lv_gpu_nxp_pxp_osa.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/vglite/lv_draw_vglite.c.o
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib48d/libGFX Library for Arduino.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/vglite/lv_draw_vglite_arc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/vglite/lv_draw_vglite_blend.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/vglite/lv_draw_vglite_line.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/vglite/lv_draw_vglite_rect.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/vglite/lv_vglite_buf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/nxp/vglite/lv_vglite_utils.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/renesas/lv_gpu_d2_draw_label.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/renesas/lv_gpu_d2_ra6m3.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_arc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_bg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_composite.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_img.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_label.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_layer.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_line.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_mask.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_polygon.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_rect.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_stack_blur.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_texture_cache.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sdl/lv_draw_sdl_utils.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/stm32_dma2d/lv_gpu_stm32_dma2d.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_arc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_blend.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_dither.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_gradient.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_img.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_layer.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_letter.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_line.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_polygon.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_rect.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/sw/lv_draw_sw_transform.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/draw/swm341_dma2d/lv_gpu_swm341_dma2d.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/layouts/flex/lv_flex.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/layouts/grid/lv_grid.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/bmp/lv_bmp.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/ffmpeg/lv_ffmpeg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/freetype/lv_freetype.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/fsdrv/lv_fs_fatfs.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/fsdrv/lv_fs_littlefs.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/fsdrv/lv_fs_posix.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/fsdrv/lv_fs_stdio.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/fsdrv/lv_fs_win32.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/gif/gifdec.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/gif/lv_gif.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/png/lodepng.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/png/lv_png.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/qrcode/lv_qrcode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/qrcode/qrcodegen.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/rlottie/lv_rlottie.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/sjpg/lv_sjpg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/sjpg/tjpgd.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/libs/tiny_ttf/lv_tiny_ttf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/lv_extra.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/others/fragment/lv_fragment.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/others/fragment/lv_fragment_manager.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/others/gridnav/lv_gridnav.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/others/ime/lv_ime_pinyin.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/others/imgfont/lv_imgfont.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/others/monkey/lv_monkey.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/others/msg/lv_msg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/others/snapshot/lv_snapshot.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/themes/basic/lv_theme_basic.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/themes/default/lv_theme_default.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/themes/mono/lv_theme_mono.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/animimg/lv_animimg.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/calendar/lv_calendar.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/calendar/lv_calendar_header_arrow.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/calendar/lv_calendar_header_dropdown.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/chart/lv_chart.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/colorwheel/lv_colorwheel.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/imgbtn/lv_imgbtn.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/keyboard/lv_keyboard.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/led/lv_led.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/list/lv_list.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/menu/lv_menu.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/meter/lv_meter.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/msgbox/lv_msgbox.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/span/lv_span.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/spinbox/lv_spinbox.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/spinner/lv_spinner.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/tabview/lv_tabview.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/tileview/lv_tileview.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/extra/widgets/win/lv_win.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_dejavu_16_persian_hebrew.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_fmt_txt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_loader.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_10.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_12.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_12_subpx.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_14.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_16.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_18.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_20.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_22.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_24.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_26.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_28.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_28_compressed.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_30.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_32.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_34.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_36.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_38.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_40.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_42.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_44.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_46.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_48.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_montserrat_8.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_simsun_16_cjk.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_unscii_16.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/font/lv_font_unscii_8.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/hal/lv_hal_disp.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/hal/lv_hal_indev.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/hal/lv_hal_tick.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_anim.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_anim_timeline.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_area.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_async.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_bidi.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_color.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_fs.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_gc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_ll.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_log.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_lru.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_math.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_mem.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_printf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_style.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_style_gen.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_templ.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_timer.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_tlsf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_txt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_txt_ap.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/misc/lv_utils.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_arc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_bar.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_btn.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_btnmatrix.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_canvas.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_checkbox.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_dropdown.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_img.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_label.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_line.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_objx_templ.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_roller.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_slider.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_switch.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_table.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/lvgl/widgets/lv_textarea.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/Esp.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/FirmwareMSC.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/FunctionalInterrupt.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/liblvgl.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/HWCDC.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/HardwareSerial.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/IPAddress.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/IPv6Address.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/MD5Builder.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/Print.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/Stream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/StreamString.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/Tone.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/lib565/liblvgl.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/USB.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/USBCDC.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/USBMSC.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/WMath.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/WString.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/base64.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/cbuf.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-adc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-bt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-cpu.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-dac.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-gpio.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-i2c-slave.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-i2c.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-ledc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-matrix.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-misc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-psram.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-spi.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-time.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-timer.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-touch.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/esp32-hal-uart.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/firmware_msc_fat.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/libb64/cdecode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/libb64/cencode.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/main.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/stdlib_noniso.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/wiring_pulse.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/FrameworkArduino/wiring_shift.c.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/libFrameworkArduino.a
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/libFrameworkArduino.a
+Linking /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/firmware.elf
+Retrieving maximum program size /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/firmware.elf
+Checking size /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [===       ]  31.1% (used 101984 bytes from 327680 bytes)
+Flash: [=         ]  13.8% (used 907057 bytes from 6553600 bytes)
+Building /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-s3-ael-build/build/s3_radio_bridge_ble/firmware.bin
+esptool.py v4.9.0
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+========================= [SUCCESS] Took 23.23 seconds =========================
+
+Environment          Status    Duration
+-------------------  --------  ------------
+s3_radio_bridge_ble  SUCCESS   00:00:23.233
+========================= 1 succeeded in 00:00:23.233 =========================

@@ -1,0 +1,95 @@
+{
+  "tasks": [
+    {
+      "id": "LANE-01",
+      "kind": "TASK",
+      "state": "PENDING",
+      "assignment": "Establish named lane architecture, source authority, current status and hardware interfaces; distinguish scaffold, donor and running device.",
+      "acceptance": "Git/file inventory plus live USB identity",
+      "failure_policy": "Capture evidence, diagnose, repair reversible issues and rerun; retain external missing hardware as blocked. Never claim compile as physical proof.",
+      "dependencies": [],
+      "execution_disposition": "PASS",
+      "execution_evidence": [
+        "source-authority.json",
+        "discovery.txt",
+        "README.md"
+      ],
+      "governance_admission": "UNAVAILABLE: project outside configured roots; original task state preserved"
+    },
+    {
+      "id": "LANE-02",
+      "kind": "TASK",
+      "state": "PENDING",
+      "assignment": "Fresh-build viable DualMCU and Titan donor targets and pinned portable core; preserve provenance and compare source authority.",
+      "acceptance": "Fresh commands, return codes and binary hashes; failures retained",
+      "failure_policy": "Capture evidence, diagnose, repair reversible issues and rerun; retain external missing hardware as blocked. Never claim compile as physical proof.",
+      "dependencies": [],
+      "execution_disposition": "PASS_FOR_VIABLE_DONORS_AND_HOST_CORE",
+      "execution_evidence": [
+        "dualmcu-build/summary.json",
+        "dualmcu-core/result.json",
+        "titan-core/result.json",
+        "titan-final-build/result.json",
+        "dualmcu-final-build/result.json",
+        "dualmcu-t40-ael-build/result.json",
+        "dualmcu-s3-ael-build/result.json"
+      ],
+      "governance_admission": "UNAVAILABLE: project outside configured roots; original task state preserved"
+    },
+    {
+      "id": "LANE-03",
+      "kind": "TASK",
+      "state": "PENDING",
+      "assignment": "Extend existing AEL runner/adapters for guarded discovery, host/build and physical observation; refuse unsupported target deployment and stale telemetry.",
+      "acceptance": "Positive and planted-negative automated tests plus live receipt",
+      "failure_policy": "Capture evidence, diagnose, repair reversible issues and rerun; retain external missing hardware as blocked. Never claim compile as physical proof.",
+      "dependencies": [],
+      "execution_disposition": "PASS_WITH_EXPLICIT_UNSUPPORTED_NATIVE_DEPLOYMENT",
+      "execution_evidence": [
+        "final-host-tests.log",
+        "titan-final-recovery/result.json",
+        "titan-scaffold-refusal/result.json",
+        "dualmcu-device-refusal/result.json"
+      ],
+      "governance_admission": "UNAVAILABLE: project outside configured roots; original task state preserved"
+    },
+    {
+      "id": "LANE-04",
+      "kind": "TASK",
+      "state": "PENDING",
+      "assignment": "Exercise available physical lanes, reconcile failures and recover through native owner; DualMCU needs both processors and actual SPI link.",
+      "acceptance": "Identified device counters/identity/raw logs; precise absent-hardware blockers",
+      "failure_policy": "Capture evidence, diagnose, repair reversible issues and rerun; retain external missing hardware as blocked. Never claim compile as physical proof.",
+      "dependencies": [],
+      "execution_disposition": "PARTIAL_EXTERNAL_HARDWARE_BLOCKER",
+      "execution_evidence": [
+        "titan-final-recovery/result.json",
+        "discovery.txt",
+        "dualmcu-device-refusal/result.json"
+      ],
+      "governance_admission": "UNAVAILABLE: project outside configured roots; original task state preserved",
+      "external_blocker": {
+        "missing": "RT1062/Teensy with its intended S3 companion and wired SPI, both programming/serial paths",
+        "evidence": "discovery.txt",
+        "release_condition": "Connect that paired development hardware; re-identify both devices before deployment."
+      }
+    },
+    {
+      "id": "LANE-05",
+      "kind": "TASK",
+      "state": "PENDING",
+      "assignment": "Regress standard Emotiscope without replacing accepted recovery evidence; deliver three-lane matrix and reproducible commands.",
+      "acceptance": "Existing Emotiscope pack live result, final source checks, referenced closeout and reusable skill",
+      "failure_policy": "Capture evidence, diagnose, repair reversible issues and rerun; retain external missing hardware as blocked. Never claim compile as physical proof.",
+      "dependencies": [],
+      "execution_disposition": "PASS",
+      "execution_evidence": [
+        "standard-regression/result.json",
+        "README.md",
+        "../../docs/prism-lanes.md",
+        "../../docs/skills/prism_lane_bench.md"
+      ],
+      "governance_admission": "UNAVAILABLE: project outside configured roots; original task state preserved"
+    }
+  ]
+}

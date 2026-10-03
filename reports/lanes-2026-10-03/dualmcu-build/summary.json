@@ -1,0 +1,184 @@
+{
+  "scope": "Donor compile and host tests only; no hardware access or source imports into PRISM",
+  "before": {
+    "commit": "21de29be3fff18244a4da7a81b21e13f35bb2694",
+    "source_id": "21de29be3fff18244a4da7a81b21e13f35bb2694-dirty-cb8c7e5a862e436a",
+    "identity_status": "DIRTY",
+    "git_status": " M docs/evidence/ws2812-128-bringup-2026-09-21/RECOVERY_AND_DMA.md\n M firmware/rt1062/ws2812_dma_driver.cpp\n",
+    "diff_sha256": "f306bc6c0ec01e5bc058f252b89d8f542da752601b0afd96d0a426db48880f19"
+  },
+  "after": {
+    "commit": "21de29be3fff18244a4da7a81b21e13f35bb2694",
+    "source_id": "21de29be3fff18244a4da7a81b21e13f35bb2694-dirty-cb8c7e5a862e436a",
+    "identity_status": "DIRTY",
+    "git_status": " M docs/evidence/ws2812-128-bringup-2026-09-21/RECOVERY_AND_DMA.md\n M firmware/rt1062/ws2812_dma_driver.cpp\n",
+    "diff_sha256": "f306bc6c0ec01e5bc058f252b89d8f542da752601b0afd96d0a426db48880f19"
+  },
+  "source_unchanged": true,
+  "build_root": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z",
+  "results": [
+    {
+      "label": "native_bridge_tests",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "harness/run_native_env_gxx.py",
+        "native_bridge_protocol",
+        "native_bridge_transport",
+        "native_s3_radio_core",
+        "native_ble_dualmcu_host"
+      ],
+      "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z",
+        "PLATFORMIO_BUILD_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build",
+        "PLATFORMIO_WORKSPACE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/workspace",
+        "PLATFORMIO_LIBDEPS_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/libdeps",
+        "PLATFORMIO_BUILD_CACHE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/cache"
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 4.193,
+      "log": "/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-build/native_bridge_tests.log",
+      "log_sha256": "3c57184758b50859b2c523e2c0b6a799768e253c4f66c4bc5866c5240585b1c9",
+      "artifacts": []
+    },
+    {
+      "label": "rt1062_production",
+      "argv": [
+        "/Users/spectrasynq/.platformio/penv/bin/pio",
+        "run",
+        "-e",
+        "rt1062_production"
+      ],
+      "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z",
+        "PLATFORMIO_BUILD_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build",
+        "PLATFORMIO_WORKSPACE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/workspace",
+        "PLATFORMIO_LIBDEPS_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/libdeps",
+        "PLATFORMIO_BUILD_CACHE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/cache"
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 28.7,
+      "log": "/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-build/rt1062_production.log",
+      "log_sha256": "052f3593d4f99068c94e5b9c4787d85e77c651a6615b32bbb0e121d85a4ca18b",
+      "artifacts": [
+        {
+          "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/rt1062_production/firmware.elf",
+          "sha256": "5f21a4d59b0f944eb13d25be1605bbd70698f0e4757c1da514e8f9194b82664b",
+          "size_bytes": 597120,
+          "exists_at_closeout": true,
+          "hash_matches_at_closeout": true
+        },
+        {
+          "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/rt1062_production/firmware.hex",
+          "sha256": "d345e6182f44a2d3c612991f7f99ab9365ccdf9fd0029598486f15cd15387f0f",
+          "size_bytes": 855544,
+          "exists_at_closeout": true,
+          "hash_matches_at_closeout": true
+        }
+      ]
+    },
+    {
+      "label": "s3_radio_bridge_ble",
+      "argv": [
+        "/Users/spectrasynq/.platformio/penv/bin/pio",
+        "run",
+        "-e",
+        "s3_radio_bridge_ble"
+      ],
+      "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+      "environment_overrides": {
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "TMPDIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z",
+        "PLATFORMIO_BUILD_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build",
+        "PLATFORMIO_WORKSPACE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/workspace",
+        "PLATFORMIO_LIBDEPS_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/libdeps",
+        "PLATFORMIO_BUILD_CACHE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/cache"
+      },
+      "exit_code": 0,
+      "timed_out": false,
+      "duration_seconds": 34.122,
+      "log": "/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-build/s3_radio_bridge_ble.log",
+      "log_sha256": "d82f4e1aa525bb73614c5fa36cbbc53093f85e755ef91c3c8ed685c210ab8616",
+      "artifacts": [
+        {
+          "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/s3_radio_bridge_ble/firmware.bin",
+          "sha256": "1dbcfee73f67facb2ad998770f18c4de68867a945f7a596aca10d5fb8cf9e906",
+          "size_bytes": 907376,
+          "exists_at_closeout": true,
+          "hash_matches_at_closeout": true
+        },
+        {
+          "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/s3_radio_bridge_ble/firmware.elf",
+          "sha256": "bb828c0e7476d1c6dddda4ac7ca68116ac106bf1cba1e5c73657f7e5d19e714a",
+          "size_bytes": 18620444,
+          "exists_at_closeout": true,
+          "hash_matches_at_closeout": true
+        },
+        {
+          "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build/s3_radio_bridge_ble/firmware.map",
+          "sha256": "80cb9fabbdba7dcd4fa4663576a94a1d51eef2cb875e685fc500f2d503fb8d1d",
+          "size_bytes": 15770020,
+          "exists_at_closeout": true,
+          "hash_matches_at_closeout": true
+        }
+      ]
+    }
+  ],
+  "native_retained": {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "harness/run_native_env_gxx.py",
+      "--keep",
+      "native_bridge_protocol",
+      "native_bridge_transport",
+      "native_s3_radio_core",
+      "native_ble_dualmcu_host"
+    ],
+    "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+    "exit_code": 0,
+    "duration_seconds": 3.6250109672546387,
+    "artifacts": [
+      {
+        "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/native-retained/gxx_native_ble_dualmcu_host__k8h5w8m/program",
+        "sha256": "f8ea47c26cbae8b45304fb7b044f2a8adddbf84aa73e183c564d793ab58bb0ae",
+        "size_bytes": 173160
+      },
+      {
+        "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/native-retained/gxx_native_bridge_protocol_gcm4i1db/program",
+        "sha256": "91d1a427b0e17c513915214a280637b77b070bc2923b9c30c1c30248ff15210e",
+        "size_bytes": 54664
+      },
+      {
+        "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/native-retained/gxx_native_bridge_transport_106qmkxu/program",
+        "sha256": "e44501565cbe46d49082ac3a9c88ab86ea57eb6e00d4a360828ce6937fae3e9e",
+        "size_bytes": 59480
+      },
+      {
+        "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/native-retained/gxx_native_s3_radio_core_f8rdiq99/program",
+        "sha256": "594198207c2e3f0a05dc255550d6e02ee2a877e47b7801cc7a71b5da6eda927c",
+        "size_bytes": 99176
+      }
+    ],
+    "compiler": "Apple clang version 17.0.0 (clang-1700.6.3.2)\nTarget: arm64-apple-darwin25.1.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n",
+    "reason": "Retain host binaries for requested artifact hashes; first runner invocation removes its binaries."
+  },
+  "workflow_verification": {
+    "executed": false,
+    "mcp_error": "Verification project outside configured workspace",
+    "cli_error": "Verification project outside configured workspace",
+    "direct_commands_executed": true,
+    "admitted": false
+  },
+  "captured_utc": "2026-10-03T07:36:45.379823+00:00",
+  "scope_limitations": [
+    "Donor build and host proof only; PRISM lane has no target implementation.",
+    "rt1062_production targets Teensy 4.1; not the Teensy 4.0 WS2812-128 bench environment.",
+    "No hardware opened, enumerated, flashed or measured.",
+    "No source imported into PRISM; dependencies installed only into scratch build workspace."
+  ]
+}

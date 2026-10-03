@@ -1,0 +1,26 @@
+{
+  "label": "native_bridge_tests",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "harness/run_native_env_gxx.py",
+    "native_bridge_protocol",
+    "native_bridge_transport",
+    "native_s3_radio_core",
+    "native_ble_dualmcu_host"
+  ],
+  "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "TMPDIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z",
+    "PLATFORMIO_BUILD_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/build",
+    "PLATFORMIO_WORKSPACE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/workspace",
+    "PLATFORMIO_LIBDEPS_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/libdeps",
+    "PLATFORMIO_BUILD_CACHE_DIR": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/20261003T073425Z/cache"
+  },
+  "exit_code": 0,
+  "timed_out": false,
+  "duration_seconds": 4.193,
+  "log": "/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-build/native_bridge_tests.log",
+  "log_sha256": "3c57184758b50859b2c523e2c0b6a799768e253c4f66c4bc5866c5240585b1c9",
+  "artifacts": []
+}

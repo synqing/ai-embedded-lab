@@ -1,0 +1,7 @@
+{
+  "commit": "21de29be3fff18244a4da7a81b21e13f35bb2694",
+  "source_id": "21de29be3fff18244a4da7a81b21e13f35bb2694-dirty-cb8c7e5a862e436a",
+  "identity_status": "DIRTY",
+  "git_status": " M docs/evidence/ws2812-128-bringup-2026-09-21/RECOVERY_AND_DMA.md\n M firmware/rt1062/ws2812_dma_driver.cpp\n",
+  "diff_sha256": "f306bc6c0ec01e5bc058f252b89d8f542da752601b0afd96d0a426db48880f19"
+}

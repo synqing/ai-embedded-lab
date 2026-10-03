@@ -1,0 +1,1253 @@
+Processing rt1062_production (platform: teensy@5.0.0; board: teensy41; framework: arduino)
+--------------------------------------------------------------------------------
+Library Manager: Installing fastled/FastLED @ 3.10.3
+Unpacking 0% 10% 20% 30% 40% 50% 60% 70% 80% 90% 100%
+Library Manager: FastLED@3.10.3 has been installed!
+Verbose mode can be enabled via `-v, --verbose` option
+CONFIGURATION: https://docs.platformio.org/page/boards/teensy/teensy41.html
+PLATFORM: Teensy (5.0.0) > Teensy 4.1
+HARDWARE: IMXRT1062 600MHz, 512KB RAM, 7.75MB Flash
+DEBUG: Current (jlink) External (jlink)
+PACKAGES: 
+ - framework-arduinoteensy @ 1.159.0 (1.59) 
+ - tool-teensy @ 1.159.0 (1.59) 
+ - toolchain-gccarmnoneeabi-teensy @ 1.110301.0 (11.3.1)
+LDF: Library Dependency Finder -> https://bit.ly/configure-pio-ldf
+LDF Modes: Finder ~ chain, Compatibility ~ soft
+Found 93 compatible libraries
+Scanning dependencies...
+Dependency Graph
+|-- FastLED @ 3.10.3
+|-- Audio @ 1.3
+|-- SPI @ 1.0
+Building in release mode
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/bridge/bridge_transport.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/contract/bridge_protocol.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/contract/control_v2/control_v2_codec.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/contract/tempo_field_v1.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/contract/transport_v2/control_v2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/contract/transport_v2/envelope_v2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/audio_pipeline.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/capture_window.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/chord_detect.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/gdft_goertzel.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/gdft_postprocess.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/media_time.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/musical_saliency.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/musical_time.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/noise_calibration.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/onset_beat.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/silence_classifier.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/tempo_acf.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/tempo_field.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/tempo_phase_tracks.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/audio/tempo_tracker.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/control/bridge_command_processor.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/control/control_catalogue.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/control/v2/control_engine.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/control/v2/registry_view.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/control/v2/response_dynamics.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/system/media_time_correlation.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/system/realtime_render_scheduler.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/transport/client_endpoint.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/transport/continuous_lane.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/transport/control_binding_v2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/transport/engine_endpoint.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/transport/reassembler.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/transport/reliable_lane.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/audio_focus.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/channel_render_state.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/effect_primitives.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/fastled_colour_compat.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/frame_blend.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/product_catalogue.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/product_effect_renderer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/product_output_treatment.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/product_palette.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/product_palette_data.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/product_runtime_policy.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/render_primitives.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/visual_audio_frame.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/wide/wide_bloom.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/wide/wide_endpoint.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/core/visual/wide/wide_field.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/firmware/rt1062/audio_input_pdm_dual.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/firmware/rt1062/fastled_parallel_output.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/firmware/rt1062/fastled_pixel_adapter.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/firmware/rt1062/main.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/firmware/rt1062/production_runtime.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/firmware/rt1062/rt_spi_master.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/src/firmware/rt1062/teensy_pdm_capture.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib5f6/Adafruit_NeoPixel/Adafruit_NeoPixel.cpp.o
+In file included from ./firmware/rt1062/audio_input_pdm_dual.h:5,
+                 from firmware/rt1062/audio_input_pdm_dual.cpp:1:
+/Users/spectrasynq/.platformio/packages/framework-arduinoteensy/cores/teensy4/DMAChannel.h: In copy constructor 'DMASetting::DMASetting(const DMASetting&)':
+/Users/spectrasynq/.platformio/packages/framework-arduinoteensy/cores/teensy4/DMAChannel.h:399:25: warning: implicitly-declared 'constexpr DMASetting& DMASetting::operator=(const DMASetting&)' is deprecated [-Wdeprecated-copy]
+  399 |                 *this = c;
+      |                         ^
+/Users/spectrasynq/.platformio/packages/framework-arduinoteensy/cores/teensy4/DMAChannel.h:397:9: note: because 'DMASetting' has user-provided 'DMASetting::DMASetting(const DMASetting&)'
+  397 |         DMASetting(const DMASetting &c) {
+      |         ^~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib5f6/Adafruit_NeoPixel/esp8266.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib7b3/DmxSimple/DmxSimple.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4de/OctoWS2811/OctoWS2811.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4de/OctoWS2811/OctoWS2811_imxrt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib65f/SoftwareSerial/SoftwareSerial.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib22a/SPI/SPI.cpp.o
+In file included from ./firmware/rt1062/audio_input_pdm_dual.h:5,
+                 from ./firmware/rt1062/teensy_pdm_capture.h:7,
+                 from firmware/rt1062/teensy_pdm_capture.cpp:1:
+/Users/spectrasynq/.platformio/packages/framework-arduinoteensy/cores/teensy4/DMAChannel.h: In copy constructor 'DMASetting::DMASetting(const DMASetting&)':
+/Users/spectrasynq/.platformio/packages/framework-arduinoteensy/cores/teensy4/DMAChannel.h:399:25: warning: implicitly-declared 'constexpr DMASetting& DMASetting::operator=(const DMASetting&)' is deprecated [-Wdeprecated-copy]
+  399 |                 *this = c;
+      |                         ^
+/Users/spectrasynq/.platformio/packages/framework-arduinoteensy/cores/teensy4/DMAChannel.h:397:9: note: because 'DMASetting' has user-provided 'DMASetting::DMASetting(const DMASetting&)'
+  397 |         DMASetting(const DMASetting &c) {
+      |         ^~~~~~~~~~
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/ExFatDbg.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/ExFatFile.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/ExFatFilePrint.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib5f6/libAdafruit_NeoPixel.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/ExFatFileWrite.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib7b3/libDmxSimple.a
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib5f6/libAdafruit_NeoPixel.a
+In file included from /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/fastled_arm_mxrt1062.h:10,
+                 from /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms.h:28,
+                 from /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/FastLED.h:87,
+                 from ./firmware/rt1062/fastled_pixel_adapter.h:11,
+                 from ./firmware/rt1062/fastled_parallel_output.h:5,
+                 from firmware/rt1062/fastled_parallel_output.cpp:1:
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h: In member function 'void FlexibleInlineBlockClocklessController<LANES, FIRST_PIN, T1, T2, T3, RGB_ORDER, XTRA0, FLIP, WAIT_TIME>::init() [with unsigned char LANES = 2; int FIRST_PIN = 1; int T1 = 250; int T2 = 625; int T3 = 375; fl::EOrder RGB_ORDER = fl::GRB; int XTRA0 = 0; bool FLIP = false; int WAIT_TIME = 280]':
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:49:13: note: in expansion of macro '_BLOCK_PIN'
+   49 |             _BLOCK_PIN( 1);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:50:13: note: in expansion of macro '_BLOCK_PIN'
+   50 |             _BLOCK_PIN( 0);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:50:13: note: in expansion of macro '_BLOCK_PIN'
+   50 |             _BLOCK_PIN( 0);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:51:13: note: in expansion of macro '_BLOCK_PIN'
+   51 |             _BLOCK_PIN(24);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:51:13: note: in expansion of macro '_BLOCK_PIN'
+   51 |             _BLOCK_PIN(24);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:52:13: note: in expansion of macro '_BLOCK_PIN'
+   52 |             _BLOCK_PIN(25);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:52:13: note: in expansion of macro '_BLOCK_PIN'
+   52 |             _BLOCK_PIN(25);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:53:13: note: in expansion of macro '_BLOCK_PIN'
+   53 |             _BLOCK_PIN(19);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:53:13: note: in expansion of macro '_BLOCK_PIN'
+   53 |             _BLOCK_PIN(19);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:54:13: note: in expansion of macro '_BLOCK_PIN'
+   54 |             _BLOCK_PIN(18);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:54:13: note: in expansion of macro '_BLOCK_PIN'
+   54 |             _BLOCK_PIN(18);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:55:13: note: in expansion of macro '_BLOCK_PIN'
+   55 |             _BLOCK_PIN(14);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:55:13: note: in expansion of macro '_BLOCK_PIN'
+   55 |             _BLOCK_PIN(14);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:56:13: note: in expansion of macro '_BLOCK_PIN'
+   56 |             _BLOCK_PIN(15);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:56:13: note: in expansion of macro '_BLOCK_PIN'
+   56 |             _BLOCK_PIN(15);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:57:13: note: in expansion of macro '_BLOCK_PIN'
+   57 |             _BLOCK_PIN(17);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:57:13: note: in expansion of macro '_BLOCK_PIN'
+   57 |             _BLOCK_PIN(17);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:58:13: note: in expansion of macro '_BLOCK_PIN'
+   58 |             _BLOCK_PIN(16);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:58:13: note: in expansion of macro '_BLOCK_PIN'
+   58 |             _BLOCK_PIN(16);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:59:13: note: in expansion of macro '_BLOCK_PIN'
+   59 |             _BLOCK_PIN(22);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:59:13: note: in expansion of macro '_BLOCK_PIN'
+   59 |             _BLOCK_PIN(22);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:60:13: note: in expansion of macro '_BLOCK_PIN'
+   60 |             _BLOCK_PIN(23);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:60:13: note: in expansion of macro '_BLOCK_PIN'
+   60 |             _BLOCK_PIN(23);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:61:13: note: in expansion of macro '_BLOCK_PIN'
+   61 |             _BLOCK_PIN(20);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:61:13: note: in expansion of macro '_BLOCK_PIN'
+   61 |             _BLOCK_PIN(20);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:62:13: note: in expansion of macro '_BLOCK_PIN'
+   62 |             _BLOCK_PIN(21);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:62:13: note: in expansion of macro '_BLOCK_PIN'
+   62 |             _BLOCK_PIN(21);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:63:13: note: in expansion of macro '_BLOCK_PIN'
+   63 |             _BLOCK_PIN(26);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:63:13: note: in expansion of macro '_BLOCK_PIN'
+   63 |             _BLOCK_PIN(26);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:64:13: note: in expansion of macro '_BLOCK_PIN'
+   64 |             _BLOCK_PIN(27);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:66:13: note: in expansion of macro '_BLOCK_PIN'
+   66 |             _BLOCK_PIN(10);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:67:13: note: in expansion of macro '_BLOCK_PIN'
+   67 |             _BLOCK_PIN(12);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:67:13: note: in expansion of macro '_BLOCK_PIN'
+   67 |             _BLOCK_PIN(12);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:68:13: note: in expansion of macro '_BLOCK_PIN'
+   68 |             _BLOCK_PIN(11);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:68:13: note: in expansion of macro '_BLOCK_PIN'
+   68 |             _BLOCK_PIN(11);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:69:13: note: in expansion of macro '_BLOCK_PIN'
+   69 |             _BLOCK_PIN(13);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:69:13: note: in expansion of macro '_BLOCK_PIN'
+   69 |             _BLOCK_PIN(13);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:70:13: note: in expansion of macro '_BLOCK_PIN'
+   70 |             _BLOCK_PIN( 6);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:70:13: note: in expansion of macro '_BLOCK_PIN'
+   70 |             _BLOCK_PIN( 6);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:71:13: note: in expansion of macro '_BLOCK_PIN'
+   71 |             _BLOCK_PIN( 9);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:71:13: note: in expansion of macro '_BLOCK_PIN'
+   71 |             _BLOCK_PIN( 9);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:72:13: note: in expansion of macro '_BLOCK_PIN'
+   72 |             _BLOCK_PIN(32);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:72:13: note: in expansion of macro '_BLOCK_PIN'
+   72 |             _BLOCK_PIN(32);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:73:13: note: in expansion of macro '_BLOCK_PIN'
+   73 |             _BLOCK_PIN( 8);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:73:13: note: in expansion of macro '_BLOCK_PIN'
+   73 |             _BLOCK_PIN( 8);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:74:13: note: in expansion of macro '_BLOCK_PIN'
+   74 |             _BLOCK_PIN( 7);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:76:13: note: in expansion of macro '_BLOCK_PIN'
+   76 |             _BLOCK_PIN(37);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:77:13: note: in expansion of macro '_BLOCK_PIN'
+   77 |             _BLOCK_PIN(36);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:77:13: note: in expansion of macro '_BLOCK_PIN'
+   77 |             _BLOCK_PIN(36);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:78:13: note: in expansion of macro '_BLOCK_PIN'
+   78 |             _BLOCK_PIN(35);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:78:13: note: in expansion of macro '_BLOCK_PIN'
+   78 |             _BLOCK_PIN(35);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:79:13: note: in expansion of macro '_BLOCK_PIN'
+   79 |             _BLOCK_PIN(34);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:79:13: note: in expansion of macro '_BLOCK_PIN'
+   79 |             _BLOCK_PIN(34);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:80:13: note: in expansion of macro '_BLOCK_PIN'
+   80 |             _BLOCK_PIN(39);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:80:13: note: in expansion of macro '_BLOCK_PIN'
+   80 |             _BLOCK_PIN(39);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:81:13: note: in expansion of macro '_BLOCK_PIN'
+   81 |             _BLOCK_PIN(38);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:81:13: note: in expansion of macro '_BLOCK_PIN'
+   81 |             _BLOCK_PIN(38);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:82:13: note: in expansion of macro '_BLOCK_PIN'
+   82 |             _BLOCK_PIN(28);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:82:13: note: in expansion of macro '_BLOCK_PIN'
+   82 |             _BLOCK_PIN(28);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:83:13: note: in expansion of macro '_BLOCK_PIN'
+   83 |             _BLOCK_PIN(31);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:83:13: note: in expansion of macro '_BLOCK_PIN'
+   83 |             _BLOCK_PIN(31);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:84:13: note: in expansion of macro '_BLOCK_PIN'
+   84 |             _BLOCK_PIN(30);
+      |             ^~~~~~~~~~
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib7b3/libDmxSimple.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/ExFatFormatter.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib65f/libSoftwareSerial.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/ExFatName.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/ExFatPartition.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4de/libOctoWS2811.a
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib65f/libSoftwareSerial.a
+In file included from /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/fastled_arm_mxrt1062.h:10,
+                 from /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms.h:28,
+                 from /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/FastLED.h:87,
+                 from ./firmware/rt1062/fastled_pixel_adapter.h:11,
+                 from ./firmware/rt1062/fastled_parallel_output.h:5,
+                 from ./firmware/rt1062/production_runtime.h:18,
+                 from firmware/rt1062/main.cpp:3:
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h: In member function 'void FlexibleInlineBlockClocklessController<LANES, FIRST_PIN, T1, T2, T3, RGB_ORDER, XTRA0, FLIP, WAIT_TIME>::init() [with unsigned char LANES = 2; int FIRST_PIN = 1; int T1 = 250; int T2 = 625; int T3 = 375; fl::EOrder RGB_ORDER = fl::GRB; int XTRA0 = 0; bool FLIP = false; int WAIT_TIME = 280]':
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:49:13: note: in expansion of macro '_BLOCK_PIN'
+   49 |             _BLOCK_PIN( 1);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:50:13: note: in expansion of macro '_BLOCK_PIN'
+   50 |             _BLOCK_PIN( 0);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:50:13: note: in expansion of macro '_BLOCK_PIN'
+   50 |             _BLOCK_PIN( 0);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:51:13: note: in expansion of macro '_BLOCK_PIN'
+   51 |             _BLOCK_PIN(24);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:51:13: note: in expansion of macro '_BLOCK_PIN'
+   51 |             _BLOCK_PIN(24);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:52:13: note: in expansion of macro '_BLOCK_PIN'
+   52 |             _BLOCK_PIN(25);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:52:13: note: in expansion of macro '_BLOCK_PIN'
+   52 |             _BLOCK_PIN(25);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:53:13: note: in expansion of macro '_BLOCK_PIN'
+   53 |             _BLOCK_PIN(19);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:53:13: note: in expansion of macro '_BLOCK_PIN'
+   53 |             _BLOCK_PIN(19);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:54:13: note: in expansion of macro '_BLOCK_PIN'
+   54 |             _BLOCK_PIN(18);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:54:13: note: in expansion of macro '_BLOCK_PIN'
+   54 |             _BLOCK_PIN(18);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:55:13: note: in expansion of macro '_BLOCK_PIN'
+   55 |             _BLOCK_PIN(14);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:55:13: note: in expansion of macro '_BLOCK_PIN'
+   55 |             _BLOCK_PIN(14);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:56:13: note: in expansion of macro '_BLOCK_PIN'
+   56 |             _BLOCK_PIN(15);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:56:13: note: in expansion of macro '_BLOCK_PIN'
+   56 |             _BLOCK_PIN(15);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:57:13: note: in expansion of macro '_BLOCK_PIN'
+   57 |             _BLOCK_PIN(17);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:57:13: note: in expansion of macro '_BLOCK_PIN'
+   57 |             _BLOCK_PIN(17);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:58:13: note: in expansion of macro '_BLOCK_PIN'
+   58 |             _BLOCK_PIN(16);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:58:13: note: in expansion of macro '_BLOCK_PIN'
+   58 |             _BLOCK_PIN(16);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:59:13: note: in expansion of macro '_BLOCK_PIN'
+   59 |             _BLOCK_PIN(22);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:59:13: note: in expansion of macro '_BLOCK_PIN'
+   59 |             _BLOCK_PIN(22);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:60:13: note: in expansion of macro '_BLOCK_PIN'
+   60 |             _BLOCK_PIN(23);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:60:13: note: in expansion of macro '_BLOCK_PIN'
+   60 |             _BLOCK_PIN(23);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:61:13: note: in expansion of macro '_BLOCK_PIN'
+   61 |             _BLOCK_PIN(20);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:61:13: note: in expansion of macro '_BLOCK_PIN'
+   61 |             _BLOCK_PIN(20);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:62:13: note: in expansion of macro '_BLOCK_PIN'
+   62 |             _BLOCK_PIN(21);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:62:13: note: in expansion of macro '_BLOCK_PIN'
+   62 |             _BLOCK_PIN(21);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:63:13: note: in expansion of macro '_BLOCK_PIN'
+   63 |             _BLOCK_PIN(26);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:63:13: note: in expansion of macro '_BLOCK_PIN'
+   63 |             _BLOCK_PIN(26);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:64:13: note: in expansion of macro '_BLOCK_PIN'
+   64 |             _BLOCK_PIN(27);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:66:13: note: in expansion of macro '_BLOCK_PIN'
+   66 |             _BLOCK_PIN(10);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:67:13: note: in expansion of macro '_BLOCK_PIN'
+   67 |             _BLOCK_PIN(12);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:67:13: note: in expansion of macro '_BLOCK_PIN'
+   67 |             _BLOCK_PIN(12);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:68:13: note: in expansion of macro '_BLOCK_PIN'
+   68 |             _BLOCK_PIN(11);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:68:13: note: in expansion of macro '_BLOCK_PIN'
+   68 |             _BLOCK_PIN(11);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:69:13: note: in expansion of macro '_BLOCK_PIN'
+   69 |             _BLOCK_PIN(13);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:69:13: note: in expansion of macro '_BLOCK_PIN'
+   69 |             _BLOCK_PIN(13);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:70:13: note: in expansion of macro '_BLOCK_PIN'
+   70 |             _BLOCK_PIN( 6);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:70:13: note: in expansion of macro '_BLOCK_PIN'
+   70 |             _BLOCK_PIN( 6);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:71:13: note: in expansion of macro '_BLOCK_PIN'
+   71 |             _BLOCK_PIN( 9);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:71:13: note: in expansion of macro '_BLOCK_PIN'
+   71 |             _BLOCK_PIN( 9);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:72:13: note: in expansion of macro '_BLOCK_PIN'
+   72 |             _BLOCK_PIN(32);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:72:13: note: in expansion of macro '_BLOCK_PIN'
+   72 |             _BLOCK_PIN(32);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:73:13: note: in expansion of macro '_BLOCK_PIN'
+   73 |             _BLOCK_PIN( 8);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:73:13: note: in expansion of macro '_BLOCK_PIN'
+   73 |             _BLOCK_PIN( 8);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:74:13: note: in expansion of macro '_BLOCK_PIN'
+   74 |             _BLOCK_PIN( 7);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:76:13: note: in expansion of macro '_BLOCK_PIN'
+   76 |             _BLOCK_PIN(37);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:77:13: note: in expansion of macro '_BLOCK_PIN'
+   77 |             _BLOCK_PIN(36);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:77:13: note: in expansion of macro '_BLOCK_PIN'
+   77 |             _BLOCK_PIN(36);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:78:13: note: in expansion of macro '_BLOCK_PIN'
+   78 |             _BLOCK_PIN(35);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:78:13: note: in expansion of macro '_BLOCK_PIN'
+   78 |             _BLOCK_PIN(35);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:79:13: note: in expansion of macro '_BLOCK_PIN'
+   79 |             _BLOCK_PIN(34);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:79:13: note: in expansion of macro '_BLOCK_PIN'
+   79 |             _BLOCK_PIN(34);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:80:13: note: in expansion of macro '_BLOCK_PIN'
+   80 |             _BLOCK_PIN(39);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:80:13: note: in expansion of macro '_BLOCK_PIN'
+   80 |             _BLOCK_PIN(39);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:81:13: note: in expansion of macro '_BLOCK_PIN'
+   81 |             _BLOCK_PIN(38);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:81:13: note: in expansion of macro '_BLOCK_PIN'
+   81 |             _BLOCK_PIN(38);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:82:13: note: in expansion of macro '_BLOCK_PIN'
+   82 |             _BLOCK_PIN(28);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:82:13: note: in expansion of macro '_BLOCK_PIN'
+   82 |             _BLOCK_PIN(28);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:83:13: note: in expansion of macro '_BLOCK_PIN'
+   83 |             _BLOCK_PIN(31);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:34:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+   34 |         if( P == 27 || P == 7 || P == 30) break;                \
+      |         ^~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:83:13: note: in expansion of macro '_BLOCK_PIN'
+   83 |             _BLOCK_PIN(31);
+      |             ^~~~~~~~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:29:27: note: here
+   29 |     #define _BLOCK_PIN(P) case P: {                             \
+      |                           ^~~~
+/Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/pio-libdeps/rt1062_production/FastLED/src/platforms/arm/mxrt1062/block_clockless_arm_mxrt1062.h:84:13: note: in expansion of macro '_BLOCK_PIN'
+   84 |             _BLOCK_PIN(30);
+      |             ^~~~~~~~~~
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4de/libOctoWS2811.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/ExFatVolume.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib22a/libSPI.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/ExFatLib/upcase.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib22a/libSPI.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatDbg.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatFile.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatFileLFN.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatFilePrint.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatFileSFN.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatFormatter.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatName.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatPartition.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FatLib/FatVolume.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FreeStack.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FsLib/FsFile.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FsLib/FsNew.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/FsLib/FsVolume.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/MinimumSerial.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SdCard/SdCardInfo.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SdCard/SdSpiCard.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SdCard/SdioTeensy.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SpiDriver/SdSpiArtemis.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SpiDriver/SdSpiChipSelect.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SpiDriver/SdSpiDue.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SpiDriver/SdSpiESP.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SpiDriver/SdSpiParticle.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SpiDriver/SdSpiSTM32.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SpiDriver/SdSpiSTM32Core.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/SpiDriver/SdSpiTeensy3.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/common/FmtNumber.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/common/FsCache.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/common/FsDateTime.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/common/FsName.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/common/FsStructs.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/common/FsUtf.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/common/PrintBasic.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/common/upcase.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/iostream/StdioStream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/iostream/StreamBaseClass.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/iostream/istream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/SdFat/iostream/ostream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libea3/SD/SD.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/FastLED.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/bitswap.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/cled_controller.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/colorpalettes.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/crgb.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/allocator.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/async.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/audio.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/audio_input.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/audio_reactive.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/bitset.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/blur.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/bytestreammemory.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/colorutils.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/libSdFat.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/corkscrew.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib4c0/libSdFat.a
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libea3/libSD.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/crgb_hsv16.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libea3/libSD.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/downscale.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/ease.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/engine_events.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/fetch.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/fft.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/fft_impl.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/file_system.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/fill.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/gamma.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/gradient.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/hsv16.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/id_tracker.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/io.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/istream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/json.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/leds.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/line_simplification.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/noise_woryley.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/ostream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/ptr.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/random.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/raster_sparse.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/rectangular_draw_buffer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/referent.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/rgbw.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/screenmap.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/sin32.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/splat.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/str.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/str_ui.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/strstream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/stub_main.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/task.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/tile2x2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/time.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/time_alpha.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/transform.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/type_traits.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/ui.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/upscale.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/wave_simulation.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/wave_simulation_real.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/xmap.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/xymap.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/xypath.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/xypath_impls.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fl/xypath_renderer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/2d/blend.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/2d/luminova.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/2d/noisepalette.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/2d/scale_up.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/2d/wave.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/detail/fx_layer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/frame.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/fx_engine.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/time.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/video.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/video/frame_interpolator.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/video/frame_tracker.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/video/pixel_stream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/fx/video/video_impl.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/hsv2rgb.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/lib8tion.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/noise.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/adafruit/clockless.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/arm/k20/clockless_objectfled.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/arm/mgm240/fastpin_arm_mgm240.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/compile_test.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/audio/audio.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/audio/sound_util.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/clockless_i2s_esp32s3.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/i2s/i2s_esp32dev.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/rmt_4/idf4_rmt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/rmt_4/idf4_rmt_impl.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/rmt_5/idf5_rmt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/rmt_5/strip_rmt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/esp/32/spi_ws2812/strip_spi.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/stub/Arduino.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/stub/led_sysdefs_stub.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/stub/time_stub.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/active_strip_data.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/engine_listener.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/entry_point.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/fastspi_wasm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/fs_wasm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/js.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/js_bindings.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/js_fetch.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/timer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/platforms/wasm/ui.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/power_mgt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/sensors/button.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/sensors/digital_pin.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/sensors/pir.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/simplex.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/third_party/cq_kernel/cq_kernel.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/third_party/cq_kernel/kiss_fft.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/third_party/cq_kernel/kiss_fftr.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/third_party/espressif/led_strip/src/led_strip_api.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/third_party/espressif/led_strip/src/led_strip_rmt_dev.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/third_party/espressif/led_strip/src/led_strip_rmt_encoder.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/third_party/espressif/led_strip/src/led_strip_spi_dev.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/third_party/object_fled/src/OjectFLED.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/transpose8x1_noinline.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/FastLED/wiring.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libdce/SerialFlash/SerialFlashChip.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libdce/SerialFlash/SerialFlashDirectory.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib0c4/Wire/Wire.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib0c4/Wire/WireIMXRT.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib0c4/Wire/WireKinetis.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib0c4/Wire/utility/twi.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/Quantizer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/Resampler.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/analyze_fft1024.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/analyze_fft256.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/analyze_notefreq.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/analyze_peak.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/analyze_print.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/analyze_rms.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/analyze_tonedetect.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/async_input_spdif3.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libdce/libSerialFlash.a
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib0c4/libWire.a
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libdce/libSerialFlash.a
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib0c4/libWire.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/control_ak4558.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/control_cs42448.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/control_cs4272.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/control_sgtl5000.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/libFastLED.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/control_tlv320aic3206.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/control_wm8731.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/data_bandlimit_step.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/data_spdif.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/data_ulaw.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/data_waveforms.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/data_windows.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_bitcrusher.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_chorus.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib68b/libFastLED.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_combine.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_delay.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_delay_ext.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_envelope.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_fade.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_flange.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_freeverb.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_granular.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_midside.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_multiply.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_rectifier.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_reverb.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_wavefolder.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/effect_waveshaper.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/filter_biquad.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/filter_fir.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/filter_ladder.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/filter_variable.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_adc.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_adcs.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_i2s.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_i2s2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_i2s_hex.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_i2s_oct.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_i2s_quad.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_pdm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_pdm_i2s2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_spdif3.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_tdm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/input_tdm2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/memcpy_audio.S.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/mixer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_adat.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_dac.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_dacs.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_i2s.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_i2s2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_i2s_hex.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_i2s_oct.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_i2s_quad.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_mqs.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_pt8211.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_pt8211_2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_pwm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_spdif.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_spdif2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_spdif3.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_tdm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/output_tdm2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/play_memory.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/play_queue.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/play_sd_raw.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/play_sd_wav.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/play_serialflash_raw.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/record_queue.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/spi_interrupt.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_dc.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_karplusstrong.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_pinknoise.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_pwm.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_simple_drum.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_sine.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_tonesweep.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_waveform.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_wavetable.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/synth_whitenoise.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/utility/imxrt_hw.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/Audio/utility/sqrt_integer.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/AudioStream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/CrashReport.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/DMAChannel.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/EventResponder.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial1.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial3.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial4.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial5.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial6.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial7.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/HardwareSerial8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/IPAddress.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/libAudio.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/IntervalTimer.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/Print.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/Stream.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/Time.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/Tone.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/WMath.cpp.o
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/lib9a4/libAudio.a
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/WString.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/analog.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/bootdata.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/clockspeed.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/debugprintf.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/delay.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/digital.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/eeprom.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/extmem.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/fuse.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/interrupt.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/keylayouts.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/libc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/main.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/memcpy-armv7m.S.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/memset.S.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/new.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/nonstd.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/pwm.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/rtc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent1.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent3.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent4.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent5.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent6.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent7.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEvent8.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEventUSB1.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/serialEventUSB2.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_alloc_valid.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_calloc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_free.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_hash.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_malloc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_malloc_stats.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_pool.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_realloc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_realloc_i.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_realloc_move.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_szalloc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_util.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/sm_zalloc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/startup.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/tempmon.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_audio.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_desc.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_flightsim.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_inst.cpp.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_joystick.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_keyboard.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_midi.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_mouse.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_mtp.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_rawhid.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_seremu.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_serial.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_serial2.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_serial3.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/usb_touch.c.o
+Compiling /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/FrameworkArduino/yield.cpp.o
+Archiving /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libFrameworkArduino.a
+Indexing /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/libFrameworkArduino.a
+Linking /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/firmware.elf
+Checking size /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+Calculating size /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/firmware.elf
+teensy_size: Memory Usage on Teensy 4.1:
+teensy_size:   FLASH: code:227068, data:68552, headers:8504   free for files:7822340
+teensy_size:    RAM1: variables:237216, code:224008, padding:5368   free for local variables:57696
+teensy_size:    RAM2: variables:15264  free for malloc/new:509024
+Building /Users/spectrasynq/ai-embedded-lab/reports/lanes-2026-10-03/dualmcu-final-build/build/rt1062_production/firmware.hex
+========================= [SUCCESS] Took 27.71 seconds =========================
+
+Environment        Status    Duration
+-----------------  --------  ------------
+rt1062_production  SUCCESS   00:00:27.712
+========================= 1 succeeded in 00:00:27.712 =========================

@@ -1,0 +1,6393 @@
+{
+  "error": "",
+  "facts": {
+    "action": "test",
+    "after": {
+      "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+      "frames": 4757,
+      "heap_free": 18476,
+      "heap_largest": 7156,
+      "mode": 0,
+      "saved": {
+        "bytes": 3351,
+        "crc": "62851093"
+      }
+    },
+    "after_metrics": {
+      "audio_active_avg_us_median": 5075,
+      "audio_active_max_us": 7085,
+      "fps_median": 105,
+      "fps_min": 96,
+      "frame_avg_us_median": 9524,
+      "frame_max_us": 16966,
+      "samples": 29,
+      "vu_max": 0.01
+    },
+    "baseline_metrics": {
+      "audio_active_avg_us_median": 5078,
+      "audio_active_max_us": 7213,
+      "fps_median": 103.0,
+      "fps_min": 99,
+      "frame_avg_us_median": 9695,
+      "frame_max_us": 16822,
+      "samples": 30,
+      "vu_max": 0.01
+    },
+    "before": {
+      "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+      "frames": 1264957,
+      "heap_free": 18476,
+      "heap_largest": 7156,
+      "mode": 0,
+      "saved": {
+        "bytes": 3351,
+        "crc": "62851093"
+      }
+    },
+    "boots": [
+      {
+        "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+        "frames": 854,
+        "heap_free": 18608,
+        "heap_largest": 7156,
+        "mode": 0,
+        "saved": {
+          "bytes": 3351,
+          "crc": "62851093"
+        },
+        "uart_evaluation": {
+          "arduino_error_lines": [
+            "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+            "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation"
+          ],
+          "baud": 115200,
+          "bytes": 5104,
+          "crash_detected": false,
+          "download_mode_detected": false,
+          "error_summary": "UART error patterns detected",
+          "errors": [
+            {
+              "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+              "lineno": 14,
+              "pattern": "\\bE\\s*\\("
+            },
+            {
+              "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+              "lineno": 14,
+              "pattern": "\\bERROR\\b"
+            }
+          ],
+          "errors_truncated": 0,
+          "forbid_matched": [],
+          "known_absent_psram_probe_errors": 2,
+          "known_boot_diagnostics": [
+            "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+            "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+            "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation"
+          ],
+          "lines": 120,
+          "matched": {
+            "boot": {
+              "count": 1,
+              "patterns": [
+                "ESP-ROM:"
+              ]
+            },
+            "expect": {
+              "KLV boot=saved": 1
+            },
+            "forbid": {}
+          },
+          "missing_expect": [],
+          "ok": false,
+          "port": "/dev/cu.usbmodem12201",
+          "raw_log_path": "reports/lanes-2026-10-03/standard-regression/logs/emotiscope.raw.log",
+          "reboot_loop_suspected": false,
+          "warnings": [],
+          "warnings_truncated": 0
+        }
+      }
+    ],
+    "commands": [
+      {
+        "command": "build",
+        "reply": [
+          "sbr{{",
+          "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+          "}}",
+          "KLV us=1956 fps=106 err=0 vu=0.00 sp=0.245 bt=0",
+          "KLVT show=1629/2319 dly=1558/8440 frm=9423/16710 n=107",
+          "KLVA wt=1814/6865 act=5064/6604 gd=1669/2306 dl=540 n=134",
+          "KLVB pre=245/977 acq=2848/7873 vu=162/412",
+          "KLVC pg=254/953 nov=100/707 snp=393/1284",
+          "KLVD ons=191/308 sal=70/263 tmp=334/1613",
+          "KLVE pub=395/1217 tail=99/354 rsec=3825/7172",
+          "KLVF live=2644/5924 fill=2143/2473 show=0/0",
+          "KLVG a1=96/205 a2=239/397 a3=263/1103",
+          "KLVI vb=33/68 vc=80/139 vd=80/133",
+          "KLVIO us=13952311209 b=613001 mask=3 rx=1 init=0 f=1266283 pair=1266283 q=1266534/1266534 c=1266534/1266534 reuse=0 qe=0 ce=0 eof=930147 rb=714352896 ovf=75 rd=1860144 cb=714295296 re=0",
+          "KLV2 before=1111/1153 render=843/865 n=1032",
+          "KLVX dec=26/199 sil=103/353 acf=419/1140 n=445",
+          "KLVY upd=423/1089 ph=2/8 pub=2/20",
+          "KLVV gz=217/855 sc=21/610 wn=152/796 rs=29/685",
+          "KLVO bpm=88.0 c=0.00 lk=0"
+        ]
+      },
+      {
+        "command": "klv_status",
+        "reply": [
+          "KLV image bytes=3351 crc=62851093",
+          "KLV vm=up origin=saved saved=1 err=0 px=128 frames=1264957",
+          "KLV renderer=live mode=0",
+          "KLV heap free=18476 big=7156"
+        ]
+      },
+      {
+        "command": "klv_get=palette",
+        "reply": [
+          "KLV value=palette n=43",
+          "KLV us=1968 fps=97 err=0 vu=0.00 sp=0.244 bt=0",
+          "KLVT show=1695/2326 dly=2301/8465 frm=10269/16706 n=99",
+          "KLVA wt=1880/7178 act=5026/7060 gd=1627/2297 dl=505 n=136",
+          "KLVB pre=254/2077 acq=2938/8155 vu=155/425",
+          "KLVC pg=248/933 nov=97/715 snp=365/1232",
+          "KLVE pub=404/1239 tail=97/753 rsec=3874/6181",
+          "KLVF live=2694/4916 fill=2132/2441 show=0/0",
+          "KLVG a1=100/222 a2=242/396 a3=271/1086",
+          "KLVH a4=412/986 cs=103/224 va=494/752",
+          "KLVI vb=35/77 vc=82/139 vd=83/334"
+        ]
+      },
+      {
+        "command": "klv_get=position",
+        "reply": [
+          "KLV value=position n=0"
+        ]
+      },
+      {
+        "command": "klv_get=brightness",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLV us=1955 fps=103 err=0 vu=0.00 sp=0.232 bt=0",
+          "KLVT show=1646/2369 dly=1808/8452 frm=9695/16709KLVA wt=1868/6943 act=5021/7068 gd=1647/2297 dl=525 n=134",
+          "KLVB pre=252/999 acq=2898/7921 vu=159/430",
+          "KLVC pg=249/949 nov=101/719 snp=387/1271",
+          "KLVD ons=189/317 sal=67/245 tmp=338/1850",
+          "KLVE pub=386/1213 tail=100/755 rsec=3832/7154",
+          "KLVF live=2663/5919 fill=2144/2463 show=0/0",
+          "KLVH a4=403/707 cs=102/197 va=493/757",
+          "KLVI vb=32/69 vc=80/131 vd=83/317"
+        ]
+      },
+      {
+        "command": "klv_get=saturation",
+        "reply": [
+          "KLV value=saturation n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=mirror",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLV us=1966 fps=101 err=0 vu=0.00 sp=0.247 bt=0",
+          "KLVT show=1697/2397 dly=1989/8449 frm=9901/16709 n=101",
+          "KLVA wt=1852/6874 act=5044/6932 gd=1629/2295 dl=504 n=133",
+          "KLVB pre=243/1003 acq=2931/7936 vu=160/421",
+          "KLVC pg=264/980 nov=93/318 snp=365/1144",
+          "KLVD ons=187/446 sal=70/702 tmp=328/1770",
+          "KLVE pub=403/1228 tail=99/724 rsec=3820/6119",
+          "KLVF live=2661/4907 fill=2131/2489 show=0/0",
+          "KLVG a1=101/206 a2=244/395 a3=282/1095",
+          "KLVH a4=423/1080 cs=105/324 va=484/734",
+          "KLVI vb=34/72 vc=80/144 vd=84/311"
+        ]
+      },
+      {
+        "command": "klv_get=speed",
+        "reply": [
+          "KLV value=speed n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=contrast",
+        "reply": [
+          "KLV value=contrast n=1000",
+          "KLV us=1966 fps=103 err=0 vu=0.00 sp=0.245 bt=0",
+          "KLVT show=1657/2369 dly=1782/8447 frm=9695/16737 n=104",
+          "KLVA wt=1849/6884 act=5056/7069 gd=1649/2314 dl=514 n=134",
+          "KLVB pre=246/999 acq=2878/7903 vu=157/421",
+          "KLVC pg=258/937 nov=113/733 snp=374/1259",
+          "KLVD ons=192/370 sal=67/125 tmp=345/1852",
+          "KLVE pub=406/1222 tail=100/757 rsec=3850/7467",
+          "KLVF live=2664/5903 fill=2137/2470 show=0/0",
+          "KLVG a1=97/212 a2=238/397 a3=260/1071",
+          "KLVH a4=402/680 cs=107/778 va=494/761",
+          "KLVI vb=35/68 vc=82/139 vd=85/406"
+        ]
+      },
+      {
+        "command": "klv_mode=live",
+        "reply": [
+          "KLV mode=live id=0"
+        ]
+      },
+      {
+        "command": "klv_set=brightness,600",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLV us=1962 fps=102 err=0 vu=0.00 sp=0.255 bt=0",
+          "KLVT show=1687/2369 dly=1865/8454 frm=9776/16715 n=104",
+          "KLVA wt=1825/6868 act=5093/7046 gd=1643/2294 dl=489 n=136",
+          "KLVB pre=242/990 acq=2908/7949 vu=157/827",
+          "KLVC pg=266/944 nov=103/715 snp=369/1143",
+          "KLVD ons=200/1077 sal=70/254 tmp=331/1933",
+          "KLVE pub=408/1213 tail=99/722 rsec=3817/6386",
+          "KLVF live=2646/5130 fill=2135/2475 show=0/0",
+          "KLVG a1=101/216 a2=252/923 a3=279/1077",
+          "KLVH a4=421/1076 cs=102/233 va=490/734",
+          "KLVI vb=34/72 vc=82/146 vd=81/203"
+        ]
+      },
+      {
+        "command": "klv_mode=waveform_tempo",
+        "reply": [
+          "KLV mode=waveform_tempo id=18",
+          "KLVR 2000/2000/2000/2293 m=1950 n=1024 o=3/3 d=17107 w=1398 b=613001 t0=13979628150 t1=13989636777 s=1024 rn=1270133 rp99=2000 lost=0/0 diag=0 sc=0 mode=18"
+        ]
+      },
+      {
+        "command": "klv_set=position,0",
+        "reply": [
+          "KLV value=position n=0",
+          "KLV us=1506 fps=117 err=0 vu=0.00 sp=0.268 bt=0",
+          "KLVT show=1761/2363 dly=2208/8449 frm=8544/16673 n=118",
+          "KLVA wt=1121/6876 act=5682/7226 gd=1691/2261 dl=618 n=133",
+          "KLVB pre=319/985 acq=2366/7864 vu=154/249",
+          "KLVC pg=297/953 nov=103/304 snp=449/1236",
+          "KLVD ons=241/935 sal=94/734 tmp=364/1616",
+          "KLVE pub=465/1217 tail=119/740 rsec=3654/7153",
+          "KLVF live=2447/5914 fill=647/2468 show=0/0",
+          "KLVG a1=131/739 a2=280/911 a3=327/984",
+          "KLVH a4=468/1099 cs=126/754 va=519/752",
+          "KLVI vb=35/76 vc=88/144 vd=93/319"
+        ]
+      },
+      {
+        "command": "klv_set=mirror,1",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLVQ 8400/16700/16800/16815 m=9641 n=1038 o=672/672 d=17107 w=1398 b=613001 t0=13980507980 t1=13990507980 s=1038 rn=1270236 rp99=16800 lost=0/0 diag=0 sc=0 sub=1038 skp=0",
+          "KLVS 7950/8800/9500/12219 m=7765 n=1038 o=113/113 d=17107 w=1398 b=613001 t0=13980507980 t1=13990507980 s=1038 rn=1270237 rp99=9850 lost=0/0 diag=0 sc=0",
+          "KLVU wait=1863/8416 late=161 skip=161 fault=0 timeout=0 w=1398 b=613001 t0=13980507980 t1=13990507980",
+          "KLVL 100/100/200/215 m=82 n=1038 o=0/0 d=17107 w=1398 b=613001 t0=13980507980 t1=13990507980 s=1038 rn=1270237 rp99=150 lost=0/0 diag=0 sc=0"
+        ]
+      },
+      {
+        "command": "klv_set=palette,37",
+        "reply": [
+          "KLV value=palette n=37"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLV us=1955 fps=119 err=0 vu=0.00 sp=0.232 bt=0",
+          "KLVT show=1776/2311 dly=2329/7677 frm=8403/16668 n=119",
+          "KLVA wt=955/4994 act=5771/7201 gd=1700/2287 dl=658 n=134",
+          "KLVB pre=339/972 acq=2223/6007 vu=155/249",
+          "KLVD ons=247/910 sal=108/734 tmp=353/1601",
+          "KLVE pub=478/1177 tail=123/731 rsec=3618/6755",
+          "KLVF live=2394/5688 fill=406/540 show=0/0",
+          "KLVG a1=133/764 a2=281/905 a3=344/935",
+          "KLVH a4=465/1094 cs=135/761 va=529/757",
+          "KLVI vb=36/64 vc=90/139 vd=95/142",
+          "KLVF begin mode=18 frames=1270579 crc=f105b77f",
+          "KLVF 000 020100000000010000010000000000020100000000020100",
+          "KLVF 008 0001060100000100000200000101040803000c0600040306",
+          "KLVF 016 00030e00020b00020a12090101020a040202020103010104",
+          "KLVF 024 000107030308030100000000000000000000000000000000",
+          "KLVF 032 000000000000000000000000000000000000000000000000",
+          "KLVF 040 000000000000000000000000000000000000000000000000",
+          "KLVF 048 000000000000000000000000000000000000000000000000",
+          "KLVF 056 000000000000000000000000000000000000000000000000",
+          "KLVF 064 000000000000000000000000000000000000000000000000",
+          "KLVF 072 000000000000000000000000000000000000000000000000",
+          "KLVF 080 000000000000000000000000000000000000000000000000",
+          "KLVF 088 000000000000000000000000000000000000000000000000",
+          "KLVF 096 000000000000000000000000000000030100030308000107",
+          "KLVF 104 01010402010304020201020a12090100020a00020b00030e",
+          "KLVF 112 0403060c0600080300010104020000010000010000000106",
+          "KLVF 120 020100000000020100000000010000010000000000020100",
+          "KLVF end"
+        ]
+      },
+      {
+        "command": "klv_set=palette,38",
+        "reply": [
+          "KLV us=1771 fps=116 err=0 vu=0.00 sp=0.255 bt=0",
+          "KLVT show=1776/2336 dly=2394/8446 frm=8618/33291 n=117",
+          "KLVA wt=1045/5155 act=5729/7142 gd=1683/2095 dl=620 n=134",
+          "KLVB pre=332/977 acq=2300/6444 vu=154/249",
+          "KLVC pg=297/959 nov=104/187 snp=460/1202",
+          "KLVD ons=235/316 sal=115/738 tmp=358/1663",
+          "KLVE pub=457/1154 tail=123/735 rsec=3773/22817",
+          "KLVF live=2579/21153 fill=405/515 show=0/0",
+          "KLVG a1=129/194 a2=284/927 a3=347/995",
+          "KLVH a4=462/1096 cs=129/756 va=518/760",
+          "KLVI vb=35/63 vc=89/147 vd=95/385",
+          "KLV value=palette n=38"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLVF begin mode=18 frames=1270992 crc=07224ec3",
+          "KLVF 000 331a100402020101012a130f171002190a091f0d0b170f02",
+          "KLVF 008 41300a0301010603023f2d0c532d194b23190f0a02472118",
+          "KLVF 016 020200381e0e2a1210201603000000230f0d2b1210000000",
+          "KLVF 024 000000000000000000000000000000000000000000000000",
+          "KLVF 032 000000000000000000000000000000000000000000000000",
+          "KLVF 040 000000000000000000000000000000000000000000000000",
+          "KLVF 048 000000000000000000000000000000000000000000000000",
+          "KLVF 056 000000000000000000000000000000000000000000000000",
+          "KLVF 064 000000000000000000000000000000000000000000000000",
+          "KLVF 072 000000000000000000000000000000000000000000000000",
+          "KLVF 080 000000000000000000000000000000000000000000000000",
+          "KLVF 088 000000000000000000000000000000000000000000000000",
+          "KLVF 096 000000000000000000000000000000000000000000000000",
+          "KLVF 104 0000002b1210230f0d0000002016032a1210381e0e020200",
+          "KLVF 112 4721180f0a024b2319532d193f2d0c06030203010141300a",
+          "KLVF 120 170f021f0d0b190a091710022a130f010101040202331a10",
+          "KLVF end",
+          "KLV us=1254 fps=117 err=0 vu=0.00 sp=0.243 bt=0",
+          "KLVT show=1784/2334 dly=2387/7347 frm=8545/25121 n=118",
+          "KLVA wt=1050/5917 act=5722/7063 gd=1685/2097 dl=615 n=134",
+          "KLVB pre=323/990 acq=2313/7223 vu=164/812",
+          "KLVC pg=298/1007 nov=102/197 snp=467/1166",
+          "KLVD ons=239/916 sal=117/746 tmp=350/1662",
+          "KLVE pub=445/1211 tail=125/733 rsec=3695/21846",
+          "KLVF live=2505/20681 fill=407/511 show=0/0",
+          "KLVG a1=130/203 a2=295/920 a3=336/992",
+          "KLVH a4=462/1092 cs=124/195 va=520/761",
+          "KLVI vb=34/63 vc=89/139 vd=92/209",
+          "KLVP 5650/6850/7100/7480 m=5627 n=1334 o=0/0 d=17107 w=1399 b=613001 t0=13987482138 t1=13997489374 s=1334 rn=1866167 rp99=7400 lost=0/0 diag=0 sc=0 is=0 ir=992905 io=1866167 iw=6877"
+        ]
+      },
+      {
+        "command": "klv_render_status",
+        "reply": [
+          "KLV mode=waveform_tempo id=18",
+          "KLV native frames=992 avg=1673 max=2738 invalid=0",
+          "KLV native ap=1866221 pcm=96 history=1",
+          "KLV us=1910 fps=119 err=0 vu=0.00 sp=0.230 bt=0",
+          "KLVT show=1774/2341 dly=2404/8167 frm=8403/16688 n=119",
+          "KLVA wt=995/6057 act=5757/7125 gd=1696/2094 dl=647 n=133",
+          "KLVB pre=327/913 acq=2256/7016 vu=169/821",
+          "KLVD ons=273/936 sal=111/734 tmp=355/1622",
+          "KLVE pub=444/647 tail=115/301 rsec=3546/6427",
+          "KLVF live=2359/5145 fill=405/511 show=0/0",
+          "KLVG a1=134/725 a2=306/930 a3=338/1013",
+          "KLVH a4=445/1082 cs=134/774 va=519/763",
+          "KLVI vb=33/62 vc=88/130 vd=91/318"
+        ]
+      },
+      {
+        "command": "klv_mode=waveform_hybrid",
+        "reply": [
+          "KLV mode=waveform_hybrid id=11"
+        ]
+      },
+      {
+        "command": "klv_set=position,0",
+        "reply": [
+          "KLV value=position n=0",
+          "KLV us=1745 fps=119 err=0 vu=0.00 sp=0.236 bt=0",
+          "KLVT show=1793/2438 dly=2140/8023 frm=8403/16683 n=119",
+          "KLVA wt=919/4043 act=5843/7319 gd=1707/2280 dl=632 n=134",
+          "KLVB pre=329/998 acq=2192/5654 vu=181/848",
+          "KLVC pg=324/1007 nov=109/769 snp=427/1031",
+          "KLVD ons=250/929 sal=102/729 tmp=347/1621",
+          "KLVE pub=513/1196 tail=126/722 rsec=3774/6370",
+          "KLVF live=2559/5323 fill=421/531 show=0/0",
+          "KLVG a1=137/774 a2=281/909 a3=324/966",
+          "KLVH a4=480/1087 cs=128/204 va=519/748",
+          "KLVI vb=34/63 vc=91/139 vd=99/424"
+        ]
+      },
+      {
+        "command": "klv_set=mirror,1",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLVR 1650/2350/2450/2768 m=1694 n=1185 o=174/174 d=17107 w=1399 b=613001 t0=13989636777 t1=13999637183 s=1185 rn=1271318 rp99=2000 lost=0/0 diag=0 sc=0 mode=11"
+        ]
+      },
+      {
+        "command": "klv_set=palette,37",
+        "reply": [
+          "KLV value=palette n=37",
+          "KLV us=1800 fps=118 err=0 vu=0.00 sp=0.224 bt=0",
+          "KLVT show=1795/2454 dly=2074/8471 frm=8472/16684 n=119",
+          "KLVA wt=881/3288 act=5880/7593 gd=1721/2188 dl=627 n=134",
+          "KLVB pre=348/1274 acq=2180/4811 vu=183/838",
+          "KLVC pg=300/923 nov=110/778 snp=413/1010",
+          "KLVD ons=231/402 sal=97KLVF live=2683/5009 fill=424/534 show=0/0",
+          "KLVG a1=164/789 a2=280/953 a3=332/1023",
+          "KLVH a4=483/1092 cs=134/780 va=509/739",
+          "KLVI vb=36/69 vc=90/135 vd=98/324",
+          "KLVS 6200/6850/8600/24943 m=6207 n=1184 o=13/13 d=17107 w=1399 b=613001 t0=13990507980 t1=14000516339 s=1184 rn=1271421 rp99=9850 lost=0/0 diag=0 sc=0",
+          "KLVU wait=2246/8418 late=14 skip=17 fault=0 timeout=0 w=1399 b=613001 t0=13990507980 t1=14000516339",
+          "KLVL 100/100/184/184 m=83 n=1184 o=0/0 d=17107 w=1399 b=613001 t0=13990507980 t1=14000516339 s=1184 rn=1271421 rp99=150 lost=0/0 diag=0 sc=0"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLVF begin mode=11 frames=1271666 crc=22facde3",
+          "KLVF 000 000000000000000000000000000000000000000000000000",
+          "KLVF 008 000000000000000000000000000000000000000000000000",
+          "KLVF 016 000000000000000000000000010000010000010000010000",
+          "KLVF 024 000000010100010000030100030100030100030100000000",
+          "KLVF 032 030100030100020100010101020101020101010000020100",
+          "KLVF 040 0000000302000402000603010503000905010a0501010000",
+          "KLVF 048 0905010603000704010503010503010502000b0401000000",
+          "KLVF 056 0a03010a03010b0401070402020101040301070403100a08",
+          "KLVF 064 100a080704030403010201010704020b04010a03010a0301",
+          "KLVF 072 0000000b0401050200050301050301070401060300090501",
+          "KLVF 080 0100000a0501090501050300060301040200030200000000",
+          "KLVF 088 020100010000020101020101010101020100030100030100",
+          "KLVF 096 000000030100030100030100030100010000010100000000",
+          "KLVF 104 010000010000010000010000000000000000000000000000",
+          "KLVF 112 000000000000000000000000000000000000000000000000",
+          "KLVF 120 000000000000000000000000000000000000000000000000",
+          "KLVF end",
+          "KLV us=2257 fps=117 err=0 vu=0.00 sp=0.228 bt=0",
+          "KLVT show=1793/2418 dly=1959/7228 frm=8544/24993 n=118",
+          "KLVA wt=839/5651 act=5875/7294 gd=1703/2181 dl=665 n=135",
+          "KLVB pre=348/995 acq=2156/7079 vu=174/842",
+          "KLVC pg=334/1008 nov=105/157 snp=420/1014",
+          "KLVD ons=235/401 sal=92/715 tmp=348/1789",
+          "KLVE pub=504/1222 tail=122/728 rsec=4075/22366",
+          "KLVF live=2835/20718 fill=436/546 show=0/0",
+          "KLVG a1=160/796 a2=316/951 a3=319/909",
+          "KLVH a4=478/1086 cs=159/772 va=522/739",
+          "KLVI vb=38/72 vc=94/140 vd=98/277"
+        ]
+      },
+      {
+        "command": "klv_set=palette,38",
+        "reply": [
+          "KLV value=palette n=38"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLVF begin mode=11 frames=1272081 crc=b2baba27",
+          "KLVF 000 000000000000000000000000000000000000000000000000",
+          "KLVF 008 000000000000000000000000000000000000000000000000",
+          "KLVF 016 000000000000000000000000000000010000010000010000",
+          "KLVF 024 010000010000010100020101020101010000010101020101",
+          "KLVF 032 020101020101020101030101020101030101030201030200",
+          "KLVF 040 030201050301050301040201040102040102050102060103",
+          "KLVF 048 0702040902040702040702040902050a02050a02060b0206",
+          "KLVF 056 0e030810030914040b13040a15040b14040b18040d240713",
+          "KLVF 064 24071318040d14040b15040b13040a14040b1003090e0308",
+          "KLVF 072 0b02060a02060a0205090205070204070204090204070204",
+          "KLVF 080 060103050102040102040102040201050301050301030201",
+          "KLVF 088 030200030201030101020101030101020101020101020101",
+          "KLVF 096 020101010101010000020101020101010100010000010000",
+          "KLVF 104 010000010000010000000000000000000000000000000000",
+          "KLVF 112 000000000000000000000000000000000000000000000000",
+          "KLVF 120 000000000000000000000000000000000000000000000000",
+          "KLVF end",
+          "KLV us=2660 fps=116 err=0 vu=0.00 sp=0.244 bt=0",
+          "KLVT show=1794/2422 dly=2049/8203 frm=8620/33305 n=116",
+          "KLVA wt=924/6289 act=5819/7241 gd=1713/2200 dl=637 n=134",
+          "KLVB pre=336/991 acq=2204/7144 vu=186/834",
+          "KLVC pg=309/1010 nov=105/156 snp=410/625",
+          "KLVD ons=233/915 sal=95/728 tmp=363/1802",
+          "KLVE pub=514/1182 tail=115/204 rsec=4055/22957",
+          "KLVF live=2843/21509 fill=440/539 show=0/0",
+          "KLVG a1=170/797 a2=268/359 a3=323/1006",
+          "KLVH a4=478/1001 cs=134/771 va=522/739",
+          "KLVI vb=36/77 vc=91/138 vd=92/207"
+        ]
+      },
+      {
+        "command": "klv_render_status",
+        "reply": [
+          "KLV mode=waveform_hybrid id=11",
+          "KLV native frames=989 avg=1969 max=2787 invalid=0",
+          "KLV native ap=1867446 pcm=96 history=1",
+          "KLV us=1893 fps=119 err=0 vu=0.00 sp=0.228 bt=0",
+          "KLVT show=1798/2440 dly=2033/6696 frm=8402/16801 n=120",
+          "KLVA wt=881/3148 act=5867/7905 gd=1726/2202 dl=646 n=134",
+          "KLVB pre=340/1271 acq=2181/4791 vu=183/839",
+          "KLVC pg=299/879 nov=106/267 snp=415/635",
+          "KLVD ons=244/928 sal=95/719 tmp=358/1710",
+          "KLVE pub=518/1196 tail=122/705 rsec=3857/6947",
+          "KLVF live=2638/5471 fill=436/547 show=0/0",
+          "KLVG a1=141/801 a2=279/906 a3=336/997",
+          "KLVH a4=492/1083 cs=142/776 va=518/761",
+          "KLVI vb=35/63 vc=91/138 vd=97/299",
+          "KLVP 5900/7150/7300/7905 m=5871 n=1334 o=2/0 d=17107 w=1400 b=613001 t0=13997489374 t1=14007495264 s=1334 rn=1867501 rp99=7400 lost=0/0 diag=0 sc=0 is=0 ir=993628 io=1867501 iw=7109"
+        ]
+      },
+      {
+        "command": "klv_mode=waveform_hybrid_k1",
+        "reply": [
+          "KLV mode=waveform_hybrid_k1 id=32"
+        ]
+      },
+      {
+        "command": "klv_set=position,0",
+        "reply": [
+          "KLV value=position n=0",
+          "KLV us=2386 fps=119 err=0 vu=0.00 sp=0.227 bt=0",
+          "KLVT show=1784/2429 dly=1869/7781 frm=8403/16666 n=119",
+          "KLVA wt=843/7109 act=5879/8233 gd=1666/2188 dl=665 n=134",
+          "KLVB pre=341/1048 acq=2156/8075 vu=184/830",
+          "KLVC pg=328/1108 nov=110/777 snp=456/1215",
+          "KLVD ons=247/924 sal=91/733 tmp=344/1733",
+          "KLVE pub=519/1197 tail=127/768 rsec=4056/6480",
+          "KLVF live=2814/5436 fill=416/528 show=0/0",
+          "KLVG a1=148/780 a2=299/973 a3=338/936",
+          "KLVH a4=481/1088 cs=137/324 va=522/739",
+          "KLVI vb=35/63 vc=91/143 vd=99/216"
+        ]
+      },
+      {
+        "command": "klv_set=mirror,1",
+        "reply": [
+          "KLV value=mirror n=1"
+        ]
+      },
+      {
+        "command": "klv_set=palette,37",
+        "reply": [
+          "KLV value=palette n=37",
+          "KLV us=2266 fps=118 err=0 vu=0.01 sp=0.228 bt=0",
+          "KLVT show=1780/2395 dly=1891/8367 frm=8475/16710 n=118",
+          "KLVA wt=851/4032 act=5852/7193 gd=1658/2139 dl=701 n=133",
+          "KLVB pre=318/986 acq=2153/5823 vu=191/852",
+          "KLVC pg=337/999 nov=105/154 snp=456/1153",
+          "KLVD ons=245/914 sal=81/211 tmp=348/1695",
+          "KLVE pub=517/1227 tail=132/753 rsec=4116/6966",
+          "KLVF live=2888/5987 fill=408/514 show=0/0",
+          "KLVG a1=142/746 a2=323/970 a3=321/1019",
+          "KLVH a4=472/1056 cs=135/213 va=519/735",
+          "KLVI vb=34/72 vc=88/135 vd=95/238",
+          "KLVR 1950/2650/2800/3436 m=2001 n=1183 o=522/522 d=17107 w=1400 b=613001 t0=13999637183 t1=14009644668 s=1183 rn=1272501 rp99=2000 lost=0/0 diag=0 sc=0 mode=32"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLVF begin mode=32 frames=1272753 crc=4b4f8470",
+          "KLVF 000 00000000030900091600010200000000040b000815000001",
+          "KLVF 008 00000000040b000714000001000000000307000714000103",
+          "KLVF 016 000308000817000000000000000a1b00050f00061200040b",
+          "KLVF 024 00091800000000061000040d00010300071500010400040b",
+          "KLVF 032 00071500000000000000071600040a000000000716000206",
+          "KLVF 040 000000000000000000000000000000000000000000000000",
+          "KLVF 048 000000000000000000000000000000000000000000000000",
+          "KLVF 056 000000000000000000000000000000000000000000000000",
+          "KLVF 064 000000000000000000000000000000000000000000000000",
+          "KLVF 072 000000000000000000000000000000000000000000000000",
+          "KLVF 080 000000000000000000000000000000000000000000000000",
+          "KLVF 088 00020600071600000000040a000716000000000000000715",
+          "KLVF 096 00040b00010400071500010300040d000610000000000918",
+          "KLVF 104 00040b00061200050f000a1b000000000000000817000308",
+          "KLVF 112 00010300071400030700000000000100071400040b000000",
+          "KLVF 120 00000100081500040b000000000102000916000309000000",
+          "KLVF end",
+          "KLVW n=1 1048 2617 245 1393 371 109 419",
+          "KLVZ 308 109 1733 587 169 306 1197",
+          "KLVIO us=14012353215 b=613001 mask=3 rx=1 init=0 f=1272820 pair=1272820 q=1273071/1273071 c=1273071/1273071 reuse=0 qe=0 ce=0 eof=934150 rb=717427200 ovf=75 rd=1868149 cb=717369216 re=0",
+          "KLV2 before=2047/3427 render=5/26 n=1181",
+          "KLVX dec=29/627 sil=123/762 acf=417/1108 n=445",
+          "KLVY upd=448/1147 ph=2/91 pub=2/5",
+          "KLVV gz=214/861 sc=19/125 wn=147/787 rs=64/693",
+          "KLVO bpm=88.0 c=0.00 lk=0",
+          "KLV us=2271 fps=115 err=0 vu=0.00 sp=0.219 bt=0",
+          "KLVT show=1795/2365 dly=1889/8237 frm=8692/33345 n=116",
+          "KLVA wt=931/6190 act=5803/7793 gd=1664/2144 dl=668 n=134",
+          "KLVB pre=307/725 acq=2225/7079 vu=185/834",
+          "KLVC pg=323/1012 nov=105/169 snp=445/1295",
+          "KLVD ons=249/919 sal=79/207 tmp=346/1687",
+          "KLVE pub=515/1209 tail=134/776 rsec=4328/23748",
+          "KLVF live=3100/22303 fill=408/514 show=0/0",
+          "KLVG a1=139/774 a2=316/980 a3=325/1028",
+          "KLVH a4=471/1007 cs=138/749 va=518/735",
+          "KLVI vb=36/64 vc=89/135 vd=95/341"
+        ]
+      },
+      {
+        "command": "klv_set=palette,38",
+        "reply": [
+          "KLV value=palette n=38"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLVF begin mode=32 frames=1273163 crc=05d7e47f",
+          "KLVF 000 0000001b000f0200011c001000000000000008000515000c",
+          "KLVF 008 00000000000015000c08000500000005000315000c050003",
+          "KLVF 016 01000113000b0c00072500150100010b000617000d020001",
+          "KLVF 024 000000000000000000000000000000000000000000000000",
+          "KLVF 032 000000000000000000000000000000000000000000000000",
+          "KLVF 040 000000000000000000000000000000000000000000000000",
+          "KLVF 048 000000000000000000000000000000000000000000000000",
+          "KLVF 056 000000000000000000000000000000000000000000000000",
+          "KLVF 064 000000000000000000000000000000000000000000000000",
+          "KLVF 072 000000000000000000000000000000000000000000000000",
+          "KLVF 080 000000000000000000000000000000000000000000000000",
+          "KLVF 088 000000000000000000000000000000000000000000000000",
+          "KLVF 096 000000000000000000000000000000000000000000000000",
+          "KLVF 104 02000117000d0b00060100012500150c000713000b010001",
+          "KLVF 112 05000315000c05000300000008000515000c000000000000",
+          "KLVF 120 15000c0800050000000000001c00100200011b000f000000",
+          "KLVF end",
+          "KLV us=1915 fps=117 err=0 vu=0.00 sp=0.245 bt=0",
+          "KLVT show=1795/2418 dly=1784/6833 frm=8544/25014 n=118",
+          "KLVA wt=884/6531 act=5843/7228 gd=1646/2133 dl=671 n=134",
+          "KLVB pre=310/883 acq=2201/7882 vu=191/848",
+          "KLVC pg=345/999 nov=110/764 snp=452/1317",
+          "KLVD ons=240/347 sal=82/206 tmp=343/1576",
+          "KLVE pub=511/1208 tail=123/239 rsec=4285/22364",
+          "KLVF live=3036/20679 fill=401/509 show=0/0",
+          "KLVG a1=142/760 a2=307/980 a3=345/1001",
+          "KLVH a4=478/1006 cs=146/758 va=521/743",
+          "KLVI vb=34/72 vc=90/133 vd=98/316"
+        ]
+      },
+      {
+        "command": "klv_render_status",
+        "reply": [
+          "KLV mode=waveform_hybrid_k1 id=32",
+          "KLV native frames=988 avg=2160 max=3436 invalid=0",
+          "KLV native ap=1868669 pcm=96 history=1",
+          "KLV us=2533 fps=119 err=0 vu=0.00 sp=0.232 bt=0",
+          "KLVT show=1803/2362 dly=1774/7435 frm=8403/16714 n=119",
+          "KLVA wt=805/3121 act=5894/7552 gd=1662/2305 dl=690 n=134",
+          "KLVB pre=323/969 acq=2111/4306 vu=200/843",
+          "KLVC pg=346/999 nov=105/156 snp=465/1159",
+          "KLVD ons=247/405 sal=84/211 tmp=335/1594",
+          "KLVE pub=523/1212 tail=130/753 rsec=4140/7091",
+          "KLVF live=2892/5922 fill=408/520 show=0/0",
+          "KLVG a1=141/712 a2=329/981 a3=323/1023",
+          "KLVH a4=477/1011 cs=143/750 va=523/739",
+          "KLVI vb=34/72 vc=90/142 vd=97/361"
+        ]
+      },
+      {
+        "command": "klv_set=palette,14",
+        "reply": [
+          "KLV err=value",
+          "KLV us=1860 fps=119 err=0 vu=0.00 sp=0.245 bt=0",
+          "KLVT show=1777/2358 dly=1812/7430 frm=8402/16662 n=120",
+          "KLVA wt=809/4301 act=5884/7319 gd=1662/2156 dl=700 n=134",
+          "KLVB pre=327/1325 acq=2145/6035 vu=184/331",
+          "KLVC pg=362/1010 nov=109/709 snp=434/1038",
+          "KLVD ons=250/937 sal=83/216 tmp=344/1655",
+          "KLVE pub=504/1223 tail=132/771 rsec=4124/7070",
+          "KLVF live=2890/5669 fill=412/514 show=0/0",
+          "KLVG a1=142/730 a2=324/981 a3=338/1001",
+          "KLVH a4=479/1017 cs=148/749 va=518/739",
+          "KLVI vb=37/66 vc=91/131 vd=94/159"
+        ]
+      },
+      {
+        "command": "klv_set=palette,17",
+        "reply": [
+          "KLV err=value",
+          "KLVP 5850/7100/7200/8233 m=5864 n=1334 o=4/1 d=17107 w=1401 b=613001 t0=14007495264 t1=14017498985 s=1334 rn=1868835 rp99=7400 lost=0/0 diag=0 sc=0 is=0 ir=994379 io=1868835 iw=7170"
+        ]
+      },
+      {
+        "command": "klv_set=palette,25",
+        "reply": [
+          "KLV err=value"
+        ]
+      },
+      {
+        "command": "klv_set=palette,32",
+        "reply": [
+          "KLV err=value",
+          "KLV us=2149 fps=119 err=0 vu=0.00 sp=0.257 bt=0",
+          "KLVT show=1817/2428 dly=1754/7661 frm=8403/16676 n=119",
+          "KLVA wt=779/3270 act=5929/8065 gd=1659/2126 dl=683 n=134",
+          "KLVB pre=344/1413 acq=2105/4535 vu=183/829",
+          "KLVC pg=325/990 nov=113/742 snp=489/1194",
+          "KLVD ons=254/915 sal=83/201 tmp=351/1671",
+          "KLVE pub=516/1190 tail=125/213 rsec=4142/5912",
+          "KLVF live=2896/4532 fill=412/513 show=0/0",
+          "KLVG a1=151/777 a2=320/978 a3=329/993",
+          "KLVH a4=481/1081 cs=139/297 va=521/752",
+          "KLVI vb=34/67 vc=89/151 vd=96/160"
+        ]
+      },
+      {
+        "command": "klv_set=palette,42",
+        "reply": [
+          "KLV err=value"
+        ]
+      },
+      {
+        "command": "klv_get=palette",
+        "reply": [
+          "KLV value=palette n=38",
+          "KLV us=2805 fps=119 err=0 vu=0.00 sp=0.245 bt=0",
+          "KLVT show=1793/2405 dly=1796/7611 frm=8403/16651 n=119",
+          "KLVA wt=829/5116 act=5884/8095 gd=1642/2138 dl=681 n=133",
+          "KLVB pre=326/1680 acq=2141/5976 vu=195/839",
+          "KLVC pg=348/994 nov=107/166 snp=471/1177",
+          "KLVD ons=245/448 sal=83/207 tmp=339/1615",
+          "KLVE pub=503/1208 tail=138/749 rsec=4125/6670",
+          "KLVF live=2862/5713 fill=408/508 show=0/0",
+          "KLVG a1=142/768 a2=329/988 a3=322/1024",
+          "KLVH a4=476/1072 cs=148/758 va=527/734",
+          "KLVI vb=36/72 vc=92/134 vd=102/384",
+          "KLVR 2150/2800/2850/2852 m=2159 n=1183 o=802/802 d=17107 w=1401 b=613001 t0=14009644668 t1=14019644959 s=1183 rn=1273684 rp99=2000 lost=0/0 diag=0 sc=0 mode=32"
+        ]
+      },
+      {
+        "command": "klv_get=position",
+        "reply": [
+          "KLV value=position n=0"
+        ]
+      },
+      {
+        "command": "klv_get=brightness",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLV us=1950 fps=118 err=0 vu=0.00 sp=0.247 bt=0",
+          "KLVT show=1802/2394 dly=1822/8475 frm=8473/16715 n=119",
+          "KLVA wt=773/4279 act=5892/7268 gd=1667/2154 dl=735 n=134",
+          "KLVB pre=324/987 acq=2093/5496 vu=184/351",
+          "KLVC pg=341/1007 nov=109/756 snp=446/1074",
+          "KLVD ons=249/404 sal=82/202 tmp=335/1661",
+          "KLVE pub=536/1216 tail=122/212 rsec=4162/7136",
+          "KLVF live=2907/5677 fill=411/518 show=0/0",
+          "KLVG a1=138/425 a2=332/970 a3=326/1023",
+          "KLVH a4=480/1024 cs=150/772 va=520/740",
+          "KLVI vb=37/67 vc=92/139 vd=100/415",
+          "KLVQ 8350/8500/16600/33319 m=8460 n=1183 o=626/626 d=17107 w=1401 b=613001 t0=14010524650 t1=14020532978 s=1183 rn=1273787 rp99=16800 lost=0/0 diag=0 sc=0 sub=1183 skp=0",
+          "KLVS 6800/7200/8950/25798 m=6714 n=1183 o=13/13 d=17107 w=1401 b=613001 t0=14010524650 t1=14020532978 s=1183 rn=1273788 rp99=9850 lost=0/0 diag=0 sc=0",
+          "KLVU wait=1744/8413 late=15 skip=18 fault=0 timeout=0 w=1401 b=613001 t0=14010524650 t1=14020532978",
+          "KLVL 100/150/150/176 m=83 n=1183 o=0/0 d=17107 w=1401 b=613001 t0=14010524650 t1=14020532978 s=1183 rn=1273788 rp99=150 lost=0/0 diag=0 sc=0"
+        ]
+      },
+      {
+        "command": "klv_get=saturation",
+        "reply": [
+          "KLV value=saturation n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=mirror",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLV us=2361 fps=118 err=0 vu=0.01 sp=0.228 bt=0",
+          "KLVT show=1785/2374 dly=1820/8406 frm=8474/16657 n=118",
+          "KLVA wt=840/7004 act=5850/7263 gd=1663/2289 dl=699 n=134",
+          "KLVB pre=310/574 acq=2150/8403 vu=183/298",
+          "KLVC pg=343/1011 nov=106/161 snp=460/1145",
+          "KLVD ons=243/352 sal=83/207 tmp=351/1680",
+          "KLVE pub=510/1199 tail=139/771 rsec=4182/6977",
+          "KLVF live=2930/5839 fill=407/529 show=0/0",
+          "KLVG a1=141/748 a2=325/985 a3=326/1010",
+          "KLVH a4=469/1095 cs=137/178 va=521/743",
+          "KLVI vb=35/67 vc=91/135 vd=100/322"
+        ]
+      },
+      {
+        "command": "klv_get=speed",
+        "reply": [
+          "KLV value=speed n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=contrast",
+        "reply": [
+          "KLV value=contrast n=1000",
+          "KLVW n=2 1412 1962 173 1640 315 131 801",
+          "KLVZ 248 77 874 407 158 199 342",
+          "KLVIO us=14022362555 b=613001 mask=3 rx=1 init=0 f=1274005 pair=1274005 q=1274256/1274256 c=1274256/1274256 reuse=0 qe=0 ce=0 eof=934817 rb=717939456 ovf=75 rd=1869484 cb=717881856 re=0",
+          "KLV2 before=2155/2855 render=5/38 n=1184",
+          "KLVX dec=25/41 sil=119/263 acf=402/1105 n=444",
+          "KLVY upd=450/1165 ph=2/83 pub=2/91",
+          "KLVV gz=228/953 sc=19/100 wn=141/766 rs=59/245",
+          "KLVO bpm=88.0 c=0.00 lk=0",
+          "KLV us=2189 fps=118 err=0 vu=0.00 sp=0.238 bt=0",
+          "KLVT show=1771/2343 dly=1778/8442 frm=8475/16709 n=118",
+          "KLVA wt=793/6986 act=5899/7502 gd=1660/2247 dl=708 n=133",
+          "KLVC pg=342/1036 nov=119/755 snp=473/1166",
+          "KLVD ons=247/441 sal=85/207 tmp=342/1592",
+          "KLVE pub=525/1217 tail=128/753 rsec=4237/6976",
+          "KLVF live=2982/5988 fill=413/531 show=0/0",
+          "KLVG a1=136/362 a2=328/983 a3=344/993",
+          "KLVH a4=469/1076 cs=142/767 va=522/739",
+          "KLVI vb=34/63 vc=87/131 vd=101/393"
+        ]
+      },
+      {
+        "command": "klv_set=saturation,0",
+        "reply": [
+          "KLV value=saturation n=0"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLVF begin mode=32 frames=1274098 crc=2205e689",
+          "KLVF 000 1010101111110d0d0d101010000000040404141414060606",
+          "KLVF 008 0000000404041515150606060000000c0c0c131313000000",
+          "KLVF 016 000000020202171717060606000000080808151515030303",
+          "KLVF 024 0101011212120e0e0e0000000404041a1a1a030303000000",
+          "KLVF 032 1111111111110000000000000b0b0b161616000000000000",
+          "KLVF 040 000000000000000000000000000000000000000000000000",
+          "KLVF 048 000000000000000000000000000000000000000000000000",
+          "KLVF 056 000000000000000000000000000000000000000000000000",
+          "KLVF 064 000000000000000000000000000000000000000000000000",
+          "KLVF 072 000000000000000000000000000000000000000000000000",
+          "KLVF 080 000000000000000000000000000000000000000000000000",
+          "KLVF 088 0000000000001616160b0b0b000000000000111111111111",
+          "KLVF 096 0000000303031a1a1a0404040000000e0e0e121212010101",
+          "KLVF 104 030303151515080808000000060606171717020202000000",
+          "KLVF 112 0000001313130c0c0c000000060606151515040404000000",
+          "KLVF 120 0606061414140404040000001010100d0d0d111111101010",
+          "KLVF end",
+          "KLV us=1933 fps=116 err=0 vu=0.00 sp=0.235 bt=0",
+          "KLVT show=1795/2344 dly=1840/7806 frm=8617/33307 n=117",
+          "KLVA wt=898/5979 act=5839/7151 gd=1656/2139 dl=654 n=134",
+          "KLVB pre=319/929 acq=2207/7271 vu=188/830",
+          "KLVC pg=338/1016 nov=110/741 snp=448/1172",
+          "KLVD ons=243/359 sal=80/211 tmp=335/1651",
+          "KLVE pub=510/1198 tail=142/774 rsec=4293/23216",
+          "KLVF live=3045/22077 fill=412/511 show=0/0",
+          "KLVG a1=143/766 a2=329/981 a3=321/944",
+          "KLVH a4=473/1007 cs=139/749 va=519/734",
+          "KLVI vb=35/72 vc=91/131 vd=97/295"
+        ]
+      },
+      {
+        "command": "klv_set=saturation,1000",
+        "reply": [
+          "KLV value=saturation n=1000",
+          "KLV us=2753 fps=119 err=0 vu=0.00 sp=0.236 bt=0",
+          "KLVT show=1791/2389 dly=1780/7525 frm=8403/16674 n=119",
+          "KLVA wt=802/2920 act=5879/8175 gd=1657/2142 dl=703 n=134",
+          "KLVB pre=330/1381 acq=2113/4332 vu=190/838",
+          "KLVC pg=360/1008 nov=109/706 snp=444/1176",
+          "KLVD ons=247/392 sal=83/211 tmp=342/1612",
+          "KLVE pub=514/1213 tail=124/377 rsec=4150/6910",
+          "KLVF live=2908/5737 fill=409/519 show=0/0",
+          "KLVG a1=151/787 a2=318/983 a3=332/970",
+          "KLVH a4=465/1006 cs=146/753 va=519/744",
+          "KLVI vb=35/67 vc=90/140 vd=97/315"
+        ]
+      },
+      {
+        "command": "klv_set=brightness,0",
+        "reply": [
+          "KLV value=brightness n=0"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLVF begin mode=32 frames=1274332 crc=88bad147",
+          "KLVF 000 000000000000000000000000000000000000000000000000",
+          "KLVF 008 000000000000000000000000000000000000000000000000",
+          "KLVF 016 000000000000000000000000000000000000000000000000",
+          "KLVF 024 000000000000000000000000000000000000000000000000",
+          "KLVF 032 000000000000000000000000000000000000000000000000",
+          "KLVF 040 000000000000000000000000000000000000000000000000",
+          "KLVF 048 000000000000000000000000000000000000000000000000",
+          "KLVF 056 000000000000000000000000000000000000000000000000",
+          "KLVF 064 000000000000000000000000000000000000000000000000",
+          "KLVF 072 000000000000000000000000000000000000000000000000",
+          "KLVF 080 000000000000000000000000000000000000000000000000",
+          "KLVF 088 000000000000000000000000000000000000000000000000",
+          "KLVF 096 000000000000000000000000000000000000000000000000",
+          "KLVF 104 000000000000000000000000000000000000000000000000",
+          "KLVF 112 000000000000000000000000000000000000000000000000",
+          "KLVF 120 000000000000000000000000000000000000000000000000",
+          "KLVF end",
+          "KLV us=2285 fps=116 err=0 vu=0.00 sp=0.250 bt=0",
+          "KLVT show=1792/2403 dly=1844/8034 frm=8618/33390 n=117",
+          "KLVA wt=830/5205 act=5856/7209 gd=1669/2262 dl=718 n=134",
+          "KLVB pre=331/994 acq=2146/6029 vu=186/829",
+          "KLVC pg=336/997 nov=106/161 snp=444/1162",
+          "KLVD ons=250/946 sal=83/202 tmp=343/1582",
+          "KLVE pub=503/1213 tail=128/753 rsec=4299/23311",
+          "KLVF live=3060/21877 fill=408/506 show=0/0",
+          "KLVG a1=145/758 a2=329/972 a3=327/1001",
+          "KLVH a4=472/1069 cs=141/758 va=519/735",
+          "KLVI vb=36/76 vc=90/135 vd=97/383"
+        ]
+      },
+      {
+        "command": "klv_set=brightness,600",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLV us=2209 fps=118 err=0 vu=0.00 sp=0.233 bt=0",
+          "KLVT show=1782/2385 dly=1873/8355 frm=8473/16658 n=119",
+          "KLVA wt=854/4283 act=5853/7143 gd=1651/2129 dl=689 n=135",
+          "KLVB pre=314/648 acq=2171/5422 vu=187/839",
+          "KLVC pg=354/1024 nov=111/759 snp=443/1132",
+          "KLVD ons=249/414 sal=80/201 tmp=34KLVE pub=508/1198 tail=126/754 rsec=4134/6982",
+          "KLVF live=2897/5356 fill=409/536 show=0/0",
+          "KLVG a1=135/353 a2=322/960 a3=340/1010",
+          "KLVH a4=475/1009 cs=143/782 va=514/739",
+          "KLVI vb=37/67 vc=91/131 vd=95/309"
+        ]
+      },
+      {
+        "command": "klv_frame",
+        "reply": [
+          "KLVF begin mode=32 frames=1274626 crc=0de8f67a",
+          "KLVF 000 00000015020c05000300000015010c0b01060000000f0108",
+          "KLVF 008 1001090000000000000f01080f01090000000e01080c0107",
+          "KLVF 016 0000000000000e01080c01070000000700040f0109020001",
+          "KLVF 024 02000110010a05000300000003000212010a03000216010d",
+          "KLVF 032 05000303000211010a020001000000000000000000000000",
+          "KLVF 040 000000000000000000000000000000000000000000000000",
+          "KLVF 048 000000000000000000000000000000000000000000000000",
+          "KLVF 056 000000000000000000000000000000000000000000000000",
+          "KLVF 064 000000000000000000000000000000000000000000000000",
+          "KLVF 072 000000000000000000000000000000000000000000000000",
+          "KLVF 080 000000000000000000000000000000000000000000000000",
+          "KLVF 088 00000000000000000000000002000111010a030002050003",
+          "KLVF 096 16010d03000212010a03000200000005000310010a020001",
+          "KLVF 104 0200010f01090700040000000c01070e0108000000000000",
+          "KLVF 112 0c01070e01080000000f01090f0108000000000000100109",
+          "KLVF 120 0f01080000000b010615010c00000005000315020c000000",
+          "KLVF end",
+          "KLV us=1922 fps=116 err=0 vu=0.00 sp=0.256 bt=0",
+          "KLVT show=1779/2347 dly=1886/7938 frm=8618/33303 n=117",
+          "KLVA wt=933/5976 act=5780/7236 gd=1647/2140 dl=671 n=134",
+          "KLVB pre=308/890 acq=2219/7252 vu=188/825",
+          "KLVC pg=340/1016 nov=103/161 snp=449/1069",
+          "KLVD ons=241/393 sal=78/202 tmp=341/1586",
+          "KLVF live=3032/21800 fill=408/517 show=0/0",
+          "KLVG a1=132/362 a2=319/972 a3=321/988",
+          "KLVH a4=470/1030 cs=144/750 va=513/735",
+          "KLVI vb=36/72 vc=90/131 vd=94/229"
+        ]
+      },
+      {
+        "command": "klv_set=contrast,1500",
+        "reply": [
+          "KLV err=hybrid_required"
+        ]
+      },
+      {
+        "command": "klv_mode=live",
+        "reply": [
+          "KLV mode=live id=0",
+          "KLV us=1939 fps=111 err=0 vu=0.00 sp=0.232 bt=0",
+          "KLVT show=1743/2404 dly=1900/8469 frm=9009/16706 n=111",
+          "KLVA wt=1203/6874 act=5530/7245 gd=1658/2280 dl=654 n=134",
+          "KLVB pre=297/986 acq=2410/7870 vu=168/394",
+          "KLVD ons=230/933 sal=77/264 tmp=340/1737",
+          "KLVE pub=473/1204 tail=108/226 rsec=4042/6980",
+          "KLVF live=2826/5970 fill=1052/2470 show=0/0",
+          "KLVG a1=123/216 a2=297/976 a3=292/997",
+          "KLVH a4=458/1076 cs=123/789 va=510/743",
+          "KLVI vb=35/72 vc=85/131 vd=94/432"
+        ]
+      },
+      {
+        "command": "klv_set=speed,1000",
+        "reply": [
+          "KLV err=native_required",
+          "KLVR 2150/2800/2850/2952 m=2152 n=1168 o=771/771 d=17107 w=1402 b=613001 t0=14019644959 t1=14029653187 s=1168 rn=1274852 rp99=2000 lost=0/0 diag=0 sc=0 mode=0"
+        ]
+      },
+      {
+        "command": "reset",
+        "reply": [
+          "K1OK",
+          "--- ! REBOOTING to apply changes (You may need to restart the Serial Monitor)",
+          "ESP-ROM:esp32s3-20210327",
+          "Build:Mar 27 2021",
+          "rst:0xc (RTC_SW_CPU_RST),boot:0x8 (SPI_FAST_FLASH_BOOT)",
+          "Saved PC:0x40380b31",
+          "SPIWP:0xee",
+          "mode:DIO, clock div:1",
+          "load:0x3fce2820,len:0x118c",
+          "load:0x403c8700,len:0x4",
+          "load:0x403c8704,len:0xc20",
+          "load:0x403cb700,len:0x30e0",
+          "entry 0x403c88b8",
+          "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+          "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+          "---------------------------",
+          "K1 | VER: 40103",
+          "---------------------------",
+          "",
+          "INIT_SERIAL: PASS",
+          "KLV boot=ok bytes=89232 largest=31732",
+          "INIT FILESYSTEM: PASS",
+          "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation",
+          "INIT_LEDS: PASS",
+          "INIT I2S (channel): PASS",
+          "I2S STD INIT: PASS",
+          "I2S ENABLE: PASS",
+          "KLV mem hist=1 ring=1 rx=0 largest=14324",
+          "GENERATING A-WEIGHTS: DONE IN 0.624 MS",
+          "INITIALIZING COCHLEAR AGC: DONE IN 0.146 MS",
+          "SYSTEM INIT COMPLETE!",
+          "BOOT_LOOP_GUARD: reset_reason=3 fail_count=0 safe_mode=0",
+          "WAVEFORM_HISTORY: OK @ 0x3FCCDA20",
+          "RUNTIME_TIMING_GUARD: timing_ok=1 sample_rate=12800 samples_per_chunk=96 tempo_decim=3 declared_ap_hz=133.333 declared_nov_hz=44.444 response_gain=1.000 dma_desc=3 ap_core=0 vp_core=1 core_ok=1 vp_task_created=1",
+          "KLV boot=saved",
+          "KLV us=1927 fps=87 err=0 vu=0.05 sp=0.239 bt=0",
+          "KLVT show=1808/2335 dly=3593/8496 frm=11666/16754 n=85",
+          "KLVA wt=988/5165 act=5667/10277 gd=1641/3246 dl=658 n=140",
+          "KLVB pre=245/997 acq=2010/6197 vu=148/830",
+          "KLVC pg=257/980 nov=93/724 snp=358/1170",
+          "KLVD ons=705/1569 sal=288/1123 tmp=329/1841",
+          "KLVE pub=371/1383 tail=95/324 rsec=4205/34429",
+          "KLVF live=2983/33434 fill=920/2840 show=0/0",
+          "KLVG a1=98/181 a2=241/619 a3=252/1077",
+          "KLVH a4=400/1179 cs=96/749 va=535/770",
+          "KLVI vb=33/57 vc=89/152 vd=89/220",
+          "KLV us=1935 fps=87 err=0 vu=0.00 sp=0.195 bt=0",
+          "KLVT show=1778/2319 dly=3435/8496 frm=11494/16719 n=87",
+          "KLVA wt=1163/5396 act=5589/7439 gd=1624/2329 dl=652 n=134",
+          "KLVB pre=232/920 acq=2201/6583 vu=144/803",
+          "KLVD ons=693/1565 sal=273/1089 tmp=344/1850",
+          "KLVE pub=379/1227 tail=97/359 rsec=3849/6174",
+          "KLVF live=2637/4957 fill=2163/2406 show=0/0",
+          "KLVG a1=103/839 a2=241/890 a3=267/1083",
+          "KLVH a4=390/1087 cs=97/196 va=532/770",
+          "KLVI vb=33/58 vc=87/134 vd=90/146",
+          "KLV us=1964 fps=87 err=0 vu=0.00 sp=0.263 bt=0",
+          "KLVT show=1795/2370 dly=3429/8472 frm=11458/16727 n=88",
+          "KLVA wt=1199/5355 act=5570/7392 gd=1645/2329 dl=669 n=134",
+          "KLVB pre=232/929 acq=2230/6487 vu=146/798",
+          "KLVC pg=233/962 nov=84/206 snp=334/1113",
+          "KLVD ons=680/1554 sal=261/1098 tmp=347/1862",
+          "KLVE pub=370/1183 tail=96/341 rsec=3821/5577",
+          "KLVF live=2630/4276 fill=2145/2411 show=0/0",
+          "KLVG a1=104/726 a2=252/930 a3=249/1001",
+          "KLVH a4=397/1098 cs=98/204 va=533/745",
+          "KLVI vb=32/63 vc=82/130 vd=84/142",
+          "KLV us=1935 fps=85 err=0 vu=0.00 sp=0.265 bt=0",
+          "KLVT show=1810/2384 dly=3758/8505 frm=11821/16714 n=86",
+          "KLVA wt=1193/5375 act=5503/7421 gd=1582/2315 dl=685 n=136",
+          "KLVB pre=249/999 acq=2259/6535 vu=158/821",
+          "KLVD ons=660/1558 sal=272/1114 tmp=333/1674",
+          "KLVE pub=349/753 tail=90/376 rsec=3856/6563",
+          "KLVF live=2668/5153 fill=2132/2371 show=0/0",
+          "KLVG a1=104/186 a2=258/952 a3=265/1101",
+          "KLVH a4=402/1110 cs=98/780 va=514/742",
+          "KLVI vb=33/54 vc=86/122 vd=90/142",
+          "KLV us=1949 fps=87 err=0 vu=0.00 sp=0.273 bt=0",
+          "KLVT show=1782/2384 dly=3430/8466 frm=11494/16736 n=87",
+          "KLVA wt=1188/5373 act=5594/7557 gd=1631/2301 dl=648 n=133",
+          "KLVB pre=228/982 acq=2207/6516 vu=147/826",
+          "KLVC pg=237/935 nov=88/316 snp=337/692",
+          "KLVD ons=699/1546 sal=246/1102 tmp=350/1900",
+          "KLVE pub=392/1221 tail=97/212 rsec=3862/5624",
+          "KLVF live=2642/4328 fill=2146/2394 show=0/0",
+          "KLVG a1=107/720 a2=241/884 a3=248/986",
+          "KLVH a4=393/1116 cs=105/376 va=542/761",
+          "KLVI vb=31/63 vc=84/139 vd=88/142",
+          "KLV us=1966 fps=86 err=0 vu=0.00 sp=0.256 bt=0",
+          "KLVT show=1781/2314 dly=3524/8482 frm=11590/16731 n=87",
+          "KLVA wt=1240/5358 act=5558/7532 gd=1605/2333 dl=641 n=134",
+          "KLVB pre=240/1069 acq=2269/6477 vu=142/808",
+          "KLVC pg=237/966 nov=92/710 snp=335/1150",
+          "KLVD ons=685/1603 sal=260/1116 tmp=349/1859",
+          "KLVF live=2652/4772 fill=2166/2399 show=0/0",
+          "KLVG a1=102/735 a2=242/990 a3=266/1059",
+          "KLVH a4=388/1120 cs=97/204 va=524/745",
+          "KLVI vb=32/72 vc=84/140 vd=86/156",
+          "KLV us=1937 fps=99 err=0 vu=0.01 sp=0.273 bt=0",
+          "KLVT show=1703/2403 dly=2146/8501 frm=10083/16745 n=100",
+          "KLVA wt=1753/6925 act=5122/7388 gd=1636/2313 dl=520 n=135",
+          "KLVB pre=238/1008 acq=2784/7933 vu=150/439",
+          "KLVC pg=269/986 nov=99/715 snp=364/1218",
+          "KLVD ons=244/1567 sal=92/726 tmp=376/1995",
+          "KLVE pub=403/1226 tail=99/403 rsec=3804/6810",
+          "KLVF live=2647/5426 fill=2160/2470 show=0/0",
+          "KLVG a1=98/243 a2=237/419 a3=264/1124",
+          "KLVH a4=402/687 cs=104/205 va=493/743",
+          "KLVI vb=33/72 vc=83/148 vd=81/141",
+          "KLV us=1937 fps=104 err=0 vu=0.00 sp=0.261 bt=0",
+          "KLVT show=1709/2402 dly=1659/8455 frm=9603/16766 n=105",
+          "KLVA wt=1789/7229 act=5140/7245 gd=1644/2288 dl=484 n=134",
+          "KLVB pre=236/1004 acq=2854/8217 vu=155/791",
+          "KLVC pg=265/931 nov=113/710 snp=364/1154",
+          "KLVD ons=194/328 sal=68/126 tmp=385/2136",
+          "KLVE pub=428/1221 tail=103/739 rsec=3807/6219",
+          "KLVF live=2632/4585 fill=2151/2494 show=0/0",
+          "KLVG a1=98/212 a2=241/380 a3=279/1107",
+          "KLVH a4=415/673 cs=105/377 va=494/738",
+          "KLVI vb=34/67 vc=88/147 vd=83/142"
+        ]
+      },
+      {
+        "command": "build",
+        "reply": [
+          "sbr{{",
+          "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+          "}}",
+          "KLV us=1947 fps=102 err=0 vu=0.01 sp=0.270 bt=0",
+          "KLVT show=1720/2398 dly=1838/8433 frm=9789/16781 n=103",
+          "KLVA wt=1746/6920 act=5127/7240 gd=1657/2397 dl=495 n=135",
+          "KLVB pre=247/1076 acq=2827/7928 vu=141/243",
+          "KLVC pg=267/971 nov=103/732 snp=367/1262",
+          "KLVD ons=196/347 sal=74/720 tmp=373/2032",
+          "KLVE pub=404/1222 tail=98/403 rsec=3798/5573",
+          "KLVF live=2644/4559 fill=2163/2483 show=0/412 va=487/738",
+          "KLVI vb=35/72 vc=86/146 vd=82/141"
+        ]
+      },
+      {
+        "command": "klv_status",
+        "reply": [
+          "KLV image bytes=3351 crc=62851093",
+          "KLV vm=up origin=saved saved=1 err=0 px=128 frames=854",
+          "KLV renderer=live mode=0",
+          "KLV heap free=18608 big=7156",
+          "BOOT_LOOP_GUARD: stable_clear=1"
+        ]
+      },
+      {
+        "command": "klv_mode=waveform_hybrid",
+        "reply": [
+          "KLV mode=waveform_hybrid id=11",
+          "KLVW n=3 743 2001 229 2425 488 100 745",
+          "KLVZ 662 453 364 810 243 143 79",
+          "KLVP 5450/7150/7400/10277 m=5414 n=1337 o=6/3 d=0 w=1 b=612949 t0=612957 t1=10619147 s=1337 rn=1337 rp99=7400 lost=0/0 diag=0 sc=0 is=0 ir=719 io=1337 iw=7229",
+          "KLVQ 8450/16750/16850/41777 m=10812 n=928 o=657/657 d=0 w=1 b=612949 t0=649618 t1=10649630 s=928 rn=928 rp99=16850 lost=0/0 diag=0 sc=0 sub=929 skp=0",
+          "KLVR 1950/2000/2000/2737 m=1945 n=929 o=8/8 d=0 w=1 b=612949 t0=641826 t1=10644956 s=929 rn=929 rp99=2000 lost=0/0 diag=0 sc=0 mode=11",
+          "KLVS 8050/9050/9800/39842 m=8058 n=929 o=192/192 d=0 w=1 b=612949 t0=649618 t1=10649630 s=929 rn=929 rp99=9800 lost=0/0 diag=0 sc=0",
+          "KLVU wait=2742/8418 late=273 skip=276 fault=0 timeout=0 w=1 b=612949 t0=649618 t1=10649630",
+          "KLVL 100/100/150/170 m=83 n=929 o=0/0 d=0 w=1 b=612949 t0=649618 t1=10649630 s=929 rn=929 rp99=150 lost=0/0 diag=0 sc=0",
+          "KLV us=1767 fps=106 err=0 vu=0.01 sp=0.229 bt=0",
+          "KLVT show=1740/2396 dly=1921/8439 frm=9433/16765 n=106",
+          "KLVA wt=1545/6931 act=5344/8602 gd=1671/2327 dl=544 n=133",
+          "KLVB pre=301/2180 acq=2680/7929 vu=161/808",
+          "KLVC pg=266/538 nov=101/323 snp=374/1144",
+          "KLVD ons=217/929 sal=74/254 tmp=382/1750",
+          "KLVE pub=446/1234 tail=98/214 rsec=3879/5762",
+          "KLVF live=2701/4863 fill=1621/2451 show=0/0",
+          "KLVG a1=113/739 a2=248/448 a3=303/1089",
+          "KLVH a4=429/1083 cs=111/226 va=502/743",
+          "KLVI vb=34/71 vc=85/148 vd=88/355",
+          "KLVIO us=10719095 b=612949 mask=3 rx=1 init=0 f=936 pair=936 q=1187/1187 c=1187/1187 reuse=0 qe=0 ce=0 eof=708 rb=543744 ovf=32 rd=1351 cb=518784 re=0",
+          "KLV2 before=1140/2728 render=804/864 n=938",
+          "KLVX dec=26/197 sil=108/743 acf=418/1196 n=450",
+          "KLVY upd=486/1259 ph=2/3 pub=2/96",
+          "KLVV gz=347/1089 sc=34/651 wn=43/212 rs=59/231",
+          "KLVO bpm=118.0 c=0.00 lk=0"
+        ]
+      },
+      {
+        "command": "klv_set=palette,43",
+        "reply": [
+          "KLV value=palette n=43"
+        ]
+      },
+      {
+        "command": "klv_set=position,0",
+        "reply": [
+          "KLV value=position n=0",
+          "KLV us=1781 fps=119 err=0 vu=0.01 sp=0.165 bt=0",
+          "KLVT show=1800/2433 dly=1963/7638 frm=8402/16661 n=120",
+          "KLVA wt=859/4329 act=5891/7437 gd=1738/2240 dl=622 n=134",
+          "KLVB pre=333/1012 acq=2155/5663 vu=175/821",
+          "KLVC pg=319/1011 nov=108/776 snp=404/714",
+          "KLVD ons=254/937 sal=101/733 tmp=379/1780",
+          "KLVE pub=512/1212 tail=119/342 rsec=3930/6621",
+          "KLVF live=2678/5087 fill=430/537 show=0/0",
+          "KLVG a1=144/787 a2=278/940 a3=327/904",
+          "KLVH a4=501/1083 cs=129/183 va=523/743",
+          "KLVI vb=37/80 vc=91/130 vd=102/303"
+        ]
+      },
+      {
+        "command": "klv_set=brightness,600",
+        "reply": [
+          "KLV value=brightness n=600"
+        ]
+      },
+      {
+        "command": "klv_set=saturation,1000",
+        "reply": [
+          "KLV value=saturation n=1000",
+          "KLV us=2469 fps=119 err=0 vu=0.01 sp=0.185 bt=0",
+          "KLVT show=1808/2414 dly=2022/7871 frm=8403/16657 n=119",
+          "KLVA wt=857/2933 act=5877/7914 gd=1717/2196 dl=646 n=134",
+          "KLVB pre=337/990 acq=2152/4839 vu=163/829",
+          "KLVC pg=310/943 nov=103/166 snp=421/1199",
+          "KLVD ons=245/946 sal=91/709 tmp=414/1775",
+          "KLVE pub=502/1203 tail=125/742 rsec=3862/6319",
+          "KLVF live=2635/5212 fill=434/535 show=0/0",
+          "KLVG a1=149/771 a2=268/343 a3=329/1006",
+          "KLVH a4=503/1231 cs=130/235 va=522/743",
+          "KLVI vb=37/71 vc=91/131 vd=99/218"
+        ]
+      },
+      {
+        "command": "klv_set=mirror,1",
+        "reply": []
+      },
+      {
+        "command": "klv_get=mirror",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLV value=mirror n=1"
+        ]
+      },
+      {
+        "command": "klv_get=mirror",
+        "reply": [
+          "KLV us=1819 fps=119 err=0 vu=0.00 sp=0.238 bt=0",
+          "KLVT show=1800/2415 dly=2089/7952 frm=8403/16673 n=120",
+          "KLVA wt=886/4931 act=5854/7373 gd=1716/2196 dl=651 n=134",
+          "KLVB pre=331/999 acq=2180/5828 vu=176/849",
+          "KLVC pg=293/406 nov=101/175 snp=407/617",
+          "KLVD ons=271/929 sal=98/718 tmp=388/1856",
+          "KLVE pub=503/1195 tail=123/718 rsec=3803/6474",
+          "KLVF live=2569/5224 fill=431/540 show=0/0",
+          "KLVG a1=129/212 a2=284/896 a3=363/1010",
+          "KLVH a4=475/1083 cs=132/275 va=519/743",
+          "KLVI vb=36/72 vc=90/131 vd=100/438",
+          "KLV value=mirror n=1"
+        ]
+      },
+      {
+        "command": "klv_set=speed,1000",
+        "reply": [
+          "KLV value=speed n=1000"
+        ]
+      },
+      {
+        "command": "klv_set=contrast,1000",
+        "reply": [
+          "KLV value=contrast n=1000",
+          "KLV us=2116 fps=119 err=0 vu=0.01 sp=0.238 bt=0",
+          "KLVT show=1810/2415 dly=2027/7361 frm=8401/16568 n=120",
+          "KLVA wt=853/4207 act=5901/7957 gd=1721/2187 dl=642 n=135",
+          "KLVB pre=332/1294 acq=2162/5642 vu=169/829",
+          "KLVC pg=309/1019 nov=105/196 snp=402/612",
+          "KLVD ons=244/924 sal=94/716 tmp=376/1765",
+          "KLVE pub=542/1220 tail=119/331 rsec=3850/6080",
+          "KLVF live=2608/4830 fill=438/550 show=0/0",
+          "KLVG a1=141/780 a2=278/905 a3=332/988",
+          "KLVH a4=507/1087 cs=149/792 va=517/766",
+          "KLVI vb=37/72 vc=90/131 vd=104/247"
+        ]
+      },
+      {
+        "command": "klv_mode=live",
+        "reply": [
+          "KLV mode=live id=0"
+        ]
+      },
+      {
+        "command": "klv_get=palette",
+        "reply": [
+          "KLV value=palette n=43",
+          "KLV us=1941 fps=107 err=0 vu=0.01 sp=0.256 bt=0",
+          "KLVT show=1753/2431 dly=2037/8451 frm=9346/16757 n=107",
+          "KLVA wt=1420/6930 act=5408/7328 gd=1681/2312 dl=569 n=133",
+          "KLVB pre=287/1012 acq=2566/7935 vu=147/329",
+          "KLVC pg=285/979 nov=11KLVD ons=200/384 sal=80/720 tmp=392/2078",
+          "KLVE pub=446/1204 tail=108/384 rsec=3865/6843",
+          "KLVF live=2667/5704 fill=1421/2464 show=0/0",
+          "KLVG a1=111/194 a2=272/928 a3=286/1028",
+          "KLVH a4=440/1100 cs=135/802 va=502/743",
+          "KLVI vb=35/80 vc=89/148 vd=94/354"
+        ]
+      },
+      {
+        "command": "klv_get=position",
+        "reply": [
+          "KLV value=position n=0"
+        ]
+      },
+      {
+        "command": "klv_get=brightness",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLV us=1968 fps=98 err=0 vu=0.00 sp=0.239 bt=0",
+          "KLVT show=1722/2385 dly=2221/8484 frm=10185/16742 n=99",
+          "KLVA wt=1848/6924 act=5053/7319 gd=1615/2325 dl=510 n=134",
+          "KLVB pre=255/1508 acq=2898/7932 vu=149/825",
+          "KLVC pg=246/971 nov=94/710 snp=361/1259",
+          "KLVD ons=191/468 sal=72/733 tmp=385/2092",
+          "KLVE pub=407/1226 tail=97/386 rsec=3818/6719",
+          "KLVF live=2657/5104 fill=2155/2497 show=0/0",
+          "KLVG a1=106/769 a2=244/933 a3=261/1087",
+          "KLVH a4=408/717 cs=113/787 va=496/748",
+          "KLVI vb=34/72 vc=84/152 vd=86/419"
+        ]
+      },
+      {
+        "command": "klv_get=saturation",
+        "reply": [
+          "KLV value=saturation n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=mirror",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLV us=1940 fps=104 err=0 vu=0.00 sp=0.218 bt=0",
+          "KLVT show=1683/2372 dly=1687/8485 frm=9615/16759 n=104",
+          "KLVA wt=1766/6924 act=5114/7347 gd=1659/2311 dl=507 n=134",
+          "KLVB pre=252/1049 acq=2810/7945 vu=147/431",
+          "KLVC pg=268/957 nov=107/714 snp=368/1246",
+          "KLVD ons=192/419 sal=68/246 tmp=371/2061",
+          "KLVE pub=410/1213 tail=101/412 rsec=3810/7276",
+          "KLVF live=2658/6203 fill=2164/2465 show=0/0",
+          "KLVG a1=98/190 a2=236/383 a3=268/1120",
+          "KLVH a4=412/765 cs=109/776 va=490/757",
+          "KLVI vb=33/72 vc=85/138 vd=89/393"
+        ]
+      },
+      {
+        "command": "klv_get=speed",
+        "reply": [
+          "KLV value=speed n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=contrast",
+        "reply": [
+          "KLV value=contrast n=1000",
+          "KLV us=1948 fps=100 err=0 vu=0.00 sp=0.226 bt=0",
+          "KLVT show=1718/2394 dly=2045/8488 frm=9983/16732 n=101",
+          "KLVA wt=1839/6923 act=5052/7196 gd=1629/2312 dl=529 n=134",
+          "KLVB pre=234/1022 acq=2903/7930 vu=151/816",
+          "KLVC pg=257/939 nov=95/326 snp=358/1290",
+          "KLVD ons=199/910 sal=70/259 tmp=362/2080",
+          "KLVE pub=413/1213 tail=98/355 rsec=3805/6247",
+          "KLVF live=2646/4655 fill=2143/2455 show=0/0",
+          "KLVG a1=101/265 a2=247/925 a3=274/1103",
+          "KLVH a4=413/1051 cs=105/395 va=491/757",
+          "KLVI vb=34/76 vc=84/139 vd=85/264"
+        ]
+      },
+      {
+        "command": "build",
+        "reply": [
+          "sbr{{",
+          "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+          "}}"
+        ]
+      },
+      {
+        "command": "klv_status",
+        "reply": [
+          "KLV image bytes=3351 crc=62851093",
+          "KLV vm=up origin=saved saved=1 err=0 px=128 frames=1533",
+          "KLV renderer=live mode=0",
+          "KLV heap free=18608 big=7156",
+          "KLV us=1951 fps=102 err=0 vu=0.01 sp=0.259 bt=0",
+          "KLVT show=1681/2428 dly=1858/8415 frm=9789/16713 n=103",
+          "KLVA wt=1836/6943 act=5084/7127 gd=1631/2304 dl=500 n=134",
+          "KLVB pre=261/1483 acq=2902/7952 vu=150/835",
+          "KLVC pg=264/988 nov=120/720 snp=356/1140",
+          "KLVD ons=203/885 sal=68/148 tmp=349/1846",
+          "KLVE pub=404/1218 tail=93/350 rsec=3825/7376",
+          "KLVF live=2674/6101 fill=2154/2477 show=0/0",
+          "KLVG a1=100/184 a2=250/936 a3=264/1034",
+          "KLVH a4=421/1081 cs=102/324 va=483/752",
+          "KLVI vb=34/72 vc=83/152 vd=84/142"
+        ]
+      },
+      {
+        "command": "build",
+        "reply": [
+          "sbr{{",
+          "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+          "}}",
+          "KLV us=1964 fps=104 err=0 vu=0.00 sp=0.231 bt=0",
+          "KLVT show=1689/2398 dly=1702/8471 frm=9591/16716 n=106",
+          "KLVA wt=1786/6914 act=5092/6601 gd=1642/2356 dl=517 n=136",
+          "KLVB pre=230/942 acq=2871/7996 vu=154/803",
+          "KLVC pg=272/967 nov=110/706 snp=363/1240",
+          "KLVD ons=203/906 sal=75/715 tmp=335/1729",
+          "KLVE pub=401/1210 tail=97/385 rsec=3798/6120",
+          "KLVF live=2636/4882 fill=2134/2461 show=0/0",
+          "KLVG a1=103/202 a2=261/936 a3=266/1088",
+          "KLVH a4=421/1078 cs=106/808 va=489/740"
+        ]
+      },
+      {
+        "command": "klv_status",
+        "reply": [
+          "KLV image bytes=3351 crc=62851093",
+          "KLV vm=up origin=saved saved=1 err=0 px=128 frames=4757",
+          "KLV renderer=live mode=0",
+          "KLV heap free=18476 big=7156"
+        ]
+      },
+      {
+        "command": "klv_mode=waveform_hybrid",
+        "reply": [
+          "KLV mode=waveform_hybrid id=11",
+          "KLV us=1710 fps=108 err=0 vu=0.00 sp=0.229 bt=0",
+          "KLVT show=1696/2370 dly=1776/8457 frm=9250/16681 n=109",
+          "KLVA wt=1644/6911 act=5227/7035 gd=1662/2279 dl=524 n=133",
+          "KLVB pre=275/1436 acq=2754/7921 vu=162/821",
+          "KLVC pg=271/962 nov=107/711 snp=377/1233",
+          "KLVD ons=210/920 sal=71/259 tmp=350/1665",
+          "KLVE pub=423/1217 tail=96/337 rsec=3817/7165",
+          "KLVF live=2662/5921 fill=1697/2473 show=0/0",
+          "KLVG a1=112/748 a2=249/453 a3=273/1061",
+          "KLVH a4=438/1091 cs=105/200 va=486/735",
+          "KLVI vb=34/85 vc=83/157 vd=85/238"
+        ]
+      },
+      {
+        "command": "klv_set=palette,43",
+        "reply": [
+          "KLV value=palette n=43"
+        ]
+      },
+      {
+        "command": "klv_set=position,0",
+        "reply": [
+          "KLV value=position n=0",
+          "KLV us=2677 fps=119 err=0 vu=0.00 sp=0.217 bt=0",
+          "KLVT show=1781/2423 dly=2056/8085 frm=8403/16640 n=119",
+          "KLVA wt=951/6315 act=5839/7398 gd=1724/2273 dl=587 n=134",
+          "KLVB pre=339/977 acq=2233/7175 vu=175/838",
+          "KLVC pg=305/994 nov=104/203 snp=413/1163",
+          "KLVD ons=246/933 sal=102/725 tmp=362/1813",
+          "KLVE pub=517/1208 tail=115/350 rsec=3859/6197",
+          "KLVF live=2634/5057 fill=430/523 show=0/0",
+          "KLVG a1=131/202 a2=272/347 a3=333/957",
+          "KLVH a4=500/1082 cs=129/235 va=521/739"
+        ]
+      },
+      {
+        "command": "klv_set=brightness,600",
+        "reply": [
+          "KLV value=brightness n=600"
+        ]
+      },
+      {
+        "command": "klv_set=saturation,1000",
+        "reply": [
+          "KLV value=saturation n=1000",
+          "KLV us=1941 fps=119 err=0 vu=0.00 sp=0.210 bt=0",
+          "KLVT show=1798/KLVA wt=917/3567 act=5872/7366 gd=1724/2187 dl=608 n=134",
+          "KLVB pre=352/1017 acq=2203/4883 vu=182/830",
+          "KLVC pg=302/907 nov=109/772 snp=415/1022",
+          "KLVD ons=244/941 sal=106/726 tmp=350/1703",
+          "KLVE pub=520/1196 tail=121/368 rsec=3891/6968",
+          "KLVF live=2669/5500 fill=439/548 show=0/0",
+          "KLVG a1=146/765 a2=271/418 a3=334/1006",
+          "KLVH a4=492/1092 cs=140/762 va=519/760",
+          "KLVI vb=34/68 vc=87/131 vd=99/416"
+        ]
+      },
+      {
+        "command": "klv_set=mirror,1",
+        "reply": [
+          "KLV value=mirror n=1"
+        ]
+      },
+      {
+        "command": "klv_set=speed,1000",
+        "reply": [
+          "KLV value=speed n=1000"
+        ]
+      },
+      {
+        "command": "klv_set=contrast,1000",
+        "reply": [
+          "KLV us=2284 fps=119 err=0 vu=0.01 sp=0.262 bt=0",
+          "KLVT show=1794/2418 dly=1983/7676 frm=8403/16644 n=119",
+          "KLVA wt=873/5033 act=5854/7351 gd=1724/2364 dl=645 n=134",
+          "KLVB pre=326/973 acq=2180/6065 vu=187/835",
+          "KLVC pg=303/889 nov=105/166 snp=407/639",
+          "KLVD ons=249/923 sal=89/719 tmp=359/1654",
+          "KLVE pub=527/1190 tail=120/332 rsec=3918/6672",
+          "KLVF live=2687/5595 fill=429/530 show=0/0",
+          "KLVG a1=152/769 a2=269/424 a3=332/975",
+          "KLVH a4=496/1091 cs=133/254 va=524/752",
+          "KLV value=contrast n=1000"
+        ]
+      },
+      {
+        "command": "klv_mode=live",
+        "reply": [
+          "KLV mode=live id=0"
+        ]
+      },
+      {
+        "command": "klv_get=palette",
+        "reply": [
+          "KLV value=palette n=43",
+          "KLV us=1945 fps=109 err=0 vu=0.00 sp=0.253 bt=0",
+          "KLVT show=1747/2418 dly=2005/8455 frm=9166/16720 n=110",
+          "KLVA wt=1360/6903 act=5441/7292 gd=1679/2271 dl=568 n=135",
+          "KLVB pre=304/1088 acq=2530/7909 vu=159/803",
+          "KLVC pg=290/957 nov=100/317 snp=387/1251",
+          "KLVD ons=211/893 sal=84/735 tmp=335/1834",
+          "KLVE pub=458/1201 tail=110/746 rsec=3882/6984",
+          "KLVF live=2673/5869 fill=1258/2462 show=0/0",
+          "KLVG a1=128/771 a2=257/943 a3=306/1121",
+          "KLVH a4=447/1079 cs=124/772 va=509/748",
+          "KLVI vb=35/72 vc=91/157 vd=98/388"
+        ]
+      },
+      {
+        "command": "klv_get=position",
+        "reply": [
+          "KLV value=position n=0"
+        ]
+      },
+      {
+        "command": "klv_get=brightness",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLV us=1948 fps=104 err=0 vu=0.00 sp=0.264 bt=0",
+          "KLVT show=1670/2405 dly=1717/8455 frm=9615/16711 n=104",
+          "KLVA wt=1884/7178 act=5067/6689 gd=1639/2309 dl=481 n=132",
+          "KLVB pre=244/1080 acq=2940/8181 vu=156/790",
+          "KLVC pg=268/962 nov=100/715 snp=394/1240",
+          "KLVD ons=201/887 sal=76/737 tmp=323/1810",
+          "KLVE pub=397/1218 tail=94/332 rsec=3813/5725",
+          "KLVF live=2653/4713 fill=2147/2493 show=0/0",
+          "KLVG a1=100/185 a2=244/417 a3=269/1097",
+          "KLVH a4=408/699 cs=102/225 va=493/743",
+          "KLVI vb=35/85 vc=84/143 vd=83/375"
+        ]
+      },
+      {
+        "command": "klv_get=saturation",
+        "reply": [
+          "KLV value=saturation n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=mirror",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLV us=1954 fps=104 err=0 vu=0.01 sp=0.273 bt=0",
+          "KLVT show=1687/2414 dly=1700/8422 frm=9615/16703 n=104",
+          "KLVA wt=1828/7173 act=5097/6610 gd=1642/2290 dl=479 n=134",
+          "KLVB pre=239/1063 acq=2911/8207 vu=147/430",
+          "KLVC pg=268/977 nov=107/719 snp=379/1236",
+          "KLVD ons=203/889 sal=75/725 tmp=333/1658",
+          "KLVE pub=409/1231 tail=91/346 rsec=3810/6725",
+          "KLVF live=2656/5602 fill=2154/2467 show=0/0",
+          "KLVG a1=103/185 a2=251/928 a3=260/1078",
+          "KLVH a4=433/1075 cs=102/328 va=489/752",
+          "KLVI vb=34/81 vc=83/152 vd=84/227"
+        ]
+      },
+      {
+        "command": "klv_get=speed",
+        "reply": [
+          "KLV value=speed n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=contrast",
+        "reply": [
+          "KLV value=contrast n=1000",
+          "KLV us=1944 fps=102 err=0 vu=0.01 sp=0.231 bt=0",
+          "KLVT show=1710/2416 dly=1832/8442 frm=9789/16724 n=103",
+          "KLVA wt=1817/7168 act=5102/7050 gd=1646/2323 dl=498 n=134",
+          "KLVB pre=239/1067 acq=2899/8177 vu=144/435",
+          "KLVC pg=270/949 nov=108/715 snp=367/1246",
+          "KLVD ons=207/889 sal=76/707 tmp=340/1858",
+          "KLVE pub=403/1235 tail=95/377 rsec=3832/6290",
+          "KLVF live=2654/4675 fill=2146/2491 show=0/0",
+          "KLVG a1=102/185 a2=250/939 a3=273/1092",
+          "KLVH a4=425/1065 cs=106/773 va=489/749",
+          "KLVI vb=35/72 vc=86/161 vd=89/321"
+        ]
+      },
+      {
+        "command": "build",
+        "reply": [
+          "sbr{{",
+          "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+          "}}",
+          "KLVK k=29/29/17 s=KLVJ tb=0/0/0",
+          "KLVP 5400/6750/7250/7398 m=5363 n=1334 o=0/0 d=0 w=6 b=612949 t0=50639104 t1=60643866 s=1334 rn=8007 rp99=7250 lost=0/0 diag=0 sc=0 is=0 ir=4077 io=8007 iw=7178"
+        ]
+      },
+      {
+        "command": "klv_status",
+        "reply": [
+          "KLVQ 8400/16650/16750/16940 m=9207 n=1087 o=651/651 d=0 w=6 b=612949 t0=50682963 t1=60691290 s=1087 rn=6234 rp99=16800 lost=0/0 diag=0 sc=0 sub=1087 skp=0",
+          "KLV image bytes=3351 crc=62851093",
+          "KLV vm=up origin=saved saved=1 err=0 px=128 frames=5236",
+          "KLV renderer=live mode=0",
+          "KLV heap free=18476 big=7156",
+          "KLVR 2000/2450/2700/2768 m=1951 n=1087 o=156/156 d=0 w=6 b=612949 t0=50686778 t1=60694898 s=1087 rn=6236 rp99=2600 lost=0/0 diag=0 sc=0 mode=0",
+          "KLVS 7550/8800/9300/11196 m=7361 n=1087 o=96/96 d=0 w=6 b=612949 t0=50682963 t1=60691290 s=100 sc=0",
+          "KLVU wait=1848/8417 late=114 skip=114 fault=0 timeout=0 w=6 b=612949 t0=50682963 t1=60691290",
+          "KLVL 100/150/192/192 m=83 n=1087 o=0/0 d=0 w=6 b=612949 t0=50682963 t1=60691290 s=1087 rn=6235 rp99=150 lost=0/0 diag=0 sc=0",
+          "KLVIO us=60794849 b=612949 mask=3 rx=1 init=0 f=6243 pair=6243 q=6494/6494 c=6494/6494 reuse=0 qe=0 ce=0 eof=4046 rb=3107328 ovf=32 rd=8028 cb=3082752 re=0",
+          "KLV2 before=1448/2751 render=502/875 n=1087",
+          "KLVX dec=29/648 sil=110/754 acf=428/1126 n=445",
+          "KLVY upd=432/1140 ph=2/11 pub=2/128",
+          "KLVV gz=212/847 sc=24/772 wn=136/802 rs=56/697",
+          "KLVO bpm=60.0 c=0.00 lk=0",
+          "KLV us=1963 fps=98 err=0 vu=0.00 sp=0.223 bt=0",
+          "KLVT show=1676/2400 dly=2228/8425 frm=10203/16810 n=98",
+          "KLVA wt=1872/6983 act=4997/6735 gd=1643/2410 dl=522 n=134",
+          "KLVB pre=253/1473 acq=2926/8017 vu=157/790",
+          "KLVC pg=262/962 nov=96/732 snp=351/1259",
+          "KLVD ons=194/429 sal=68/246 tmp=319/1797",
+          "KLVE pub=392/1213 tail=92/350 rsec=3880/5544",
+          "KLVF live=2740/4569 fill=2153/2479 show=0/0",
+          "KLVG a1=100/217 a2=252/956 a3=265/1077",
+          "KLVH a4=409/1023 cs=100/212 va=481/761",
+          "KLVI vb=34/72 vc=84/139 vd=82/142"
+        ]
+      }
+    ],
+    "controls_passed": true,
+    "decoder_sha256": "ed537572da4730d26461a390462fe2d7ebdf217496a8317125a60a8ee7071ff5",
+    "desaturation_frame": {
+      "crc": "2205e689",
+      "frames": 1274098,
+      "lit_a": 28,
+      "lit_b": 28,
+      "max": 26,
+      "mode": 32,
+      "pixels": [
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          17,
+          17,
+          17
+        ],
+        [
+          13,
+          13,
+          13
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          4,
+          4
+        ],
+        [
+          20,
+          20,
+          20
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          4,
+          4
+        ],
+        [
+          21,
+          21,
+          21
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          12,
+          12,
+          12
+        ],
+        [
+          19,
+          19,
+          19
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          23,
+          23,
+          23
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          21,
+          21,
+          21
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          18,
+          18,
+          18
+        ],
+        [
+          14,
+          14,
+          14
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          4,
+          4
+        ],
+        [
+          26,
+          26,
+          26
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          17,
+          17,
+          17
+        ],
+        [
+          17,
+          17,
+          17
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          11,
+          11,
+          11
+        ],
+        [
+          22,
+          22,
+          22
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          22,
+          22,
+          22
+        ],
+        [
+          11,
+          11,
+          11
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          17,
+          17,
+          17
+        ],
+        [
+          17,
+          17,
+          17
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          26,
+          26,
+          26
+        ],
+        [
+          4,
+          4,
+          4
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          14,
+          14,
+          14
+        ],
+        [
+          18,
+          18,
+          18
+        ],
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          21,
+          21,
+          21
+        ],
+        [
+          8,
+          8,
+          8
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          23,
+          23,
+          23
+        ],
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          19,
+          19,
+          19
+        ],
+        [
+          12,
+          12,
+          12
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          21,
+          21,
+          21
+        ],
+        [
+          4,
+          4,
+          4
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          20,
+          20,
+          20
+        ],
+        [
+          4,
+          4,
+          4
+        ],
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          16,
+          16,
+          16
+        ],
+        [
+          13,
+          13,
+          13
+        ],
+        [
+          17,
+          17,
+          17
+        ],
+        [
+          16,
+          16,
+          16
+        ]
+      ],
+      "sum": 2100,
+      "symmetric": true
+    },
+    "expected_firmware": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+    "modes": {
+      "waveform_hybrid": {
+        "frames": [
+          {
+            "crc": "22facde3",
+            "frames": 1271666,
+            "lit_a": 40,
+            "lit_b": 40,
+            "max": 16,
+            "mode": 11,
+            "pixels": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                2,
+                0
+              ],
+              [
+                4,
+                2,
+                0
+              ],
+              [
+                6,
+                3,
+                1
+              ],
+              [
+                5,
+                3,
+                0
+              ],
+              [
+                9,
+                5,
+                1
+              ],
+              [
+                10,
+                5,
+                1
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                9,
+                5,
+                1
+              ],
+              [
+                6,
+                3,
+                0
+              ],
+              [
+                7,
+                4,
+                1
+              ],
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                5,
+                2,
+                0
+              ],
+              [
+                11,
+                4,
+                1
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                10,
+                3,
+                1
+              ],
+              [
+                10,
+                3,
+                1
+              ],
+              [
+                11,
+                4,
+                1
+              ],
+              [
+                7,
+                4,
+                2
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                4,
+                3,
+                1
+              ],
+              [
+                7,
+                4,
+                3
+              ],
+              [
+                16,
+                10,
+                8
+              ],
+              [
+                16,
+                10,
+                8
+              ],
+              [
+                7,
+                4,
+                3
+              ],
+              [
+                4,
+                3,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                7,
+                4,
+                2
+              ],
+              [
+                11,
+                4,
+                1
+              ],
+              [
+                10,
+                3,
+                1
+              ],
+              [
+                10,
+                3,
+                1
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                11,
+                4,
+                1
+              ],
+              [
+                5,
+                2,
+                0
+              ],
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                7,
+                4,
+                1
+              ],
+              [
+                6,
+                3,
+                0
+              ],
+              [
+                9,
+                5,
+                1
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                10,
+                5,
+                1
+              ],
+              [
+                9,
+                5,
+                1
+              ],
+              [
+                5,
+                3,
+                0
+              ],
+              [
+                6,
+                3,
+                1
+              ],
+              [
+                4,
+                2,
+                0
+              ],
+              [
+                3,
+                2,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ],
+            "sum": 608,
+            "symmetric": true
+          },
+          {
+            "crc": "b2baba27",
+            "frames": 1272081,
+            "lit_a": 43,
+            "lit_b": 43,
+            "max": 36,
+            "mode": 11,
+            "pixels": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                3,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                3,
+                1,
+                1
+              ],
+              [
+                3,
+                2,
+                1
+              ],
+              [
+                3,
+                2,
+                0
+              ],
+              [
+                3,
+                2,
+                1
+              ],
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                4,
+                2,
+                1
+              ],
+              [
+                4,
+                1,
+                2
+              ],
+              [
+                4,
+                1,
+                2
+              ],
+              [
+                5,
+                1,
+                2
+              ],
+              [
+                6,
+                1,
+                3
+              ],
+              [
+                7,
+                2,
+                4
+              ],
+              [
+                9,
+                2,
+                4
+              ],
+              [
+                7,
+                2,
+                4
+              ],
+              [
+                7,
+                2,
+                4
+              ],
+              [
+                9,
+                2,
+                5
+              ],
+              [
+                10,
+                2,
+                5
+              ],
+              [
+                10,
+                2,
+                6
+              ],
+              [
+                11,
+                2,
+                6
+              ],
+              [
+                14,
+                3,
+                8
+              ],
+              [
+                16,
+                3,
+                9
+              ],
+              [
+                20,
+                4,
+                11
+              ],
+              [
+                19,
+                4,
+                10
+              ],
+              [
+                21,
+                4,
+                11
+              ],
+              [
+                20,
+                4,
+                11
+              ],
+              [
+                24,
+                4,
+                13
+              ],
+              [
+                36,
+                7,
+                19
+              ],
+              [
+                36,
+                7,
+                19
+              ],
+              [
+                24,
+                4,
+                13
+              ],
+              [
+                20,
+                4,
+                11
+              ],
+              [
+                21,
+                4,
+                11
+              ],
+              [
+                19,
+                4,
+                10
+              ],
+              [
+                20,
+                4,
+                11
+              ],
+              [
+                16,
+                3,
+                9
+              ],
+              [
+                14,
+                3,
+                8
+              ],
+              [
+                11,
+                2,
+                6
+              ],
+              [
+                10,
+                2,
+                6
+              ],
+              [
+                10,
+                2,
+                5
+              ],
+              [
+                9,
+                2,
+                5
+              ],
+              [
+                7,
+                2,
+                4
+              ],
+              [
+                7,
+                2,
+                4
+              ],
+              [
+                9,
+                2,
+                4
+              ],
+              [
+                7,
+                2,
+                4
+              ],
+              [
+                6,
+                1,
+                3
+              ],
+              [
+                5,
+                1,
+                2
+              ],
+              [
+                4,
+                1,
+                2
+              ],
+              [
+                4,
+                1,
+                2
+              ],
+              [
+                4,
+                2,
+                1
+              ],
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                5,
+                3,
+                1
+              ],
+              [
+                3,
+                2,
+                1
+              ],
+              [
+                3,
+                2,
+                0
+              ],
+              [
+                3,
+                2,
+                1
+              ],
+              [
+                3,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                3,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                2,
+                1,
+                1
+              ],
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ],
+            "sum": 1084,
+            "symmetric": true
+          }
+        ],
+        "status": {
+          "attempts": [
+            [
+              "KLV mode=waveform_hybrid id=11",
+              "KLV native frames=989 avg=1969 max=2787 invalid=0",
+              "KLV native ap=1867446 pcm=96 history=1",
+              "KLV us=1893 fps=119 err=0 vu=0.00 sp=0.228 bt=0",
+              "KLVT show=1798/2440 dly=2033/6696 frm=8402/16801 n=120",
+              "KLVA wt=881/3148 act=5867/7905 gd=1726/2202 dl=646 n=134",
+              "KLVB pre=340/1271 acq=2181/4791 vu=183/839",
+              "KLVC pg=299/879 nov=106/267 snp=415/635",
+              "KLVD ons=244/928 sal=95/719 tmp=358/1710",
+              "KLVE pub=518/1196 tail=122/705 rsec=3857/6947",
+              "KLVF live=2638/5471 fill=436/547 show=0/0",
+              "KLVG a1=141/801 a2=279/906 a3=336/997",
+              "KLVH a4=492/1083 cs=142/776 va=518/761",
+              "KLVI vb=35/63 vc=91/138 vd=97/299",
+              "KLVP 5900/7150/7300/7905 m=5871 n=1334 o=2/0 d=17107 w=1400 b=613001 t0=13997489374 t1=14007495264 s=1334 rn=1867501 rp99=7400 lost=0/0 diag=0 sc=0 is=0 ir=993628 io=1867501 iw=7109"
+            ]
+          ],
+          "snapshot": [
+            "KLV mode=waveform_hybrid id=11",
+            "KLV native frames=989 avg=1969 max=2787 invalid=0",
+            "KLV native ap=1867446 pcm=96 history=1",
+            "KLV us=1893 fps=119 err=0 vu=0.00 sp=0.228 bt=0",
+            "KLVT show=1798/2440 dly=2033/6696 frm=8402/16801 n=120",
+            "KLVA wt=881/3148 act=5867/7905 gd=1726/2202 dl=646 n=134",
+            "KLVB pre=340/1271 acq=2181/4791 vu=183/839",
+            "KLVC pg=299/879 nov=106/267 snp=415/635",
+            "KLVD ons=244/928 sal=95/719 tmp=358/1710",
+            "KLVE pub=518/1196 tail=122/705 rsec=3857/6947",
+            "KLVF live=2638/5471 fill=436/547 show=0/0",
+            "KLVG a1=141/801 a2=279/906 a3=336/997",
+            "KLVH a4=492/1083 cs=142/776 va=518/761",
+            "KLVI vb=35/63 vc=91/138 vd=97/299",
+            "KLVP 5900/7150/7300/7905 m=5871 n=1334 o=2/0 d=17107 w=1400 b=613001 t0=13997489374 t1=14007495264 s=1334 rn=1867501 rp99=7400 lost=0/0 diag=0 sc=0 is=0 ir=993628 io=1867501 iw=7109"
+          ]
+        }
+      },
+      "waveform_hybrid_k1": {
+        "frames": [
+          {
+            "crc": "4b4f8470",
+            "frames": 1272753,
+            "lit_a": 30,
+            "lit_b": 30,
+            "max": 27,
+            "mode": 32,
+            "pixels": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                9
+              ],
+              [
+                0,
+                9,
+                22
+              ],
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                11
+              ],
+              [
+                0,
+                8,
+                21
+              ],
+              [
+                0,
+                0,
+                1
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                11
+              ],
+              [
+                0,
+                7,
+                20
+              ],
+              [
+                0,
+                0,
+                1
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                7
+              ],
+              [
+                0,
+                7,
+                20
+              ],
+              [
+                0,
+                1,
+                3
+              ],
+              [
+                0,
+                3,
+                8
+              ],
+              [
+                0,
+                8,
+                23
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                10,
+                27
+              ],
+              [
+                0,
+                5,
+                15
+              ],
+              [
+                0,
+                6,
+                18
+              ],
+              [
+                0,
+                4,
+                11
+              ],
+              [
+                0,
+                9,
+                24
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                6,
+                16
+              ],
+              [
+                0,
+                4,
+                13
+              ],
+              [
+                0,
+                1,
+                3
+              ],
+              [
+                0,
+                7,
+                21
+              ],
+              [
+                0,
+                1,
+                4
+              ],
+              [
+                0,
+                4,
+                11
+              ],
+              [
+                0,
+                7,
+                21
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                7,
+                22
+              ],
+              [
+                0,
+                4,
+                10
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                7,
+                22
+              ],
+              [
+                0,
+                2,
+                6
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                2,
+                6
+              ],
+              [
+                0,
+                7,
+                22
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                4,
+                10
+              ],
+              [
+                0,
+                7,
+                22
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                7,
+                21
+              ],
+              [
+                0,
+                4,
+                11
+              ],
+              [
+                0,
+                1,
+                4
+              ],
+              [
+                0,
+                7,
+                21
+              ],
+              [
+                0,
+                1,
+                3
+              ],
+              [
+                0,
+                4,
+                13
+              ],
+              [
+                0,
+                6,
+                16
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                9,
+                24
+              ],
+              [
+                0,
+                4,
+                11
+              ],
+              [
+                0,
+                6,
+                18
+              ],
+              [
+                0,
+                5,
+                15
+              ],
+              [
+                0,
+                10,
+                27
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                8,
+                23
+              ],
+              [
+                0,
+                3,
+                8
+              ],
+              [
+                0,
+                1,
+                3
+              ],
+              [
+                0,
+                7,
+                20
+              ],
+              [
+                0,
+                3,
+                7
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                1
+              ],
+              [
+                0,
+                7,
+                20
+              ],
+              [
+                0,
+                4,
+                11
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                1
+              ],
+              [
+                0,
+                8,
+                21
+              ],
+              [
+                0,
+                4,
+                11
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                2
+              ],
+              [
+                0,
+                9,
+                22
+              ],
+              [
+                0,
+                3,
+                9
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ],
+            "sum": 1090,
+            "symmetric": true
+          },
+          {
+            "crc": "05d7e47f",
+            "frames": 1273163,
+            "lit_a": 18,
+            "lit_b": 18,
+            "max": 37,
+            "mode": 32,
+            "pixels": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                27,
+                0,
+                15
+              ],
+              [
+                2,
+                0,
+                1
+              ],
+              [
+                28,
+                0,
+                16
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                8,
+                0,
+                5
+              ],
+              [
+                21,
+                0,
+                12
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                21,
+                0,
+                12
+              ],
+              [
+                8,
+                0,
+                5
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                5,
+                0,
+                3
+              ],
+              [
+                21,
+                0,
+                12
+              ],
+              [
+                5,
+                0,
+                3
+              ],
+              [
+                1,
+                0,
+                1
+              ],
+              [
+                19,
+                0,
+                11
+              ],
+              [
+                12,
+                0,
+                7
+              ],
+              [
+                37,
+                0,
+                21
+              ],
+              [
+                1,
+                0,
+                1
+              ],
+              [
+                11,
+                0,
+                6
+              ],
+              [
+                23,
+                0,
+                13
+              ],
+              [
+                2,
+                0,
+                1
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                1
+              ],
+              [
+                23,
+                0,
+                13
+              ],
+              [
+                11,
+                0,
+                6
+              ],
+              [
+                1,
+                0,
+                1
+              ],
+              [
+                37,
+                0,
+                21
+              ],
+              [
+                12,
+                0,
+                7
+              ],
+              [
+                19,
+                0,
+                11
+              ],
+              [
+                1,
+                0,
+                1
+              ],
+              [
+                5,
+                0,
+                3
+              ],
+              [
+                21,
+                0,
+                12
+              ],
+              [
+                5,
+                0,
+                3
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                8,
+                0,
+                5
+              ],
+              [
+                21,
+                0,
+                12
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                21,
+                0,
+                12
+              ],
+              [
+                8,
+                0,
+                5
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                28,
+                0,
+                16
+              ],
+              [
+                2,
+                0,
+                1
+              ],
+              [
+                27,
+                0,
+                15
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ],
+            "sum": 794,
+            "symmetric": true
+          }
+        ],
+        "status": {
+          "attempts": [
+            [
+              "KLV mode=waveform_hybrid_k1 id=32",
+              "KLV native frames=988 avg=2160 max=3436 invalid=0",
+              "KLV native ap=1868669 pcm=96 history=1",
+              "KLV us=2533 fps=119 err=0 vu=0.00 sp=0.232 bt=0",
+              "KLVT show=1803/2362 dly=1774/7435 frm=8403/16714 n=119",
+              "KLVA wt=805/3121 act=5894/7552 gd=1662/2305 dl=690 n=134",
+              "KLVB pre=323/969 acq=2111/4306 vu=200/843",
+              "KLVC pg=346/999 nov=105/156 snp=465/1159",
+              "KLVD ons=247/405 sal=84/211 tmp=335/1594",
+              "KLVE pub=523/1212 tail=130/753 rsec=4140/7091",
+              "KLVF live=2892/5922 fill=408/520 show=0/0",
+              "KLVG a1=141/712 a2=329/981 a3=323/1023",
+              "KLVH a4=477/1011 cs=143/750 va=523/739",
+              "KLVI vb=34/72 vc=90/142 vd=97/361"
+            ]
+          ],
+          "snapshot": [
+            "KLV mode=waveform_hybrid_k1 id=32",
+            "KLV native frames=988 avg=2160 max=3436 invalid=0",
+            "KLV native ap=1868669 pcm=96 history=1",
+            "KLV us=2533 fps=119 err=0 vu=0.00 sp=0.232 bt=0",
+            "KLVT show=1803/2362 dly=1774/7435 frm=8403/16714 n=119",
+            "KLVA wt=805/3121 act=5894/7552 gd=1662/2305 dl=690 n=134",
+            "KLVB pre=323/969 acq=2111/4306 vu=200/843",
+            "KLVC pg=346/999 nov=105/156 snp=465/1159",
+            "KLVD ons=247/405 sal=84/211 tmp=335/1594",
+            "KLVE pub=523/1212 tail=130/753 rsec=4140/7091",
+            "KLVF live=2892/5922 fill=408/520 show=0/0",
+            "KLVG a1=141/712 a2=329/981 a3=323/1023",
+            "KLVH a4=477/1011 cs=143/750 va=523/739",
+            "KLVI vb=34/72 vc=90/142 vd=97/361"
+          ]
+        }
+      },
+      "waveform_tempo": {
+        "frames": [
+          {
+            "crc": "f105b77f",
+            "frames": 1270579,
+            "lit_a": 24,
+            "lit_b": 24,
+            "max": 18,
+            "mode": 18,
+            "pixels": [
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                0,
+                1,
+                6
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                1,
+                1,
+                4
+              ],
+              [
+                8,
+                3,
+                0
+              ],
+              [
+                12,
+                6,
+                0
+              ],
+              [
+                4,
+                3,
+                6
+              ],
+              [
+                0,
+                3,
+                14
+              ],
+              [
+                0,
+                2,
+                11
+              ],
+              [
+                0,
+                2,
+                10
+              ],
+              [
+                18,
+                9,
+                1
+              ],
+              [
+                1,
+                2,
+                10
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                2,
+                1,
+                3
+              ],
+              [
+                1,
+                1,
+                4
+              ],
+              [
+                0,
+                1,
+                7
+              ],
+              [
+                3,
+                3,
+                8
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                3,
+                1,
+                0
+              ],
+              [
+                3,
+                3,
+                8
+              ],
+              [
+                0,
+                1,
+                7
+              ],
+              [
+                1,
+                1,
+                4
+              ],
+              [
+                2,
+                1,
+                3
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                1,
+                2,
+                10
+              ],
+              [
+                18,
+                9,
+                1
+              ],
+              [
+                0,
+                2,
+                10
+              ],
+              [
+                0,
+                2,
+                11
+              ],
+              [
+                0,
+                3,
+                14
+              ],
+              [
+                4,
+                3,
+                6
+              ],
+              [
+                12,
+                6,
+                0
+              ],
+              [
+                8,
+                3,
+                0
+              ],
+              [
+                1,
+                1,
+                4
+              ],
+              [
+                2,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                1,
+                6
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ]
+            ],
+            "sum": 398,
+            "symmetric": true
+          },
+          {
+            "crc": "07224ec3",
+            "frames": 1270992,
+            "lit_a": 22,
+            "lit_b": 22,
+            "max": 83,
+            "mode": 18,
+            "pixels": [
+              [
+                51,
+                26,
+                16
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                42,
+                19,
+                15
+              ],
+              [
+                23,
+                16,
+                2
+              ],
+              [
+                25,
+                10,
+                9
+              ],
+              [
+                31,
+                13,
+                11
+              ],
+              [
+                23,
+                15,
+                2
+              ],
+              [
+                65,
+                48,
+                10
+              ],
+              [
+                3,
+                1,
+                1
+              ],
+              [
+                6,
+                3,
+                2
+              ],
+              [
+                63,
+                45,
+                12
+              ],
+              [
+                83,
+                45,
+                25
+              ],
+              [
+                75,
+                35,
+                25
+              ],
+              [
+                15,
+                10,
+                2
+              ],
+              [
+                71,
+                33,
+                24
+              ],
+              [
+                2,
+                2,
+                0
+              ],
+              [
+                56,
+                30,
+                14
+              ],
+              [
+                42,
+                18,
+                16
+              ],
+              [
+                32,
+                22,
+                3
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                35,
+                15,
+                13
+              ],
+              [
+                43,
+                18,
+                16
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                43,
+                18,
+                16
+              ],
+              [
+                35,
+                15,
+                13
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                32,
+                22,
+                3
+              ],
+              [
+                42,
+                18,
+                16
+              ],
+              [
+                56,
+                30,
+                14
+              ],
+              [
+                2,
+                2,
+                0
+              ],
+              [
+                71,
+                33,
+                24
+              ],
+              [
+                15,
+                10,
+                2
+              ],
+              [
+                75,
+                35,
+                25
+              ],
+              [
+                83,
+                45,
+                25
+              ],
+              [
+                63,
+                45,
+                12
+              ],
+              [
+                6,
+                3,
+                2
+              ],
+              [
+                3,
+                1,
+                1
+              ],
+              [
+                65,
+                48,
+                10
+              ],
+              [
+                23,
+                15,
+                2
+              ],
+              [
+                31,
+                13,
+                11
+              ],
+              [
+                25,
+                10,
+                9
+              ],
+              [
+                23,
+                16,
+                2
+              ],
+              [
+                42,
+                19,
+                15
+              ],
+              [
+                1,
+                1,
+                1
+              ],
+              [
+                4,
+                2,
+                2
+              ],
+              [
+                51,
+                26,
+                16
+              ]
+            ],
+            "sum": 2878,
+            "symmetric": true
+          }
+        ],
+        "status": {
+          "attempts": [
+            [
+              "KLV mode=waveform_tempo id=18",
+              "KLV native frames=992 avg=1673 max=2738 invalid=0",
+              "KLV native ap=1866221 pcm=96 history=1",
+              "KLV us=1910 fps=119 err=0 vu=0.00 sp=0.230 bt=0",
+              "KLVT show=1774/2341 dly=2404/8167 frm=8403/16688 n=119",
+              "KLVA wt=995/6057 act=5757/7125 gd=1696/2094 dl=647 n=133",
+              "KLVB pre=327/913 acq=2256/7016 vu=169/821",
+              "KLVD ons=273/936 sal=111/734 tmp=355/1622",
+              "KLVE pub=444/647 tail=115/301 rsec=3546/6427",
+              "KLVF live=2359/5145 fill=405/511 show=0/0",
+              "KLVG a1=134/725 a2=306/930 a3=338/1013",
+              "KLVH a4=445/1082 cs=134/774 va=519/763",
+              "KLVI vb=33/62 vc=88/130 vd=91/318"
+            ]
+          ],
+          "snapshot": [
+            "KLV mode=waveform_tempo id=18",
+            "KLV native frames=992 avg=1673 max=2738 invalid=0",
+            "KLV native ap=1866221 pcm=96 history=1",
+            "KLV us=1910 fps=119 err=0 vu=0.00 sp=0.230 bt=0",
+            "KLVT show=1774/2341 dly=2404/8167 frm=8403/16688 n=119",
+            "KLVA wt=995/6057 act=5757/7125 gd=1696/2094 dl=647 n=133",
+            "KLVB pre=327/913 acq=2256/7016 vu=169/821",
+            "KLVD ons=273/936 sal=111/734 tmp=355/1622",
+            "KLVE pub=444/647 tail=115/301 rsec=3546/6427",
+            "KLVF live=2359/5145 fill=405/511 show=0/0",
+            "KLVG a1=134/725 a2=306/930 a3=338/1013",
+            "KLVH a4=445/1082 cs=134/774 va=519/763",
+            "KLVI vb=33/62 vc=88/130 vd=91/318"
+          ]
+        }
+      }
+    },
+    "original_controls": {
+      "brightness": 600,
+      "contrast": 1000,
+      "mirror": 1,
+      "palette": 43,
+      "position": 0,
+      "saturation": 1000,
+      "speed": 1000
+    },
+    "psram_bytes": 0,
+    "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+    "raw_log": "reports/lanes-2026-10-03/standard-regression/logs/emotiscope.raw.log",
+    "raw_sha256": "e094dd92e0d7e33629a0783996a310636daaa83998c225d5a9ea0a9816e0c921",
+    "restored": {
+      "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+      "frames": 5236,
+      "heap_free": 18476,
+      "heap_largest": 7156,
+      "mode": 0,
+      "saved": {
+        "bytes": 3351,
+        "crc": "62851093"
+      }
+    },
+    "soak_before": {
+      "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+      "frames": 1533,
+      "heap_free": 18608,
+      "heap_largest": 7156,
+      "mode": 0,
+      "saved": {
+        "bytes": 3351,
+        "crc": "62851093"
+      }
+    },
+    "source": {
+      "branch": "main",
+      "git": "a15b39be63880cd521424c76fbfa3e67ec91e9e1",
+      "lane": true,
+      "platformio_sha256": "1fe23e304ed49a5830680a25b3d425d95c4e1b970ca7d9cea0e4c23d0de96475",
+      "root": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3"
+    },
+    "usb_serial": "DC:54:75:EA:36:14"
+  },
+  "ok": true
+}

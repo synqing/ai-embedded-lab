@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "harness/run_native_env_gxx.py",
+    "--keep",
+    "native_bridge_protocol",
+    "native_bridge_transport",
+    "native_s3_radio_core",
+    "native_ble_dualmcu_host"
+  ],
+  "cwd": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-DualMCU-Firmware",
+  "exit_code": 0,
+  "duration_seconds": 3.6250109672546387,
+  "artifacts": [
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/native-retained/gxx_native_ble_dualmcu_host__k8h5w8m/program",
+      "sha256": "f8ea47c26cbae8b45304fb7b044f2a8adddbf84aa73e183c564d793ab58bb0ae",
+      "size_bytes": 173160
+    },
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/native-retained/gxx_native_bridge_protocol_gcm4i1db/program",
+      "sha256": "91d1a427b0e17c513915214a280637b77b070bc2923b9c30c1c30248ff15210e",
+      "size_bytes": 54664
+    },
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/native-retained/gxx_native_bridge_transport_106qmkxu/program",
+      "sha256": "e44501565cbe46d49082ac3a9c88ab86ea57eb6e00d4a360828ce6937fae3e9e",
+      "size_bytes": 59480
+    },
+    {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/lanes-dualmcu-build/native-retained/gxx_native_s3_radio_core_f8rdiq99/program",
+      "sha256": "594198207c2e3f0a05dc255550d6e02ee2a877e47b7801cc7a71b5da6eda927c",
+      "size_bytes": 99176
+    }
+  ],
+  "compiler": "Apple clang version 17.0.0 (clang-1700.6.3.2)\nTarget: arm64-apple-darwin25.1.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n",
+  "reason": "Retain host binaries for requested artifact hashes; first runner invocation removes its binaries."
+}
