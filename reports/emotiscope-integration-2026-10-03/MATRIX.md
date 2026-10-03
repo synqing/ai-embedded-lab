@@ -134,6 +134,6 @@ Source coverage: 0 files; paths in inventory. Host-side integration adds no devi
 
 ## Final execution evidence
 
-All six selected components passed the integrated physical run `live-03/result.json`; `lane-build/result.json` and `lane-flash/result.json` cover the actual native runner build/deployment paths. `integration-host-tests-final.log` covers 24 host tests with planted faults. `concurrent-refusal/result.json` is an expected physical-port ownership refusal while `observe-final` owns the device. Earlier failures remain in live-01 and live-02. Full paths and resource impact are in matrix.json.
+All six selected components passed the integrated physical run `live-05/result.json`; `lane-build/result.json` and `lane-flash/result.json` cover the actual native runner build/deployment paths. `integration-host-tests-reconcile.log` covers 25 host tests with planted faults. `concurrent-refusal/result.json` is an expected physical-port ownership refusal while `observe-final` owns the device. Earlier failures remain in live-01 and live-02. Full paths and resource impact are in matrix.json.
 
 PASS here means the declared bench capability passed its tests. It does not relabel the known upstream PSRAM diagnostic FAIL, promise uninterrupted output through reset, certify optical/wire performance, qualify the greenfield K1 product, or assert a governance admission. No embedded ML item was invented.

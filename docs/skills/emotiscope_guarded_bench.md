@@ -24,12 +24,12 @@ flash is not a physical function result.
   live-02 failed rather than interpreting missing counters as zero. Retry only
   the read-only query, at most three times, retaining every reply. Complete
   invalid-input counters greater than zero fail immediately. Never retry an
-  ambiguous flash or state-changing command merely because an ACK is absent.
+  ambiguous flash or state-changing command merely because an ACK is absent. Reconcile a missing control ACK using the matching read-only query and require the exact intended state.
 - Three intentional resets are not a reboot loop. Evaluate each reset window
   separately using one ROM marker, and reject unexpected boots in steady state.
 - This no-PSRAM board uses a prebuilt SDK that probes absent quad PSRAM. Keep
   the original UART diagnostic FAIL. Only explicitly characterised probe errors
-  may coexist with a separate functional boot pass; unknown errors still fail.
+  and the missing optional show-state overlay may coexist with a separate functional boot pass; unknown errors still fail. Check both ESP-IDF and Arduino [E] severity formats.
 - Output-buffer CRC/readback proves firmware output bytes, not light or wire
   timing. Frame capture pauses the renderer. Measure cadence in passive windows
   and do not claim 120 FPS or optical qualification from valid CRCs.

@@ -25,7 +25,7 @@ Inference/model measurements are therefore NOT APPLICABLE, not omitted tests.
 - Preserved starting checkpoint: `d4c3282`; recovery evidence is unchanged.
 - AEL upstream: `a95dd2639019c6366c92d2bdb78561a9f89855eb`.
 - Matrix and fresh legacy baseline: `c097378`.
-- Working AEL adapter/pack/tests: `dc50c3b`; strict steady-state error rejection: `9be9928`.
+- Working AEL adapter/pack/tests: `dc50c3b`; strict steady-state error rejection: `9be9928`; final diagnostic/ACK handling: `4fad4b9`.
 - During execution the old firmware tree explicitly handed ownership to
   `/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3`.
   The guard detected the concurrent device identity change before controls.
@@ -47,17 +47,17 @@ capsule and shared Core provenance remain distinct from new host integration.
 | Fresh build from old current source | RAM 159252 B, application flash 1024974 B | fresh-baseline-build.log |
 | Fresh legacy guarded flash | 85 host tests; b05cbd2c verified on device | fresh-baseline-flash-retry.log |
 | AEL guarded current-lane build and flash | 85 host tests; byte-identical build/flash binary; correct source identity | lane-build/, lane-flash/ |
-| New and existing AEL boundary tests | 24 passed, including planted failure cases | integration-host-tests-final.log |
-| Full real-music device run | PASS | live-03/result.json and logs/emotiscope.raw.log |
-| Modes 18, 11 and 32 | Changing CRC-valid 128-pixel frames, both halves lit, mirrored output, PCM96/history present, invalid=0 | live-03/artifacts/emotiscope-test.json |
+| New and existing AEL boundary tests | 25 passed, including planted failure cases | integration-host-tests-reconcile.log |
+| Full real-music device run | PASS | live-05/result.json and live-05/logs/emotiscope.raw.log |
+| Modes 18, 11 and 32 | Changing CRC-valid 128-pixel frames, both halves lit, mirrored output, PCM96/history present, invalid=0 | live-05/artifacts/emotiscope-test.json |
 | Controls | Palette changes affect actual output; forbidden palettes rejected without state change; desaturation and brightness output checks pass; mode-dependent controls reject invalid context | same |
-| Reset and storage | Three explicit resets, each one ROM boot, saved image 3351 B / CRC62851093 returns | same |
+| Reset and storage | Three resets in live-03 plus one final rerun reset; saved image 3351 B / CRC62851093 returns | live-03/ and live-05/ |
 | Stability and resources | No unexpected reset/fault; frame count progresses; no heap loss in final 60-second window | measurements.json |
 | Standalone observation | PASS; original controls/mode restored | observe-final/result.json; observe-reviewed/result.json |
 | Concurrent AEL access | Second real-port process refused before serial open, as intended | concurrent-refusal/result.json |
 
-The successful full run contains 59 complete timing samples in each 60-second
-passive window. Reset windows and intrusive frame dumps are kept separate.
+The final run contains 60 and 59 complete timing samples in its two 60-second
+passive windows. The earlier full run with three resets is retained in live-03. Reset windows and intrusive frame dumps are kept separate.
 Captain confirmed real music was playing at the Emotiscope. AEL did not play
 synthetic audio, change calibration, touch Titan or erase saved storage.
 
@@ -70,15 +70,15 @@ synthetic audio, change calibration, touch Titan or erase saved storage.
 | Firmware binary | 1025376 B | 1025376 B |
 | PSRAM allocated | 0 B | 0 B |
 | Additional ML model/tensor arena | 0 B | 0 B |
-| Live median FPS, real music | 82 | 92 |
-| Minimum reported FPS | 78 | 85 |
-| Median frame average | 12148 µs | 10900 µs |
-| Maximum reported frame time | 16937 µs | 16919 µs |
-| Median audio active average | 5512 µs | 5616 µs |
-| Maximum reported audio active time | 8242 µs | 8254 µs |
+| Live median FPS, real music | 91 | 88 |
+| Minimum reported FPS | 84 | 82 |
+| Median frame average | 10989 µs | 11329 µs |
+| Maximum reported frame time | 16907 µs | 16872 µs |
+| Median audio active average | 5644.5 µs | 5607 µs |
+| Maximum reported audio active time | 7894 µs | 7893 µs |
 
 The final stability window began and ended with 18608 B free heap and a 7156 B
-largest block. Live frames advanced from 1456 to 7160. Saved code and all seven
+largest block. Live frames advanced from 1498 to 7003. Saved code and all seven
 control values were preserved. Firmware SHA-256:
 `a676991b476030938f6f867b242e964ddd9e4a66ebe770fba5fc092a0ab294ef`.
 
@@ -102,13 +102,23 @@ made about radio coexistence, unexposed stack high-water marks or waveform timin
    original controls. Added bounded retries only for incomplete read-only
    snapshots. Planted tests verify genuine invalid-input faults are not retried.
    live-03 then passed all modes and resets. Raw failed replies remain preserved.
+4. Final raw-log review found Arduino [E] messages not covered by AEL's generic
+   severity regex. Added explicit detection and fault tests. The absent optional
+   SHOW_STATE_V1.BIN message is present in the original baseline too; source
+   treats it as a no-op, leaving primary configuration authoritative. It is now
+   explicitly recorded alongside PSRAM diagnostics; other Arduino errors fail.
+5. live-04 lost a state-change ACK. It failed and restored the original state.
+   The adapter now reconciles missing control ACKs through bounded read-only
+   state queries, never by repeating the mutation. Host tests reject a wrong
+   postcondition and prove that only one write was issued. Final live-05 passed
+   all three modes, controls, reset and the two 60-second windows with this code.
 
 ## Genuine limitations
 
 - The existing no-PSRAM board still emits the SDK's absent-PSRAM probe errors.
   Source diagnosis is in AUTHORITY.md. Every boot's original AEL diagnostic
   result remains FAIL with its errors intact; functional readiness is a separate
-  check allowing only these known errors. This is characterised, not fixed.
+  check allowing only these known errors and the absent optional show-state file. This is characterised, not fixed.
 - Post-current-limit frame dumps prove device-generated output bytes. They do
   not prove emitted light, LED wire timing or optical quality. No analyser or
   camera result is claimed.

@@ -14,31 +14,31 @@
   "psram_bytes": 0,
   "model_bytes": 0,
   "inference_latency": "NOT APPLICABLE: no embedded ML in upstream",
-  "initialisation": "Boot readiness checked during 10-second windows; no precise initialisation latency instrumented",
+  "initialisation": "Three resets in live-03 plus one in final live-05; each returned saved code within a 10-second observation window. No precise boot latency instrumented.",
   "stack_headroom": "Not exposed by adopted telemetry; no new device tasks or stacks",
   "before": {
-    "audio_active_avg_us_median": 5512,
-    "audio_active_max_us": 8242,
-    "fps_median": 82,
-    "fps_min": 78,
-    "frame_avg_us_median": 12148.0,
-    "frame_max_us": 16937,
-    "samples": 59,
-    "vu_max": 0.19
+    "audio_active_avg_us_median": 5644.5,
+    "audio_active_max_us": 7894,
+    "fps_median": 91.0,
+    "fps_min": 84,
+    "frame_avg_us_median": 10989.0,
+    "frame_max_us": 16907,
+    "samples": 60,
+    "vu_max": 0.13
   },
   "after": {
-    "audio_active_avg_us_median": 5616,
-    "audio_active_max_us": 8254,
-    "fps_median": 92,
-    "fps_min": 85,
-    "frame_avg_us_median": 10900.0,
-    "frame_max_us": 16919,
+    "audio_active_avg_us_median": 5607.0,
+    "audio_active_max_us": 7893,
+    "fps_median": 88,
+    "fps_min": 82,
+    "frame_avg_us_median": 11329,
+    "frame_max_us": 16872,
     "samples": 59,
-    "vu_max": 0.17
+    "vu_max": 0.15
   },
   "soak_start": {
     "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
-    "frames": 1456,
+    "frames": 1498,
     "heap_free": 18608,
     "heap_largest": 7156,
     "mode": 0,
@@ -49,7 +49,7 @@
   },
   "soak_end": {
     "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
-    "frames": 7160,
+    "frames": 7003,
     "heap_free": 18608,
     "heap_largest": 7156,
     "mode": 0,
@@ -58,5 +58,50 @@
       "crc": "62851093"
     }
   },
-  "qualification": "Live telemetry under operator-confirmed changing real music; not a controlled fixed-waveform performance comparison, optical proof or 120 FPS qualification"
+  "qualification": "Live telemetry under operator-confirmed changing real music; not a controlled fixed-waveform performance comparison, optical proof or 120 FPS qualification",
+  "earlier_live_03": {
+    "before": {
+      "audio_active_avg_us_median": 5512,
+      "audio_active_max_us": 8242,
+      "fps_median": 82,
+      "fps_min": 78,
+      "frame_avg_us_median": 12148.0,
+      "frame_max_us": 16937,
+      "samples": 59,
+      "vu_max": 0.19
+    },
+    "after": {
+      "audio_active_avg_us_median": 5616,
+      "audio_active_max_us": 8254,
+      "fps_median": 92,
+      "fps_min": 85,
+      "frame_avg_us_median": 10900.0,
+      "frame_max_us": 16919,
+      "samples": 59,
+      "vu_max": 0.17
+    },
+    "soak_start": {
+      "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+      "frames": 1456,
+      "heap_free": 18608,
+      "heap_largest": 7156,
+      "mode": 0,
+      "saved": {
+        "bytes": 3351,
+        "crc": "62851093"
+      }
+    },
+    "soak_end": {
+      "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+      "frames": 7160,
+      "heap_free": 18608,
+      "heap_largest": 7156,
+      "mode": 0,
+      "saved": {
+        "bytes": 3351,
+        "crc": "62851093"
+      }
+    }
+  },
+  "final_run": "live-05"
 }

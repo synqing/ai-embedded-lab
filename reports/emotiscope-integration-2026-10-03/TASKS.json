@@ -23,11 +23,11 @@
       "dependencies": [],
       "execution_disposition": "PASS",
       "execution_evidence": [
-        "integration-host-tests-final.log",
+        "integration-host-tests-reconcile.log",
         "lane-build/result.json",
         "lane-flash/result.json",
-        "live-03/result.json",
-        "live-03/logs/emotiscope.raw.log"
+        "live-05/result.json",
+        "live-05/logs/emotiscope.raw.log"
       ],
       "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
@@ -53,11 +53,11 @@
       "dependencies": [],
       "execution_disposition": "PASS",
       "execution_evidence": [
-        "integration-host-tests-final.log",
+        "integration-host-tests-reconcile.log",
         "lane-build/result.json",
         "lane-flash/result.json",
-        "live-03/result.json",
-        "live-03/logs/emotiscope.raw.log"
+        "live-05/result.json",
+        "live-05/logs/emotiscope.raw.log"
       ],
       "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
@@ -84,11 +84,11 @@
       "dependencies": [],
       "execution_disposition": "PASS",
       "execution_evidence": [
-        "integration-host-tests-final.log",
+        "integration-host-tests-reconcile.log",
         "lane-build/result.json",
         "lane-flash/result.json",
-        "live-03/result.json",
-        "live-03/logs/emotiscope.raw.log"
+        "live-05/result.json",
+        "live-05/logs/emotiscope.raw.log"
       ],
       "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
@@ -114,11 +114,11 @@
       "dependencies": [],
       "execution_disposition": "PASS",
       "execution_evidence": [
-        "integration-host-tests-final.log",
+        "integration-host-tests-reconcile.log",
         "lane-build/result.json",
         "lane-flash/result.json",
-        "live-03/result.json",
-        "live-03/logs/emotiscope.raw.log"
+        "live-05/result.json",
+        "live-05/logs/emotiscope.raw.log"
       ],
       "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },
@@ -144,11 +144,11 @@
       "dependencies": [],
       "execution_disposition": "PASS",
       "execution_evidence": [
-        "integration-host-tests-final.log",
+        "integration-host-tests-reconcile.log",
         "lane-build/result.json",
         "lane-flash/result.json",
-        "live-03/result.json",
-        "live-03/logs/emotiscope.raw.log",
+        "live-05/result.json",
+        "live-05/logs/emotiscope.raw.log",
         "concurrent-refusal/result.json"
       ],
       "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
@@ -176,11 +176,11 @@
       "dependencies": [],
       "execution_disposition": "PASS",
       "execution_evidence": [
-        "integration-host-tests-final.log",
+        "integration-host-tests-reconcile.log",
         "lane-build/result.json",
         "lane-flash/result.json",
-        "live-03/result.json",
-        "live-03/logs/emotiscope.raw.log"
+        "live-05/result.json",
+        "live-05/logs/emotiscope.raw.log"
       ],
       "governance_admission": "UNAVAILABLE: actual project outside configured workspace roots; original registry state preserved"
     },

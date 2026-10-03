@@ -31,3 +31,9 @@ The new lane build passed 85 inherited tests and generated firmware.bin (1025376
 Live-02 caught a torn read-only native status line under real music and restored all original controls/mode. The adapter now retries only incomplete read-only snapshots at most three times; a complete nonzero invalid count immediately fails. Host fault tests cover both paths. This is host robustness to existing serial truncation, not a firmware transport fix.
 
 The lane remains separate from the AEL checkout. Firmware source inputs were not changed by this integration. The only firmware deployment differences are lane ownership/build identity; the AEL capabilities execute on the host.
+
+## Optional show-state diagnostic and Arduino severity audit
+
+The preserved baseline and live-03 both contain `[E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation`. In the lane's materialised source, control/k1_show_state.cpp:395–399 returns false on that missing optional read. persistence/bridge_fs.h:644–646 explicitly calls it a soft restore and missing/corrupt data a no-op; primary CONFIG remains authoritative. Saved Live code is separately loaded and its CRC is verified. This pre-existing absent overlay is characterised, not silently created or erased.
+
+The generic AEL UART evaluator does not recognise every Arduino [E] line. The Emotiscope adapter now explicitly records those lines during boot, accepts only exact known diagnostic shapes and rejects other [E] lines during steady state. Original logs and old evaluation outputs remain immutable. Host tests plant an unrelated Arduino DMA error to prove rejection.

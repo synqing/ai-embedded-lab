@@ -81,7 +81,7 @@ source identity, decoder hash, commands and replies, saved image, heap readings,
 frame pixels/CRC and timing summaries. Exit 1 means failure. Missing samples,
 incomplete frame CRCs, wrong firmware, faults or failed state restoration cannot
 pass. Incomplete read-only native status replies get at most three attempts;
-nonzero invalid-input counters fail immediately. Builds/flashes do not retry.
+nonzero invalid-input counters fail immediately. Missing state-change acknowledgements are reconciled with read-only queries; the mutation is never repeated. Builds/flashes do not retry.
 
 The OS lock coordinates AEL processes across tty/cu aliases; `lsof` additionally
 refuses an existing external port owner. It cannot compel unrelated programs to
@@ -90,8 +90,8 @@ is a real boundary, not a reason to accept mixed-source evidence.
 
 Existing PSRAM startup diagnostics remain visible as an upstream UART evaluation
 FAIL. The bench acceptance separately requires exactly one boot, saved-program
-readiness, no crash and only the two characterised absent-PSRAM probe errors.
-Any other error fails. No errors are deleted or changed to a diagnostic PASS.
+readiness, no crash and only the characterised absent-PSRAM probes and missing optional show-state file.
+Arduino [E] severity is checked as well as the upstream evaluator. Any other error fails. No errors are deleted or changed to a diagnostic PASS.
 See the report for why removing BOARD_HAS_PSRAM would not fix this SDK path.
 
 ## Scope, provenance and recovery

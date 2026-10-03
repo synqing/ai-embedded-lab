@@ -14,11 +14,11 @@
     ],
     "files": 4,
     "evidence": [
-      "integration-host-tests-final.log",
+      "integration-host-tests-reconcile.log",
       "lane-build/result.json",
       "lane-flash/result.json",
-      "live-03/result.json",
-      "live-03/logs/emotiscope.raw.log"
+      "live-05/result.json",
+      "live-05/logs/emotiscope.raw.log"
     ],
     "resource_impact": "Host-only integration; no extra firmware tasks, stacks, DMA, interrupts, buffers or ML models. Flash/static RAM delta zero; measurements.json."
   },
@@ -36,11 +36,11 @@
     ],
     "files": 3,
     "evidence": [
-      "integration-host-tests-final.log",
+      "integration-host-tests-reconcile.log",
       "lane-build/result.json",
       "lane-flash/result.json",
-      "live-03/result.json",
-      "live-03/logs/emotiscope.raw.log"
+      "live-05/result.json",
+      "live-05/logs/emotiscope.raw.log"
     ],
     "resource_impact": "Host-only integration; no extra firmware tasks, stacks, DMA, interrupts, buffers or ML models. Flash/static RAM delta zero; measurements.json."
   },
@@ -59,11 +59,11 @@
     ],
     "files": 5,
     "evidence": [
-      "integration-host-tests-final.log",
+      "integration-host-tests-reconcile.log",
       "lane-build/result.json",
       "lane-flash/result.json",
-      "live-03/result.json",
-      "live-03/logs/emotiscope.raw.log"
+      "live-05/result.json",
+      "live-05/logs/emotiscope.raw.log"
     ],
     "resource_impact": "Host-only integration; no extra firmware tasks, stacks, DMA, interrupts, buffers or ML models. Flash/static RAM delta zero; measurements.json."
   },
@@ -81,11 +81,11 @@
     ],
     "files": 13,
     "evidence": [
-      "integration-host-tests-final.log",
+      "integration-host-tests-reconcile.log",
       "lane-build/result.json",
       "lane-flash/result.json",
-      "live-03/result.json",
-      "live-03/logs/emotiscope.raw.log"
+      "live-05/result.json",
+      "live-05/logs/emotiscope.raw.log"
     ],
     "resource_impact": "Host-only integration; no extra firmware tasks, stacks, DMA, interrupts, buffers or ML models. Flash/static RAM delta zero; measurements.json."
   },
@@ -103,11 +103,11 @@
     ],
     "files": 4,
     "evidence": [
-      "integration-host-tests-final.log",
+      "integration-host-tests-reconcile.log",
       "lane-build/result.json",
       "lane-flash/result.json",
-      "live-03/result.json",
-      "live-03/logs/emotiscope.raw.log",
+      "live-05/result.json",
+      "live-05/logs/emotiscope.raw.log",
       "concurrent-refusal/result.json"
     ],
     "resource_impact": "Host-only integration; no extra firmware tasks, stacks, DMA, interrupts, buffers or ML models. Flash/static RAM delta zero; measurements.json."
@@ -127,11 +127,11 @@
     ],
     "files": 4,
     "evidence": [
-      "integration-host-tests-final.log",
+      "integration-host-tests-reconcile.log",
       "lane-build/result.json",
       "lane-flash/result.json",
-      "live-03/result.json",
-      "live-03/logs/emotiscope.raw.log"
+      "live-05/result.json",
+      "live-05/logs/emotiscope.raw.log"
     ],
     "resource_impact": "Host-only integration; no extra firmware tasks, stacks, DMA, interrupts, buffers or ML models. Flash/static RAM delta zero; measurements.json."
   },

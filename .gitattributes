@@ -1,0 +1,3 @@
+
+# Raw UART evidence must survive checkout without CRLF conversion.
+reports/**/logs/*.raw.log -text whitespace=cr-at-eol

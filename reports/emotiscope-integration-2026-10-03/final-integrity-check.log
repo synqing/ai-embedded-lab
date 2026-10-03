@@ -6,3 +6,6 @@ observe-reviewed: PASS
 concurrent-refusal: expected refusal, no serial file
 d4c3282 baseline/recovery evidence: unchanged
 matrix: 13/13 terminal dispositions, 4048 unique upstream source paths
+live-04: failed ACK, original state restored; retained as failure evidence
+live-05: final implementation PASS; frame CRCs, controls, reset, timing, heap and saved-state restoration verified
+Arduino severity audit: three diagnosed boot lines per reset; unrelated [E] errors rejected by planted tests
