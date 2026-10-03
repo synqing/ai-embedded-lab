@@ -12,3 +12,11 @@ Use with [prism-lanes.md](../prism-lanes.md). This is the closeout capture for t
 8. Regress the standard lane with its existing pack, restore controls and saved programme, and retain the recovery image. Capture both positive and planted-negative tests before committing.
 
 Do not mistake `accepted=false` in an old broker checkpoint scheme for unidentified hardware; independently compare the observed UID/build/schema with source-bound build evidence. Conversely, never convert that independent read-only match into programming/control permission. This run made no firmware admission changes.
+
+For PRISM-owned locked baselines, use the same adapter's `bench-build` and
+`regression` actions. Verify that the recorded lane entry point executed, that
+its receipt identifies the operation and retains `BENCH_ONLY`, and that emitted
+firmware hashes match. Preserve a failed or missing receipt as failure even
+when a command exits zero. Keep `build`/`flash` refusal until clean product
+source and deployment profiles have separately been admitted. `diagnose` only
+reports capabilities and the remaining path; it never opens the serial device.

@@ -111,6 +111,129 @@ def source_facts(source, lane):
             'lock_sha256': sha(source / 'deps/prism-core.lock.json')}
 
 
+def lane_bench(cfg, ctx, facts):
+    """Use the lane-owned locked reference; never imply clean product admission."""
+    source = Path(cfg['source']).resolve()
+    script = source / 'scripts/bench.py'
+    require(script.is_file() and not script.is_symlink(), 'Lane has no owned bench entry point')
+    tracked = facts['source']['tracked_files']
+    require('scripts/bench.py' in tracked, 'Bench entry point must be recorded in the lane')
+    before = donor_identity(source)
+    action = cfg['action']
+    command = [sys.executable, '-B', str(script)]
+    if action == 'bench-build':
+        command.append('build')
+        if cfg['lane'] == 'dualmcu':
+            require(cfg.get('target') in DUAL_TARGETS, 'Unsupported DualMCU bench target')
+            command += ['--target', cfg['target']]
+    elif action == 'regression':
+        command.append('test')
+    else:
+        raise ValueError('Unsupported bench action')
+    run_key = hashlib.sha256(str(ctx.run_dir.resolve()).encode()).hexdigest()[:16]
+    output = source / '_scratch/ael' / run_key
+    facts['lane_output'] = str(output)
+    require(not output.exists(), 'Fresh lane bench output required')
+    command += ['--output', str(output)]
+    log = ctx.logs_dir / 'lane-bench.log'
+    facts.update(argv=command, cwd=str(source), lane_identity=before,
+                 qualification='BENCH_ONLY: inherited/uncertain reference; no clean product or physical acceptance')
+    with log.open('w') as out:
+        proc = run_command(command, cwd=source, stdout=out, timeout=1200)
+    facts.update(returncode=proc.returncode, log=str(log), log_sha256=sha(log))
+    require(proc.returncode == 0, 'Lane bench operation failed; ' + str(log))
+    require(donor_identity(source) == before, 'Lane source changed during bench operation')
+    receipt = output / 'receipt.json'
+    require(receipt.is_file() and not receipt.is_symlink(), 'Lane bench produced no execution receipt')
+    record = json.loads(receipt.read_text())
+    expected_schema = 'titan-bench-execution.v1' if cfg['lane'] == 'titan' else 'prism.operation.v1'
+    require(record.get('schema') == expected_schema, 'Wrong lane bench receipt schema')
+    require(record.get('operation') == ('build' if action == 'bench-build' else 'test'), 'Wrong lane receipt operation')
+    if record.get('schema') == 'prism.operation.v1':
+        require(record.get('returncode') == 0, 'Lane receipt records failed execution')
+        require(record.get('product_admission') is False and record.get('device_proof') is False,
+                'Bench receipt cannot claim product admission or device proof')
+        commands = record.get('commands')
+        require(isinstance(commands, list) and commands, 'Lane receipt has no executed commands')
+        for executed in commands:
+            require(isinstance(executed.get('argv'), list) and executed['argv'] and executed.get('returncode') == 0,
+                    'Lane receipt contains missing or failed execution')
+            name = Path(executed.get('log', ''))
+            require(not name.is_absolute() and '..' not in name.parts and name.name,
+                    'Unsafe lane command log path')
+            command_log = output / name
+            require(command_log.is_file() and not command_log.is_symlink() and sha(command_log) == executed.get('log_sha256'),
+                    'Lane command log missing or changed')
+    elif record.get('schema') == 'titan-bench-execution.v1':
+        require(record.get('exit_code') == 0, 'Lane receipt records failed execution')
+        require(record.get('product_admitted') is False and record.get('hardware_access') is False,
+                'Bench receipt cannot claim product admission or hardware access')
+    else:
+        raise RuntimeError('Unknown lane bench receipt schema')
+    require(str(record.get('classification', '')).startswith('BENCH_ONLY'), 'Unclassified bench receipt')
+    facts['lane_receipts'] = [{'path': str(receipt), 'sha256': sha(receipt)}]
+    if record['schema'] == 'titan-bench-execution.v1':
+        nested = output / ('build/receipt.json' if action == 'bench-build' else 'checks/receipt.json')
+        key = 'build_receipt_sha256' if action == 'bench-build' else 'checks_receipt_sha256'
+        require(nested.is_file() and not nested.is_symlink() and sha(nested) == record.get(key),
+                'Titan nested execution receipt missing or changed')
+        if action == 'bench-build':
+            build = json.loads(nested.read_text())
+            require(build.get('pass') is True and isinstance(record.get('build_id'), str)
+                    and len(record['build_id']) == 64 and build.get('build_id') == record['build_id']
+                    and build.get('artifacts') == record.get('artifacts'),
+                    'Titan nested build failed or differs from outer receipt')
+        if action == 'regression':
+            checks = json.loads(nested.read_text())
+            require(checks.get('schema') == 'titan-adapter-checks.v1' and checks.get('exit_code') == 0
+                    and checks.get('hardware_tested') is False, 'Titan adapter checks did not succeed within host scope')
+        facts['lane_receipts'].append({'path': str(nested), 'sha256': sha(nested)})
+    elif action == 'regression':
+        nested = output / 'clean-components/receipt.json'
+        require(nested.is_file() and not nested.is_symlink() and sha(nested) == record.get('clean_components_receipt_sha256'),
+                'DualMCU clean component receipt missing or changed')
+        checks = json.loads(nested.read_text())
+        require(checks.get('schema') == 'prism.operation.v1' and checks.get('operation') == 'test'
+                and checks.get('returncode') == 0 and checks.get('product_admission') is False
+                and checks.get('device_proof') is False, 'DualMCU component tests did not succeed within host scope')
+        facts['lane_receipts'].append({'path': str(nested), 'sha256': sha(nested)})
+    if action == 'bench-build':
+        artifacts = [p for p in output.rglob('*') if p.is_file() and p.suffix in ('.elf', '.hex', '.bin')]
+        require(artifacts, 'Lane bench build produced no firmware')
+        declared = record.get('artefacts') if record['schema'] == 'prism.operation.v1' else record.get('artifacts')
+        require(isinstance(declared, dict) and declared, 'Lane build receipt has no artifact hashes')
+        for name, digest in declared.items():
+            relative = Path(name)
+            require(not relative.is_absolute() and '..' not in relative.parts, 'Unsafe lane artifact path')
+            artifact_root = output if record['schema'] == 'prism.operation.v1' else output / 'build'
+            bound = artifact_root / relative
+            require(bound.is_file() and not bound.is_symlink() and sha(bound) == digest,
+                    'Declared lane artifact missing or changed: ' + name)
+        for artifact in artifacts:
+            relative = artifact.relative_to(output).as_posix()
+            matches = [digest for name, digest in declared.items()
+                       if relative == name or relative.endswith('/' + name)]
+            require(len(matches) == 1 and matches[0] == sha(artifact), 'Lane build artifact not bound to receipt: ' + relative)
+        facts['binaries'] = [{'path': str(p), 'bytes': p.stat().st_size, 'sha256': sha(p)} for p in sorted(artifacts)]
+
+
+def lane_diagnosis(cfg, facts):
+    """Report available capabilities without probing, opening or resetting hardware."""
+    source = Path(cfg['source']).resolve()
+    facts['capabilities'] = {
+        'locked_bench_entry': (source / 'scripts/bench.py').is_file(),
+        'migration_manifest': (source / 'docs/migration').is_dir(),
+        'core_tag': facts['source']['core_tag'],
+        'native_product_deployment': False,
+    }
+    facts['qualification'] = 'Read-only capability inventory; no firmware, electrical or optical acceptance'
+    facts['remaining'] = [
+        'Admit or independently implement the required audio and visual engine with recorded provenance',
+        'Build and verify the clean product target independently of bench source',
+        'Identify and qualify the intended physical target before deployment',
+    ]
+
+
 def validate_titan(row, expected_build, now):
     identity = row['identity']
     require(identity.get('identified') is True and identity.get('uid') == TITAN_UID, 'Titan UID unidentified/mismatched')
@@ -275,7 +398,11 @@ class PrismLaneAdapter:
             facts['source'] = source_facts(cfg['source'], lane)
             source = Path(cfg['source']).resolve()
             if action in ('flash', 'build', 'recover'):
-                raise RuntimeError('No native firmware/deployment profile in this PRISM scaffold; donor observation and core-test are separate capabilities')
+                raise RuntimeError('No native firmware/deployment profile admitted in this PRISM lane; bench operations, donor observation and core-test are separate capabilities')
+            elif action in ('bench-build', 'regression'):
+                lane_bench(cfg, ctx, facts)
+            elif action == 'diagnose':
+                lane_diagnosis(cfg, facts)
             elif action == 'discover':
                 from serial.tools import list_ports
                 facts['ports'] = [{'port': p.device, 'vid': p.vid, 'pid': p.pid, 'serial': p.serial_number} for p in list_ports.comports()]
@@ -298,7 +425,7 @@ class PrismLaneAdapter:
                         proc = run_command(commands[1], cwd=stage, stdout=out, timeout=300)
                     facts.update(argv=commands, returncode=proc.returncode, log=str(log), log_sha256=sha(log))
                     require(proc.returncode == 0, 'Portable core host test failed; ' + str(log))
-                facts['qualification'] = 'Fresh host C++ compilation and JS parity only; no native firmware exists'
+                facts['qualification'] = 'Fresh host C++ compilation and JS parity only; no native firmware or device qualification'
             elif action == 'observe':
                 require(lane == 'titan', 'DualMCU requires identified RT1062 plus S3 and wired SPI; single Emotiscope S3 is insufficient')
                 observe_titan(cfg, ctx, facts)

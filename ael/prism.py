@@ -12,7 +12,7 @@ def main():
     p.add_argument('--lane', required=True, choices=('dualmcu', 'titan'))
     p.add_argument('--source', required=True, type=Path)
     p.add_argument('--core-source', type=Path)
-    p.add_argument('--action', required=True, choices=('discover', 'core-test', 'donor-build', 'donor-recover', 'observe', 'build', 'flash', 'recover'))
+    p.add_argument('--action', required=True, choices=('discover', 'core-test', 'donor-build', 'donor-recover', 'observe', 'bench-build', 'regression', 'diagnose', 'build', 'flash', 'recover'))
     p.add_argument('--target', choices=('rt1062_production', 'rt1062_k1_migration_t40_ws2812_128', 's3_radio_bridge_ble'))
     p.add_argument('--donor-source', type=Path)
     p.add_argument('--build-receipt', type=Path)
@@ -25,6 +25,7 @@ def main():
     if a.action == 'core-test' and not a.core_source: p.error('core-test requires --core-source')
     if a.action == 'donor-build' and not a.donor_source: p.error('donor-build requires --donor-source')
     if a.action == 'donor-build' and a.lane == 'dualmcu' and not a.target: p.error('DualMCU donor build requires --target')
+    if a.action == 'bench-build' and a.lane == 'dualmcu' and not a.target: p.error('DualMCU bench build requires --target')
     if a.action in ('observe', 'donor-recover') and a.lane == 'titan' and not (a.donor_source and a.build_receipt):
         p.error('Titan requires --donor-source and --build-receipt')
     plan = load_pack(Path(__file__).resolve().parents[1] / 'packs/prism_lanes.json')

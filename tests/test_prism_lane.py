@@ -157,3 +157,133 @@ def test_timeout_kills_compiler_child(tmp_path, ignore_term):
     time.sleep(.9)
     assert (tmp_path / 'ready').exists(), 'Child did not start; timeout test inconclusive'
     assert not (tmp_path / 'escaped').exists()
+
+
+def bench_context(tmp_path, monkeypatch, *, scenario='valid', kind='dualmcu', action='bench-build'):
+    source = tmp_path / ('Kx-Titan' if kind == 'titan' else 'K1-DualMCU'); (source / 'scripts').mkdir(parents=True)
+    (source / 'scripts/bench.py').write_text('# lane-owned entry\n')
+    run = tmp_path / 'run'; logs = run / 'logs'; logs.mkdir(parents=True)
+    facts = {'source': {'tracked_files': ['scripts/bench.py']}}
+    identity = {'commit': 'fixture', 'inputs': {'scripts/bench.py': 'fixture'}}
+    identities = iter([identity, {}] if scenario == 'changed' else [identity, identity])
+    monkeypatch.setattr(lane, 'donor_identity', lambda _: next(identities))
+
+    def execute(argv, **kwargs):
+        assert argv[:2] == [sys.executable, '-B']
+        assert str(source / 'scripts/bench.py') in argv
+        assert '--output' in argv and '--donor-source' not in argv
+        output = Path(argv[argv.index('--output') + 1]); output.mkdir(parents=True)
+        assert output.is_relative_to(source)
+        command_log = output / 'execution.log'; command_log.write_text('executed fixture\n')
+        if scenario != 'no_receipt':
+            artifact_name = 'firmware.elf' if kind == 'titan' else 'build/firmware.elf'
+            record = {'schema': 'prism.operation.v1', 'classification': 'BENCH_ONLY_UNCERTAIN_LEGACY', 'returncode': 0,
+                      'operation': 'build', 'product_admission': False, 'device_proof': False,
+                      'artefacts': {artifact_name: lane.hashlib.sha256(b'fixture ELF').hexdigest()},
+                      'commands': [{'argv': ['fixture'], 'returncode': 0, 'log': 'execution.log',
+                                    'log_sha256': lane.sha(command_log)}]}
+            if scenario == 'wrong_operation': record['operation'] = 'verify'
+            if scenario == 'false_admission': record['product_admission'] = True
+            if scenario == 'device_claim': record['device_proof'] = True
+            if scenario == 'receipt_failed': record['returncode'] = 1
+            if scenario == 'unclassified': record['classification'] = 'PRODUCT'
+            if scenario == 'unknown_schema': record['schema'] = 'outcome.PASS'
+            if scenario == 'artifact_drift': record['artefacts'][artifact_name] = '0' * 64
+            if scenario == 'missing_declared': record['artefacts']['missing.hex' if kind == 'titan' else 'build/missing.hex'] = '0' * 64
+            if scenario == 'log_drift': record['commands'][0]['log_sha256'] = '0' * 64
+            if kind == 'titan':
+                nested = output / ('build/receipt.json' if action == 'bench-build' else 'checks/receipt.json')
+                nested.parent.mkdir(exist_ok=True)
+                build_id = 'b' * 64
+                child = ({'pass': True, 'build_id': build_id, 'artifacts': record['artefacts']}
+                         if action == 'bench-build' else
+                         {'schema': 'titan-adapter-checks.v1', 'exit_code': 0, 'hardware_tested': False})
+                if scenario == 'nested_failed_build': child['pass'] = False
+                if scenario == 'nested_wrong_build': child['build_id'] = 'c' * 64
+                if scenario == 'nested_wrong_artifacts': child['artifacts'] = {}
+                nested.write_text(json.dumps(child))
+                record = {'schema': 'titan-bench-execution.v1', 'classification': 'BENCH_ONLY_GPL_OR_UNCERTAIN',
+                          'operation': 'build' if action == 'bench-build' else 'test', 'exit_code': 0,
+                          'product_admitted': False, 'hardware_access': False, 'artifacts': record['artefacts'], 'build_id': build_id,
+                          'build_receipt_sha256' if action == 'bench-build' else 'checks_receipt_sha256': lane.sha(nested)}
+                if scenario == 'nested_drift': nested.write_text('{}')
+                if scenario == 'nested_device_claim':
+                    nested.write_text(json.dumps({'schema': 'titan-adapter-checks.v1', 'exit_code': 0, 'hardware_tested': True}))
+                    record['checks_receipt_sha256'] = lane.sha(nested)
+            (output / 'receipt.json').write_text(json.dumps(record))
+        if scenario != 'no_firmware':
+            (output / 'build').mkdir(exist_ok=True)
+            (output / 'build/firmware.elf').write_bytes(b'fixture ELF')
+        return SimpleNamespace(returncode=1 if scenario == 'failed' else 0)
+
+    monkeypatch.setattr(lane, 'run_command', execute)
+    cfg = {'source': str(source), 'lane': kind, 'action': action, 'target': 'rt1062_production'}
+    return cfg, SimpleNamespace(run_dir=run, logs_dir=logs), facts
+
+
+def test_lane_owned_bench_build_is_distinct_from_product(tmp_path, monkeypatch):
+    cfg, ctx, facts = bench_context(tmp_path, monkeypatch)
+    lane.lane_bench(cfg, ctx, facts)
+    assert facts['returncode'] == 0
+    assert facts['qualification'].startswith('BENCH_ONLY:')
+    assert facts['binaries'][0]['sha256'] == lane.sha(Path(facts['binaries'][0]['path']))
+    assert facts['lane_receipts']
+
+
+@pytest.mark.parametrize('scenario', ['no_receipt', 'no_firmware', 'changed', 'failed',
+                                     'wrong_operation', 'false_admission', 'device_claim',
+                                     'receipt_failed', 'unclassified', 'unknown_schema', 'artifact_drift',
+                                     'missing_declared', 'log_drift'])
+def test_lane_bench_cannot_pass_without_execution_artifacts(tmp_path, monkeypatch, scenario):
+    cfg, ctx, facts = bench_context(tmp_path, monkeypatch, scenario=scenario)
+    with pytest.raises(RuntimeError):
+        lane.lane_bench(cfg, ctx, facts)
+
+
+@pytest.mark.parametrize('fault', ['untracked', 'symlink', 'missing', 'wrong_target'])
+def test_bench_dispatch_refuses_unbound_entry_without_execution(tmp_path, monkeypatch, fault):
+    cfg, ctx, facts = bench_context(tmp_path, monkeypatch)
+    script = Path(cfg['source']) / 'scripts/bench.py'
+    if fault == 'untracked': facts['source']['tracked_files'] = []
+    if fault == 'missing': script.unlink()
+    if fault == 'symlink':
+        script.unlink(); script.symlink_to(tmp_path / 'outside.py')
+    if fault == 'wrong_target': cfg.update(lane='dualmcu', target='s3_audio_renderer')
+    monkeypatch.setattr(lane, 'run_command', lambda *a, **kw: pytest.fail('invalid entry launched'))
+    with pytest.raises(RuntimeError): lane.lane_bench(cfg, ctx, facts)
+
+
+def test_diagnosis_has_no_hardware_side_effects(tmp_path, monkeypatch):
+    facts = {'source': {'core_tag': 'v0.2.0'}}
+    monkeypatch.setattr(lane.subprocess, 'run', lambda *a, **kw: pytest.fail('diagnosis executed a process'))
+    lane.lane_diagnosis({'source': str(tmp_path)}, facts)
+    assert facts['capabilities']['native_product_deployment'] is False
+    assert len(facts['remaining']) == 3
+
+
+@pytest.mark.parametrize('action', ['bench-build', 'regression'])
+def test_titan_receipts_bind_nested_execution(tmp_path, monkeypatch, action):
+    cfg, ctx, facts = bench_context(tmp_path, monkeypatch, kind='titan', action=action)
+    lane.lane_bench(cfg, ctx, facts)
+    assert len(facts['lane_receipts']) == 2
+    assert Path(facts['lane_output']).is_relative_to(Path(cfg['source']))
+
+
+@pytest.mark.parametrize('action', ['bench-build', 'regression'])
+def test_titan_changed_nested_execution_refused(tmp_path, monkeypatch, action):
+    cfg, ctx, facts = bench_context(tmp_path, monkeypatch, kind='titan', action=action, scenario='nested_drift')
+    with pytest.raises(RuntimeError, match='nested execution receipt'):
+        lane.lane_bench(cfg, ctx, facts)
+
+
+def test_titan_regression_cannot_claim_device_proof(tmp_path, monkeypatch):
+    cfg, ctx, facts = bench_context(tmp_path, monkeypatch, kind='titan', action='regression', scenario='nested_device_claim')
+    with pytest.raises(RuntimeError, match='host scope'):
+        lane.lane_bench(cfg, ctx, facts)
+
+
+@pytest.mark.parametrize('scenario', ['nested_failed_build', 'nested_wrong_build', 'nested_wrong_artifacts'])
+def test_titan_build_requires_successful_consistent_child(tmp_path, monkeypatch, scenario):
+    cfg, ctx, facts = bench_context(tmp_path, monkeypatch, kind='titan', scenario=scenario)
+    with pytest.raises(RuntimeError, match='nested build failed or differs'):
+        lane.lane_bench(cfg, ctx, facts)

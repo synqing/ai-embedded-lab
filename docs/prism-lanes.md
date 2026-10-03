@@ -2,6 +2,40 @@
 
 This extends the existing AEL runner, adapter registry, evidence writer and zero-retry policy. It does not install a second test framework. Results distinguish the named PRISM scaffold from externally referenced donor firmware. See the [validated three-lane report](../reports/lanes-2026-10-03/README.md) and [reusable procedure](skills/prism_lane_bench.md).
 
+## PRISM-owned reference builds — migration increment
+
+The migration adds `bench-build`, `regression` and read-only `diagnose` to the
+same adapter. The first two execute each lane's recorded `scripts/bench.py`
+against its immutable dependency capsule, without an old firmware checkout.
+They retain `BENCH_ONLY` qualification. Neither grants clean product admission
+or a physical deployment verdict. `build`, `flash` and `recover` continue to
+refuse until an admitted native product/deployment profile exists.
+
+Run with the existing Python environment from this repository. Every AEL output
+must be fresh. AEL stages lane inputs and binaries in a separate fresh directory
+under that lane's `_scratch/ael/`; the AEL evidence directory may be elsewhere.
+
+```bash
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane dualmcu --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU --action bench-build --target rt1062_production --out /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU/_scratch/ael-rt41
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane titan --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan --action bench-build --out /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/ael-titan-build
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane dualmcu --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU --action regression --out /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU/_scratch/ael-dual-tests
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane titan --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan --action regression --out /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/ael-titan-tests
+```
+
+The adapter requires an executed operation receipt with a recognised schema,
+successful command and receipt exit codes, explicit bench classification and
+false product/device claims. Firmware bytes must match the receipt hashes.
+Missing receipts, missing firmware, source drift, unrecorded or linked entry
+points, wrong target IDs and false admission claims fail. AEL does not restart
+hardware or retry these operations. `core-test` remains a separate check of the
+tagged dependency; lane reference builds are not PRISM-Core admissions.
+
+The following donor-baseline procedure and observations are historical. The
+current capsule builds above use the PRISM lane scripts: Titan preserves
+`SOURCE_DATE_EPOCH` and enforces the compiler hash/version and FSP header lock.
+Donor-baseline nondeterminism and scaffold descriptions below describe the
+earlier run, rather than the newly admitted component/reference-build capability.
+
 Use the existing Python 3.11 environment. The workstation's default Homebrew Python 3.14 currently has an incompatible `pyexpat` linkage; it is not the validated interpreter.
 
 ```bash
