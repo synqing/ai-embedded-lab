@@ -1739,6 +1739,7 @@ class _InstrumentSimHttpAdapter:
 
 class AdapterRegistry:
     def __init__(self):
+        from ael.adapters.emotiscope import EmotiscopeAdapter
         self._instrument_backends = _InstrumentBackendRegistry()
         self._capability_map = {
             "measure.voltage": _InstrumentAipHttpAdapter("measure.voltage"),
@@ -1753,6 +1754,9 @@ class AdapterRegistry:
         }
         self._adapters = {
             "preflight.probe": _PreflightAdapter(),
+            "build.emotiscope": EmotiscopeAdapter(),
+            "load.emotiscope": EmotiscopeAdapter(),
+            "check.emotiscope": EmotiscopeAdapter(),
             "build.idf": _BuildAdapter("idf"),
             "build.arm_debug": _BuildAdapter("arm_debug"),
             "build.cmake": _BuildAdapter("cmake"),

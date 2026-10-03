@@ -1,0 +1,95 @@
+........................................................................ [ 84%]
+.............                                                            [100%]
+85 passed in 13.60s
+
+unk(uint32_t)':
+SPECTRASYNQ_K1_FIRMWARE/audio/i2s_audio.h:595:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+  595 |     g_emo_i2s_short++;
+      |     ^~~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/audio/i2s_audio.h:604:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+  604 |     g_emo_i2s_ok++;
+      |     ^~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/audio/i2s_audio.h:605:33: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+  605 |     if (g_emo_last_wait < 200u) g_emo_i2s_ready++;
+      |                                 ^~~~~~~~~~~~~~~
+In file included from /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3/_scratch/bench/cc2c022cebdb8b97/project/SPECTRASYNQ_K1_FIRMWARE/SPECTRASYNQ_K1_FIRMWARE.ino:44:
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h: In function 'void show_leds()':
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1086:7: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1086 |       g_emo_spi_skip++;
+      |       ^~~~~~~~~~~~~~
+SPECTRASYNQ_K1_FIRMWARE/visual/led_utilities.h:1100:5: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+ 1100 |     g_emo_spi_submit++;
+      |     ^~~~~~~~~~~~~~~~
+In file included from /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3/_scratch/bench/cc2c022cebdb8b97/project/SPECTRASYNQ_K1_FIRMWARE/SPECTRASYNQ_K1_FIRMWARE.ino:49:
+SPECTRASYNQ_K1_FIRMWARE/system/system.h: In function 'void check_current_function()':
+SPECTRASYNQ_K1_FIRMWARE/system/system.h:68:28: warning: '++' expression of 'volatile'-qualified type is deprecated [-Wvolatile]
+   68 |   function_hits[function_id]++;
+      |   ~~~~~~~~~~~~~~~~~~~~~~~~~^
+Retrieving maximum program size .pio/build/k1_emotiscope_live/firmware.elf
+Checking size .pio/build/k1_emotiscope_live/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=====     ]  48.6% (used 159252 bytes from 327680 bytes)
+Flash: [===       ]  30.7% (used 1024974 bytes from 3342336 bytes)
+========================= [SUCCESS] Took 4.83 seconds =========================
+
+nging baud rate to 921600
+Changed.
+Configuring flash size...
+Auto-detected Flash size: 8MB
+Flash will be erased from 0x00000000 to 0x00004fff...
+Flash will be erased from 0x00008000 to 0x00008fff...
+Flash will be erased from 0x0000e000 to 0x0000ffff...
+Flash will be erased from 0x00010000 to 0x0010afff...
+SHA digest in image updated
+Compressed 20208 bytes to 13058...
+Writing at 0x00000000... (100 %)
+Wrote 20208 bytes (13058 compressed) at 0x00000000 in 0.3 seconds (effective 525.2 kbit/s)...
+Hash of data verified.
+Compressed 3072 bytes to 146...
+Writing at 0x00008000... (100 %)
+Wrote 3072 bytes (146 compressed) at 0x00008000 in 0.0 seconds (effective 517.0 kbit/s)...
+Hash of data verified.
+Compressed 8192 bytes to 47...
+Writing at 0x0000e000... (100 %)
+Wrote 8192 bytes (47 compressed) at 0x0000e000 in 0.1 seconds (effective 725.1 kbit/s)...
+Hash of data verified.
+Compressed 1025376 bytes to 525898...
+Writing at 0x00010000... (3 %)
+Writing at 0x0001b59e... (6 %)
+Writing at 0x0002841c... (9 %)
+Writing at 0x0003a338... (12 %)
+Writing at 0x0004e7a6... (15 %)
+Writing at 0x000596ea... (18 %)
+Writing at 0x0006d4c3... (21 %)
+Writing at 0x00073bd3... (24 %)
+Writing at 0x000790d4... (27 %)
+Writing at 0x0007f6ec... (30 %)
+Writing at 0x00084eca... (33 %)
+Writing at 0x0008afe8... (36 %)
+Writing at 0x00091420... (39 %)
+Writing at 0x00096812... (42 %)
+Writing at 0x0009cb69... (45 %)
+Writing at 0x000a2962... (48 %)
+Writing at 0x000a8830... (51 %)
+Writing at 0x000ada53... (54 %)
+Writing at 0x000b3812... (57 %)
+Writing at 0x000b934f... (60 %)
+Writing at 0x000beb65... (63 %)
+Writing at 0x000c40b1... (66 %)
+Writing at 0x000c9dd8... (69 %)
+Writing at 0x000cf052... (72 %)
+Writing at 0x000d4bc0... (75 %)
+Writing at 0x000da660... (78 %)
+Writing at 0x000e0cec... (81 %)
+Writing at 0x000eb965... (84 %)
+Writing at 0x000f18aa... (87 %)
+Writing at 0x000f7d08... (90 %)
+Writing at 0x000fdeda... (93 %)
+Writing at 0x001037f5... (96 %)
+Writing at 0x00109bb6... (100 %)
+Wrote 1025376 bytes (525898 compressed) at 0x00010000 in 6.6 seconds (effective 1239.4 kbit/s)...
+Hash of data verified.
+Hard resetting via RTS pin...
+========================= [SUCCESS] Took 13.98 seconds =========================
+
+FLASH_AND_RUNTIME_VERIFIED 181cb92a {"version": "40103", "git": "181cb92a", "epoch": "1790997874", "env": "k1_emotiscope_live"} /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3/_scratch/bench/cc2c022cebdb8b97/deployment.json

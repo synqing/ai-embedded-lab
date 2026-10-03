@@ -1,0 +1,12 @@
+{
+  "name": "emotiscope_usb_bench",
+  "upstream_revision": "a95dd2639019c6366c92d2bdb78561a9f89855eb",
+  "target": {
+    "usb_serial": "DC:54:75:EA:36:14",
+    "environment": "k1_emotiscope_live",
+    "saved": {"bytes": 3351, "crc": "62851093"}
+  },
+  "recovery_policy": {"enabled": false},
+  "timeout_s": 4000,
+  "steps": []
+}

@@ -1,0 +1,80 @@
+K1-S3 BENCH /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3/_scratch/bench/cc2c022cebdb8b97/project
+........................................................................ [ 84%]
+.............                                                            [100%]
+85 passed in 18.72s
+
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-psram.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-rgb-led.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-rmt.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-sigmadelta.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-spi.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-time.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-timer.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-tinyusb.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-touch-ng.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-touch.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/esp32-hal-uart.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/firmware_msc_fat.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/freertos_stats.cpp.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/libb64/cdecode.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/libb64/cencode.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/main.cpp.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/stdlib_noniso.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/wiring_pulse.c.o
+Compiling .pio/build/k1_emotiscope_live/FrameworkArduino/wiring_shift.c.o
+Archiving .pio/build/k1_emotiscope_live/libFrameworkArduino.a
+Indexing .pio/build/k1_emotiscope_live/libFrameworkArduino.a
+Linking .pio/build/k1_emotiscope_live/firmware.elf
+Retrieving maximum program size .pio/build/k1_emotiscope_live/firmware.elf
+Checking size .pio/build/k1_emotiscope_live/firmware.elf
+Advanced Memory Usage is available via "PlatformIO Home > Project Inspect"
+RAM:   [=====     ]  48.6% (used 159252 bytes from 327680 bytes)
+Flash: [===       ]  30.7% (used 1024974 bytes from 3342336 bytes)
+Building .pio/build/k1_emotiscope_live/firmware.bin
+esptool.py v4.8.9
+Creating esp32s3 image...
+Merged 2 ELF sections
+Successfully created esp32s3 image.
+========================= [SUCCESS] Took 23.85 seconds =========================
+
+{
+  "pins": {
+    "core": "6142c02d404ac66c935eaae5476c08546a554682",
+    "tag": "v0.3.0",
+    "bench": "b05cbd2cf83d821e1ef06482d4b7cb07397bdfff",
+    "bench_sha256": "21360211f6f05ee41494c6e9be8b8a2144f9d31e1f37ee10deb561d6298c2e11"
+  },
+  "lane": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+  "profile": "1fe23e304ed49a5830680a25b3d425d95c4e1b970ca7d9cea0e4c23d0de96475",
+  "overlay": {
+    "SPECTRASYNQ_K1_FIRMWARE/audio/k1_audio_frame.cpp": "a00bc64402a812f2d226c6ebe2d63dcdd642382533c5eb97614c42d2e0496959",
+    "SPECTRASYNQ_K1_FIRMWARE/audio/k1_emo_waveform_audio.h": "c1f3bd73fdc3214e1beade9ca0ec798a534a6856c9dec61601ec4b34a63884c3",
+    "SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_waveform_hybrid.cpp": "a74045d91dc9800d8f1906f9a0596cc61d1230da1c58d723c129c6a117861247",
+    "SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_waveform_hybrid_k1.cpp": "b9841b91d577efbf8bf448c983bc9c4cbced1b054c860636652f37e3b1b42f4f",
+    "SPECTRASYNQ_K1_FIRMWARE/effects/light_mode_waveform_tempo.cpp": "5f46d0d47653eed84ea234dcf5f1cea07c677bd51b36622c2ebf5448549a3e07",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_controls.h": "bafa38195589cd418b56fe21b0d86801b65781d33448ee29b5bedc632fd167cd",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_dump.h": "03068d0a139ef61ae0fea5adfd287f610712a1ca1567f18de76586d33d918c9b",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_hist.h": "a4649a45dd604babe15fa427011ed18d211a609d70bca38137c6a9eec06c9202",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_io.cpp": "2b9e2049a9a91617a610e24bc1de3c325315800fc2cb6f6bc1c0b57faef57254",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_io.h": "d206cbda8e8d965295a2ae56eabc32e46c209a9d3bc0d84e1aa86f3220a2362a",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_timing.h": "8b2495f4efe34d5b003b6ee34be3e9c1cd86d24f29ba07fd95af68dfe19b3e26",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_waveforms.cpp": "adb80903fc56685ca116404096391ddca4e6ed6b92d78735ba5fb307ea070fb9",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_emo_waveforms.h": "6ec4bcf7b54821dac889b74c9e1562971e06a7967ce43d0c59f5d014a32c9dd3",
+    "SPECTRASYNQ_K1_FIRMWARE/live/k1_live_bench.cpp": "dbb5f6aa7011fa07b1300b8657c660c031aabea2eca60863434dc93f14adc291",
+    "SPECTRASYNQ_K1_FIRMWARE/visual/k1_vp_pace.h": "b8d9952549c2f799212f45b1fe8db1b34721fe829fe570b4bf4235a42aa7ad52"
+  },
+  "orchestration": {
+    "scripts/bench.py": "85bd51411b6ff70973b26c2969966bac92a3e32828eac386d39eb2a8c588bd5c",
+    "scripts/dependencies.py": "bd6b4b0fa150e298414279ac4b70e4fe0b3e8fb5c3b33874a3089428ee94a7a1",
+    "scripts/flash.py": "ef2c1c8f191fbd62309fb566fc28523c208265532e439b8bd46bc3937465ded7",
+    "scripts/serve.py": "f2c1683b051031441b1297d6ef84dc69a5e8bb6386406db28f618db2536d2b2d"
+  },
+  "identity_hook": "d8b942efd3c46734e91e42256598411039d4eed8f154f7f15d2a44341c53d761",
+  "epoch": 1790997874,
+  "env": "k1_emotiscope_live",
+  "qualification": "build-only",
+  "firmware": {
+    "bytes": 1025376,
+    "sha256": "a676991b476030938f6f867b242e964ddd9e4a66ebe770fba5fc092a0ab294ef"
+  }
+}

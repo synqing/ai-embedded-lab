@@ -1,0 +1,61 @@
+{
+  "started_at": "2026-10-03T03:26:33.656048Z",
+  "finished_at": "2026-10-03T03:26:58.465169Z",
+  "ok": true,
+  "termination": "pass",
+  "steps": [
+    {
+      "name": "emotiscope-build",
+      "type": "build.emotiscope",
+      "attempt": 1,
+      "effective_retry_budget": 0,
+      "ok": true,
+      "result": {
+        "ok": true,
+        "retryable": false,
+        "error_summary": "",
+        "evidence": [
+          {
+            "kind": "emotiscope.build",
+            "source": "ael.adapters.emotiscope",
+            "status": "pass",
+            "summary": "Completed declared checks",
+            "facts": {
+              "action": "build",
+              "usb_serial": "DC:54:75:EA:36:14",
+              "psram_bytes": 0,
+              "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+              "source": {
+                "root": "/Users/spectrasynq/SpectraSynq_K1_Firmware",
+                "git": "719af686ffcd2eba170974e5bb71078b05325686",
+                "branch": "wip/emotiscope-perf",
+                "platformio_sha256": "41e859dcd63a37f66fcb88aa09c3eaca889b4778ee1265021962d29b3aae3803"
+              },
+              "argv": [
+                "pio",
+                "run",
+                "-e",
+                "k1_emotiscope_live"
+              ],
+              "returncode": 0,
+              "log": "reports/emotiscope-integration-2026-10-03/ael-build/logs/build.log",
+              "log_sha256": "c600f5fb8dc9b3159d42dd57fd79b6c64bf01ef6a2ae43f83f36ed113fe1859f",
+              "binary": {
+                "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-ael-build/k1_emotiscope_live/firmware.bin",
+                "bytes": 1025376,
+                "sha256": "6e37f9222cebb312645544179aad5b469375e4d39d3b0b4b71c16a7c6bab560d"
+              }
+            },
+            "artifacts": {
+              "result": "reports/emotiscope-integration-2026-10-03/ael-build/artifacts/emotiscope-build.json"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "recovery": [],
+  "error_summary": "",
+  "timeout_s": 4000.0,
+  "failure_kind": ""
+}

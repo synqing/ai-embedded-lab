@@ -1,0 +1,60 @@
+{
+  "started_at": "2026-10-03T03:31:32.000430Z",
+  "finished_at": "2026-10-03T03:32:17.272554Z",
+  "ok": true,
+  "termination": "pass",
+  "steps": [
+    {
+      "name": "emotiscope-flash",
+      "type": "load.emotiscope",
+      "attempt": 1,
+      "effective_retry_budget": 0,
+      "ok": true,
+      "result": {
+        "ok": true,
+        "retryable": false,
+        "error_summary": "",
+        "evidence": [
+          {
+            "kind": "emotiscope.flash",
+            "source": "ael.adapters.emotiscope",
+            "status": "pass",
+            "summary": "Completed declared checks",
+            "facts": {
+              "action": "flash",
+              "usb_serial": "DC:54:75:EA:36:14",
+              "psram_bytes": 0,
+              "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+              "source": {
+                "root": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3",
+                "git": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+                "branch": "main",
+                "lane": true,
+                "platformio_sha256": "1fe23e304ed49a5830680a25b3d425d95c4e1b970ca7d9cea0e4c23d0de96475"
+              },
+              "argv": [
+                "/Users/spectrasynq/.platformio/penv/bin/python",
+                "scripts/flash.py"
+              ],
+              "returncode": 0,
+              "log": "reports/emotiscope-integration-2026-10-03/lane-flash/logs/flash.log",
+              "log_sha256": "52d87edc38320cf94c196340c431549207e8c87163dd8ca90faea2c89cc1d3fd",
+              "binary": {
+                "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3/_scratch/bench/cc2c022cebdb8b97/project/.pio/build/k1_emotiscope_live/firmware.bin",
+                "bytes": 1025376,
+                "sha256": "a676991b476030938f6f867b242e964ddd9e4a66ebe770fba5fc092a0ab294ef"
+              }
+            },
+            "artifacts": {
+              "result": "reports/emotiscope-integration-2026-10-03/lane-flash/artifacts/emotiscope-flash.json"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "recovery": [],
+  "error_summary": "",
+  "timeout_s": 4000.0,
+  "failure_kind": ""
+}
