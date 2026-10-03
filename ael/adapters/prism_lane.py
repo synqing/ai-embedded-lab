@@ -233,6 +233,8 @@ def lane_diagnosis(cfg, facts):
     facts['capabilities'] = {
         'locked_bench_entry': (source / 'scripts/bench.py').is_file(),
         'native_product_build': 'scripts/build.py' in facts['source'].get('tracked_files', []),
+        'native_product_host_checks': any(script in facts['source'].get('tracked_files', [])
+                                          for script in ('scripts/native_check.py', 'scripts/native_test.py')),
         'migration_manifest': (source / 'docs/migration').is_dir(),
         'core_tag': facts['source']['core_tag'],
         'native_product_deployment': False,
@@ -429,6 +431,100 @@ def lane_product_build(cfg, ctx, facts):
     facts['lane_receipts'] = [{'path': str(receipt), 'sha256': sha(receipt)}]
 
 
+def validate_native_checks(record, output, source, lane, facts):
+    """Validate observed lane host checks without admitting untested inventory."""
+    require(type(record.get('exit_code')) is int and record['exit_code'] == 0
+            and record.get('hardware_access') is False and record.get('product_admitted') is False,
+            'Invalid native host execution scope')
+    require(record.get('development_core', False) is False, 'Native checks require pinned Core')
+    tracked = set(facts['source']['tracked_files'])
+    inputs = record.get('inputs')
+    require(isinstance(inputs, dict) and inputs, 'Missing native check source inventory')
+    for name, digest in inputs.items():
+        require(name in tracked and sha(safe_file(source, name)) == digest,
+                'Native check input unbound or changed: ' + name)
+        require(not any(part in Path(name).parts for part in ('bench', '_scratch', 'reference')),
+                'Native check includes reference capsule source')
+    if lane == 'titan':
+        require(record.get('schema') == 'prism-titan-native-checks.v1'
+                and record.get('classification') == 'HOST_QUALIFICATION_ONLY', 'Wrong Titan native check receipt')
+        core = source / 'deps/PRISM-Core'
+        require(Path(record.get('core_root', '')).resolve() == core.resolve(), 'Native checks use foreign Core')
+        core_inputs = record.get('core_inputs')
+        require(isinstance(core_inputs, dict) and core_inputs, 'Missing native Core check inventory')
+        for name, digest in core_inputs.items():
+            require('deps/PRISM-Core/' + name in tracked and sha(safe_file(core, name)) == digest,
+                    'Native check Core input unbound or changed')
+        operations = record.get('results')
+        require(isinstance(operations, list) and operations, 'Missing observed native checks')
+        positives, faults = [], []
+        for row in operations:
+            require(isinstance(row.get('argv'), list) and row['argv']
+                    and type(row.get('exit_code')) is int and row.get('case'), 'Invalid native check operation')
+            if row['case'].endswith(' planted fault'):
+                require(row['exit_code'] != 0, 'Native planted fault survived')
+                faults.append(row['case'])
+            else:
+                require(row['exit_code'] == 0, 'Native positive check failed')
+                positives.append(row['case'])
+        require(positives and faults and any(case.endswith(' compile') for case in positives),
+                'Native checks require actual compilation, positive execution and compiled faults')
+    else:
+        require(record.get('schema') == 'prism.native-host-test.v1'
+                and record.get('classification') == 'PRODUCT_CANDIDATE'
+                and record.get('operation') == 'test', 'Wrong DualMCU native check receipt')
+        operations = record.get('operations')
+        require(isinstance(operations, list) and operations, 'Missing observed native checks')
+        def check_log(row):
+            file = safe_file(output, row.get('log', ''))
+            require(sha(file) == row.get('log_sha256'), 'Native check log missing or changed')
+        for row in operations:
+            require(isinstance(row.get('argv'), list) and row['argv']
+                    and type(row.get('returncode')) is int and row['returncode'] == 0,
+                    'Native positive check failed or missing')
+            if 'oracle_returncode' in row:
+                require(type(row['oracle_returncode']) is int and row['oracle_returncode'] == 0,
+                        'Native differential oracle failed')
+            check_log(row)
+        mutations = record.get('mutations')
+        require(isinstance(mutations, list) and mutations, 'Missing compiled native faults')
+        for row in mutations:
+            require(type(row.get('compile_returncode')) is int and row['compile_returncode'] == 0
+                    and type(row.get('run_returncode')) is int and row['run_returncode'] != 0
+                    and row.get('detected') is True and row.get('name'), 'Native planted fault survived or did not compile')
+            check_log(row)
+        positives, faults = [row['argv'] for row in operations], [row['name'] for row in mutations]
+    facts.update(native_check_receipt=record, observed_positive_checks=positives, rejected_compiled_faults=faults,
+                 qualification='NATIVE_HOST_CANDIDATE_CHECKS: observed owned application checks; full inventory and physical gates remain open')
+
+
+def lane_product_test(cfg, ctx, facts):
+    source = Path(cfg['source']).resolve()
+    script_name = 'scripts/native_check.py' if cfg['lane'] == 'titan' else 'scripts/native_test.py'
+    script = safe_file(source, script_name)
+    require(script_name in facts['source']['tracked_files'], 'Native check entry must be bound in lane')
+    before = donor_identity(source)
+    compiler = Path(shutil.which('clang++') or '').resolve()
+    require(compiler.is_file(), 'Native host compiler unavailable')
+    compiler_digest = sha(compiler)
+    run_key = hashlib.sha256(str(ctx.run_dir.resolve()).encode()).hexdigest()[:16]
+    output = source / '_scratch/ael-product-test' / run_key
+    require(not output.exists(), 'Fresh native check output required')
+    command = [sys.executable, '-B', str(script), '--output', str(output)]
+    log = ctx.logs_dir / 'lane-product-test.log'
+    facts.update(argv=command, cwd=str(source), lane_identity=before, lane_output=str(output),
+                 host_compiler={'path': str(compiler), 'sha256': compiler_digest})
+    with log.open('w') as out:
+        proc = run_command(command, cwd=source, stdout=out, timeout=1200)
+    facts.update(returncode=proc.returncode, log=str(log), log_sha256=sha(log))
+    require(proc.returncode == 0, 'Native host checks failed; ' + str(log))
+    require(donor_identity(source) == before and sha(compiler) == compiler_digest,
+            'Native source/compiler changed during checks')
+    receipt = safe_file(output, 'receipt.json')
+    validate_native_checks(json.loads(receipt.read_text()), output, source, cfg['lane'], facts)
+    facts['lane_receipts'] = [{'path': str(receipt), 'sha256': sha(receipt)}]
+
+
 def validate_titan(row, expected_build, now):
     identity = row['identity']
     require(identity.get('identified') is True and identity.get('uid') == TITAN_UID, 'Titan UID unidentified/mismatched')
@@ -598,6 +694,8 @@ class PrismLaneAdapter:
                 lane_bench(cfg, ctx, facts)
             elif action == 'product-build':
                 lane_product_build(cfg, ctx, facts)
+            elif action == 'product-test':
+                lane_product_test(cfg, ctx, facts)
             elif action == 'diagnose':
                 lane_diagnosis(cfg, facts)
             elif action == 'discover':

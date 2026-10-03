@@ -12,6 +12,11 @@ source changes during compilation are rejected. The result is classified
 `PRODUCT_CANDIDATE`: native compilation does not close missing musical/effect
 behaviour, controls, timing or physical qualification.
 
+Each application has its own required ELF and map: ARM RT1062 and Xtensa S3
+for DualMCU, ARM M85 for Titan. Swapped, missing or extra applications fail.
+The RT1062 and M85 maps must contain the shared musical Runtime; the radio
+companion map must not. This checks image ownership, not complete semantics.
+
 ```bash
 /Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane dualmcu --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU --action product-build --out _scratch/prism-dualmcu-product
 /Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane titan --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan --action product-build --out _scratch/prism-titan-product
@@ -21,6 +26,19 @@ Each lane must have committed its owned source and pin before these commands;
 each `--out` must be unused. No serial connection, programming, reset or recovery
 occurs. Existing `build`, `flash` and `recover` refusal guards remain until the
 corresponding product and deployment admission requirements are met.
+
+`product-test` runs the existing lane-owned native host checks:
+`scripts/native_test.py` for DualMCU and `scripts/native_check.py` for Titan.
+It binds the committed source and pinned Core, positive compile/execution
+records and rejected compiled faults. The result is
+`NATIVE_HOST_CANDIDATE_CHECKS`; it does not mark the untested behaviour inventory
+complete. Reference-capsule inputs, failed checks, surviving or uncompiled
+faults, development Core, changed logs and false hardware/admission claims fail.
+
+```bash
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane dualmcu --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-DualMCU --action product-test --out _scratch/prism-dualmcu-native-tests
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism --lane titan --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan --action product-test --out _scratch/prism-titan-native-tests
+```
 
 ## PRISM-owned reference builds — migration increment
 
@@ -98,6 +116,11 @@ Titan uses the donor's native `scripts/build_scalar.py`, installed Arm GNU 13.3.
 
 Titan observations require the existing `com.spectrasynq.titan-broker` owner and `/tmp/titan-emotiscope-control/live-stats.json`. The adapter checks USB identity, exact owner arguments, source/build/schema, freshness of each device topic, continuing audio/LED counters, changing frame CRCs and no new capture/LED faults. The broker's admission boolean is recorded, not rewritten. A read-only observation PASS does not grant control or programming admission.
 
-Native `build`, `flash` and `recover` for the PRISM scaffolds fail closed: neither contains a board application, startup configuration or deployable target. DualMCU `observe` also refuses the single S3 Emotiscope as a substitute for both chips. These refusals are tested. A donor build is never automatically flashed, and hardware side effects are never retried by AEL.
+At the original scaffold baseline, neither lane contained a native application.
+The current native `product-build` and `product-test` entries above now execute
+owned applications and their tests. `build`, `flash` and `recover` still fail
+closed because full product/deployment admission remains open. DualMCU
+`observe` refuses a single S3 Emotiscope as a substitute for both chips. A donor
+build is never automatically flashed; hardware side effects are never retried.
 
 For Titan image recovery, preserve the existing donor's `scripts/programme_rfp_swd.py`, E2 Lite identity and current image-bound admission procedure; this run validates owner recovery only. For standard image recovery, use the preserved [original recovery procedure](../reports/emotiscope-baseline-2026-10-03/README.md). Never write a Titan/Teensy image to `/dev/tty.usbmodem12201`.
