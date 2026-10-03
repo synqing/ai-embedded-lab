@@ -1,0 +1,446 @@
+{
+  "error": "klv_set=mirror,1: missing 'KLV value=mirror n=1'; replies=[]",
+  "facts": {
+    "action": "test",
+    "baseline_metrics": {
+      "audio_active_avg_us_median": 5080,
+      "audio_active_max_us": 8303,
+      "fps_median": 99.0,
+      "fps_min": 89,
+      "frame_avg_us_median": 10166,
+      "frame_max_us": 16772,
+      "samples": 10,
+      "vu_max": 0.05
+    },
+    "before": {
+      "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+      "frames": 65206,
+      "heap_free": 18476,
+      "heap_largest": 7156,
+      "mode": 0,
+      "saved": {
+        "bytes": 3351,
+        "crc": "62851093"
+      }
+    },
+    "commands": [
+      {
+        "command": "build",
+        "reply": [
+          "sbr{{",
+          "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+          "}}",
+          "KLV us=1970 fps=91 err=0 vu=0.07 sp=0.285 bt=0",
+          "KLVT show=1767/2371 dly=3010/8497 frm=11050/16719 n=92",
+          "KLVB pre=253/986 acq=2090/6510 vu=144/839",
+          "KLVD ons=727/1596 sal=260/774 tmp=336/1672",
+          "KLVE pub=350/743 tail=97/252 rsec=3898/6689",
+          "KLVF live=2677/5428 fill=2095/2386 show=0/0",
+          "KLVG a1=102/246 a2=239/346 a3=239/1010",
+          "KLVH a4=380/1110 cs=95/183 va=536/756",
+          "KLVI vb=34/68 vc=86/126 vd=86/142"
+        ]
+      },
+      {
+        "command": "klv_status",
+        "reply": [
+          "KLV image bytes=3351 crc=62851093",
+          "KLV vm=up origin=saved saved=1 err=0 px=128 frames=65206",
+          "KLV renderer=live mode=0",
+          "KLV heap free=18476 big=7156"
+        ]
+      },
+      {
+        "command": "klv_get=palette",
+        "reply": [
+          "KLV value=palette n=43",
+          "KLV us=1966 fps=88 err=0 vu=0.06 sp=0.282 bt=0",
+          "KLVT show=1797/2353 dly=3203/8498 frm=11329/16706 n=89",
+          "KLVA wt=1096/5416 act=5699/7593 gd=1636/2355 dl=617 n=135",
+          "KLVB pre=290/3197 acq=2156/6564 vu=147/812",
+          "KLVC pg=242/908 nov=107/720 snp=346/1050",
+          "KLVD ons=706/1585 sal=251/762 tmp=336/1609",
+          "KLVE pub=377/1332 tail=92/213 rsec=3907/6799",
+          "KLVF live=2702/5782 fill=2149/2343 show=0/0",
+          "KLVG a1=114/740 a2=252/1022 a3=259/970",
+          "KLVH a4=400/1095 cs=97/247 va=523/779"
+        ]
+      },
+      {
+        "command": "klv_get=position",
+        "reply": [
+          "KLV value=position n=0"
+        ]
+      },
+      {
+        "command": "klv_get=brightness",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLVP 5800/7250/7550/7743 m=5643 n=1334 o=19/0 d=685 w=73 b=612999 t0=720944431 t1=730948361 s=1334 rn=97259 rp99=7550 lost=0/0 diag=0 sc=0 is=0 ir=53920 io=97259 iw=5463",
+          "KLVR 1989/1989/1989/1989 m=1955 n=898 o=0/0 d=685 w=73 b=612999 t0=721119644 t1=731119809 s=898 rn=67134 rp99=2400 lost=0/0 diag=0 sc=0 mode=0",
+          "KLV us=1957 fps=86 err=0 vu=0.03 sp=0.264 bt=0",
+          "KLVT show=1766/2350 dly=3516/8494 frm=11590/16707 n=87",
+          "KLVA wt=1216/5443 act=5549/7550 gd=1618/2337 dl=629 n=135",
+          "KLVB pre=261/990 acq=2209/6596 vu=139/807",
+          "KLVC pg=271/976 nov=94/697 snp=357/1279",
+          "KLVD ons=661/1581 sal=249/731 tmp=331/1734",
+          "KLVF live=2718/5414 fill=2119/2376 show=0/0",
+          "KLVG a1=101/225 a2=235/352 a3=253/1001",
+          "KLVH a4=373/1133 cs=93/175 va=509/761",
+          "KLVI vb=35/63 vc=86/130 vd=90/238",
+          "KLVQ 8450/16700/16750/16815 m=11135 n=898 o=682/682 d=685 w=73 b=612999 t0=721191338 t1=731191343 s=898 rn=67138 rp99=16800 lost=0/0 diag=0 sc=0 sub=16380 skp=0",
+          "KLVS 8100/9100/9800/11750 m=8118 n=898 o=234/234 d=685 w=73 b=612999 t0=721191338 t1=731191343 s=89 diag=0 sc=0",
+          "KLVU wait=2884/8426 late=5230 skip=5233 fault=0 timeout=0 w=73 b=612999 t0=721191338 t1=731191343",
+          "KLVL 100/150/200/210 m=86 n=898 o=0/0 d=685 w=73 b=612999 t0=721191338 t1=731191343 s=898 rn=67139 rp99=200 lost=0/0 diag=0 sc=0"
+        ]
+      },
+      {
+        "command": "klv_get=saturation",
+        "reply": [
+          "KLV value=saturation n=1000",
+          "KLVIO us=731352922 b=612999 mask=3 rx=1 init=0 f=67153 pair=67153 q=67404/67404 c=67404/67404 reuse=0 qe=0 ce=0 eof=48750 rb=37440000 ovf=93 rd=97313 cb=37368192 re=0",
+          "KLV2 before=1114/1149 render=841/869 n=899",
+          "KLVX dec=25/41 sil=106/748 acf=403/1100 n=444",
+          "KLVY upd=438/1210 ph=2/13 pub=2/16",
+          "KLVV gz=324/1061 sc=25/40 wn=34/58 rs=50/191",
+          "KLVO bpm=111.0 c=0.44 lk=0"
+        ]
+      },
+      {
+        "command": "klv_get=mirror",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLV us=1949 fps=83 err=0 vu=0.04 sp=0.272 bt=0",
+          "KLVT show=1777/2356 dly=3836/8497 frm=12004/16842 n=84",
+          "KLVA wt=1236/5454 act=5567/7672 gd=1609/2266 dl=637 n=134",
+          "KLVB pre=249/991 acq=2243/6639 vu=133/812",
+          "KLVC pg=243/969 nov=101/732 snp=365/129KLVD ons=702/1606 sal=248/1090 tmp=338/1698",
+          "KLVE pub=365/1139 tail=96/222 rsec=3980/5665",
+          "KLVF live=2784/4758 fill=2142/2357 show=0/0",
+          "KLVG a1=109/748 a2=237/461 a3=246/1014",
+          "KLVH a4=383/1039 cs=95/187 va=525/787",
+          "KLVI vb=31/60 vc=81/130 vd=90/371"
+        ]
+      },
+      {
+        "command": "klv_get=speed",
+        "reply": [
+          "KLV value=speed n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=contrast",
+        "reply": [
+          "KLV value=contrast n=1000"
+        ]
+      },
+      {
+        "command": "klv_mode=live",
+        "reply": [
+          "KLV mode=live id=0",
+          "KLV us=1946 fps=87 err=0 vu=0.03 sp=0.227 bt=6",
+          "KLVT show=1825/2362 dly=3392/8496 frm=11457/16727 n=88",
+          "KLVA wt=1130/5407 act=5626/7696 gd=1599/2291 dl=669 n=134",
+          "KLVB pre=269/991 acq=2141/6541 vu=144/816",
+          "KLVC pg=279/984 nov=91/706 snp=334/1277",
+          "KLVD ons=717/1596 sal=254/738 tmp=351/1640",
+          "KLVE pub=358/689 tail=105/762 rsec=3870/6130",
+          "KLVF live=2688/4625 fill=2091/2363 show=0/0",
+          "KLVG a1=101/237 a2=242/896 a3=253/1096",
+          "KLVH a4=383/1103 cs=97/177 va=516/748",
+          "KLVI vb=33/67 vc=81/130 vd=92/330"
+        ]
+      },
+      {
+        "command": "klv_set=brightness,600",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLV us=1951 fps=93 err=0 vu=0.05 sp=0.208 bt=0",
+          "KLVT show=1796/2367 dly=2723/8471 frm=10752/16712 n=93",
+          "KLVB pre=259/993 acq=2126/6576 vu=156/821",
+          "KLVC pg=273/984 nov=98/739 snp=349/1283",
+          "KLVD ons=709/1587 sal=266/752 tmp=328/1691",
+          "KLVE pub=358/732 tail=105/753 rseKLVF live=2667/4341 fill=2093/2365 show=0/0",
+          "KLVG a1=101/222 a2=241/343 a3=252/1006",
+          "KLVH a4=392/1102 cs=96/182 va=523/761",
+          "KLVI vb=34/55 vc=83/131 vd=85/437"
+        ]
+      },
+      {
+        "command": "klv_mode=waveform_tempo",
+        "reply": [
+          "KLV mode=waveform_tempo id=18"
+        ]
+      },
+      {
+        "command": "klv_set=position,0",
+        "reply": [
+          "KLV value=position n=0",
+          "KLV us=2102 fps=110 err=0 vu=0.04 sp=0.249 bt=0",
+          "KLVT show=1866/2389 dly=1905/8423 frm=9084/16760 n=111",
+          "KLVA wt=469/5371 act=6877/8424 gd=1763/2341 dl=573 n=126",
+          "KLVB pre=288/990 acq=1842/6510 vu=160/856",
+          "KLVC pg=327/1021 nov=128/719 snp=453/1298",
+          "KLVD ons=850/1584 sal=402/716 tmp=332/1720",
+          "KLVE pub=526/844 tail=118/230 rsec=4144/6669",
+          "KLVF live=2766/5383 fill=887/2352 show=0/0",
+          "KLVG a1=114/778 a2=270/952 a3=404/1006",
+          "KLVH a4=544/1116 cs=140/222 va=590/801",
+          "KLVI vb=34/63 vc=96/139 vd=104/359"
+        ]
+      },
+      {
+        "command": "klv_set=mirror,1",
+        "reply": []
+      },
+      {
+        "command": "klv_mode=waveform_hybrid",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLV mode=waveform_hybrid id=11",
+          "KLV us=2479 fps=119 err=0 vu=0.04 sp=0.205 bt=0",
+          "KLVT show=1916/2249 dly=1521/7095 frm=8403/16776 n=119",
+          "KLVA wt=150/733 act=7340/8372 gd=1752/2297 dl=682 n=121",
+          "KLVB pre=320/1363 acq=1711/2089 vu=158/826",
+          "KLVC pg=367/549 nov=122/175 snp=461/1098",
+          "KLVD ons=926/1090 sal=481/565 tmp=314/1067",
+          "KLVE pub=568/1156 tail=134/226 rsec=4282/7301",
+          "KLVF live=2958/5949 fill=430/534 show=0/0",
+          "KLVG a1=144/752 a2=350/931 a3=447/1020",
+          "KLVH a4=580/1219 cs=155/209 va=502/683",
+          "KLVI vb=34/63 vc=96/135 vd=117/260"
+        ]
+      },
+      {
+        "command": "klv_set=palette,43",
+        "reply": [
+          "KLV value=palette n=43"
+        ]
+      },
+      {
+        "command": "klv_set=position,0",
+        "reply": [
+          "KLV value=position n=0",
+          "KLV us=2237 fps=119 err=0 vu=0.01 sp=0.248 bt=0",
+          "KLVT show=1949/2441 dly=1460/6761 frm=8402/16741 n=120",
+          "KLVA wt=144/722 act=7187/8906 gd=1761/2288 dl=839 n=122",
+          "KLVB pre=443/1190 acq=1605/2166 vu=110/223",
+          "KLVC pg=345/562 nov=123/154 snp=430/1143",
+          "KLVD ons=945/1515 sal=432/539 tmp=307/1539",
+          "KLVE pub=510/767 tail=140/204 rsec=4321/7464",
+          "KLVF live=3160/6324 fill=435/528 show=0/0",
+          "KLVG a1=150/748 a2=434/947 a3=298/1024",
+          "KLVH a4=536/1089 cs=157/187 va=432/617",
+          "KLVI vb=33/72 vc=88/130 vd=97/297"
+        ]
+      },
+      {
+        "command": "klv_set=brightness,600",
+        "reply": [
+          "KLV value=brightness n=600"
+        ]
+      },
+      {
+        "command": "klv_set=saturation,1000",
+        "reply": [
+          "KLV value=saturation n=1000"
+        ]
+      },
+      {
+        "command": "klv_set=mirror,1",
+        "reply": [
+          "KLV us=2511 fps=119 err=0 vu=0.04 sp=0.243 bt=0",
+          "KLVT show=1885/2379 dly=1210/7725 frm=8403/16731 n=119",
+          "KLVA wt=104/714 act=7584/8961 gd=1961/2273 dl=464 n=121",
+          "KLVB pre=320/956 acq=1554/2178 vu=188/826",
+          "KLVC pg=402/516 nov=129/210 snp=507/687",
+          "KLVE pub=588/832 tail=128/187 rsec=4561/6963",
+          "KLVF live=3152/5979 fill=490/555 show=0/0",
+          "KLVG a1=117/281 a2=297/944 a3=344/426",
+          "KLVH a4=652/1179 cs=152/187 va=578/812",
+          "KLVI vb=35/63 vc=106/143 vd=115/419",
+          "KLV value=mirror n=1"
+        ]
+      },
+      {
+        "command": "klv_set=speed,1000",
+        "reply": [
+          "KLV value=speed n=1000",
+          "KLVP 6250/8300/8500/8961 m=6129 n=1281 o=182/139 d=685 w=75 b=612999 t0=740954117 t1=750954808 s=1281 rn=99874 rp99=7600 lost=0/0 diag=0 sc=0 is=0 ir=55523 io=99874 iw=7120",
+          "KLVR 2000/2500/2550/2592 m=2058 n=1066 o=399/399 d=685 w=75 b=612999 t0=741120157 t1=751120308 s=1066 rn=69134 rp99=2400 lost=0/0 diag=0 sc=0 mode=11"
+        ]
+      },
+      {
+        "command": "klv_set=contrast,1000",
+        "reply": [
+          "KLVQ 8400/16700/16850/16855 m=9371 n=1068 o=662/662 d=685 w=75 b=612999 t0=741199750 t1=751207999 s=1068 rn=69143 rp99=16800 lost=0/0 diag=0 sc=0 sub=1068 skp=0",
+          "KLV value=contrast n=1000",
+          "KLVS 7350/8750/9450/11429 m=7530 n=1068 o=106/106 d=685 w=75 b=612999 t0=741199750 t1=751207999 s=1068 rn=69144 rp99=9800 lost=0/0 diag=0 sc=0",
+          "KLVU wait=1835/8421 late=132 skip=132 fault=0 timeout=0 w=75 b=612999 t0=741199750 t1=751207999",
+          "KLVL 100/100/200/225 m=82 n=1068 o=0/0 d=685 w=75 b=612999 t0=741199750 t1=751207999 s=1068 rn=69144 rp99=200 lost=0/0 diag=0 sc=0",
+          "KLV us=2228 fps=117 err=0 vu=0.03 sp=0.276 bt=0",
+          "KLVT show=1967/2448 dly=1494/8544 frm=8545/16749 n=118",
+          "KLVA wt=110/741 act=7249/8859 gd=1764/2288 dl=688 n=123",
+          "KLVB pre=345/978 acq=1604/2050 vu=165/821",
+          "KLVC pg=363/997 nov=128/747 snp=440/1157",
+          "KLVD ons=933/1529 sal=432/1044 tmp=334/1796",
+          "KLVE pub=536/1223 tail=134/210 rsec=4365/7575",
+          "KLVF live=3104/6180 fill=452/549 show=0/0",
+          "KLVG a1=145/782 a2=343/935 a3=418/1032",
+          "KLVH a4=551/1080 cs=158/802 va=480/770",
+          "KLVI vb=35/63 vc=96/139 vd=110/419",
+          "KLVW n=146 319 1597 198 1954 396 136 522",
+          "KLVZ 950 518 910 581 140 126 99",
+          "KLVIO us=751386849 b=612999 mask=3 rx=1 init=0 f=69163 pair=69163 q=69414/69414 c=69414/69414 reuse=0 qe=0 ce=0 eof=50085 rb=38465280 ovf=120 rd=99928 cb=38372352 re=0",
+          "KLV2 before=1656/2584 render=401/869 n=1074",
+          "KLVX dec=25/37 sil=114/192 acf=414/1122 n=425",
+          "KLVY upd=443/1388 ph=2/11 pub=2/3",
+          "KLVV gz=297/1167 sc=28/640 wn=43/677 rs=71/737",
+          "KLVO bpm=107.0 c=0.21 lk=0"
+        ]
+      },
+      {
+        "command": "klv_mode=live",
+        "reply": [
+          "KLV mode=live id=0"
+        ]
+      },
+      {
+        "command": "klv_get=palette",
+        "reply": [
+          "KLV value=palette n=43",
+          "KLV us=1949 fps=98 err=0 vu=0.03 sp=0.258 bt=0",
+          "KLVT show=1874/2423 dly=2536/8613 frm=10185/16811 n=99",
+          "KLVA wt=587/4142 act=6091/8636 gd=1670/2338 dl=713 n=135",
+          "KLVB pre=288/1384 acq=1749/5258 vu=137/309",
+          "KLVC pg=280/976 nov=111/732 snp=387/1306",
+          "KLVD ons=776/1599 sal=315/1065 tmp=320/1658",
+          "KLVE pub=411/1221 tail=103/301 rsec=4075/7016",
+          "KLVF live=2861/5994 fill=1432/2363 show=0/0",
+          "KLVG a1=114/766 a2=292/950 a3=282/992",
+          "KLVH a4=440/1091 cs=108/196 va=505/765",
+          "KLVI vb=32/63 vc=84/130 vd=94/241"
+        ]
+      },
+      {
+        "command": "klv_get=position",
+        "reply": [
+          "KLV value=position n=0"
+        ]
+      },
+      {
+        "command": "klv_get=brightness",
+        "reply": [
+          "KLV value=brightness n=600",
+          "KLV us=1971 fps=89 err=0 vu=0.04 sp=0.259 bt=0",
+          "KLVT show=1820/2360 dly=3128/8478 frm=11204/16700 n=90",
+          "KLVA wt=1080/4414 act=5686/7751 gd=1643/2341 dl=648 n=135",
+          "KLVB pre=275/1084 acq=2104/5575 vu=150/826",
+          "KLVC pg=264/984 nov=109/724 snp=347/1279",
+          "KLVD ons=701/1613 sal=258/890 tmp=334/1601",
+          "KLVE pub=362/1403 tail=99/748 rsec=3865/7024",
+          "KLVF live=2684/5586 fill=2122/2351 show=0/0",
+          "KLVG a1=100/186 a2=249/903 a3=261/1011",
+          "KLVI vb=33/63 vc=85/131 vd=88/216"
+        ]
+      },
+      {
+        "command": "klv_get=saturation",
+        "reply": [
+          "KLV value=saturation n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=mirror",
+        "reply": [
+          "KLV value=mirror n=1",
+          "KLV us=1929 fps=87 err=0 vu=0.05 sp=0.213 bt=0",
+          "KLVT show=1808/2351 dly=3369/8507 frm=11457/16723 n=88",
+          "KLVA wt=1122/5418 act=5632/7608 gd=1602/2335 dl=674 n=134",
+          "KLVB pre=264/1004 acq=2135/6555 vu=145/834",
+          "KLVC pg=267/984 nov=99/698 snp=357/1294",
+          "KLVD ons=712/1589 sal=269/1028 tmp=325/1670",
+          "KLVE pub=368/1327 tail=99/744 rsec=3877/6134",
+          "KLVF live=2677/4590 fill=2127/2373 show=0/0",
+          "KLVG a1=99/224 a2=249/935 a3=255/1010",
+          "KLVH a4=374/712 cs=97/187 va=517/766"
+        ]
+      },
+      {
+        "command": "klv_get=speed",
+        "reply": [
+          "KLV value=speed n=1000"
+        ]
+      },
+      {
+        "command": "klv_get=contrast",
+        "reply": [
+          "KLV value=contrast n=1000",
+          "KLV us=1959 fps=87 err=0 vu=0.01 sp=0.295 bt=0",
+          "KLVT show=1784/2345 dly=3396/8507 frm=11494/16752 n=87",
+          "KLVA wt=1146/5394 act=5634/7693 gd=1609/2302 dl=616 n=134",
+          "KLVB pre=247/997 acq=2188/6566 vu=143/821",
+          "KLVC pg=245/1002 nov=107/719 snp=356/1289",
+          "KLVE pub=370/1119 tail=98/744 rsec=3892/6004",
+          "KLVF live=2696/4825 fill=2146/2396 show=0/0",
+          "KLVG a1=101/265 a2=249/1001 a3=266/1006",
+          "KLVH a4=386/1096 cs=98/224 va=516/748",
+          "KLVI vb=32/54 vc=83/131 vd=91/423"
+        ]
+      },
+      {
+        "command": "build",
+        "reply": [
+          "sbr{{",
+          "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+          "}}"
+        ]
+      },
+      {
+        "command": "klv_status",
+        "reply": [
+          "KLV image bytes=3351 crc=62851093",
+          "KLV vm=up origin=saved saved=1 err=0 px=128 frames=67186",
+          "KLV renderer=live mode=0",
+          "KLV heap free=18476 big=7156"
+        ]
+      }
+    ],
+    "decoder_sha256": "ed537572da4730d26461a390462fe2d7ebdf217496a8317125a60a8ee7071ff5",
+    "expected_firmware": "181cb92a4e660eaeae281ad3c081cf1b420f81f3",
+    "modes": {},
+    "original_controls": {
+      "brightness": 600,
+      "contrast": 1000,
+      "mirror": 1,
+      "palette": 43,
+      "position": 0,
+      "saturation": 1000,
+      "speed": 1000
+    },
+    "psram_bytes": 0,
+    "qualification": "target telemetry and post-current-limit LED buffers; not optical/electrical waveform certification",
+    "raw_log": "reports/emotiscope-integration-2026-10-03/live-04/logs/emotiscope.raw.log",
+    "raw_sha256": "b700485929eebf24312d12e1bbbdec54217be6f6da24ecefea5a4a74ab71c72a",
+    "restored": {
+      "build": "BUILD: version=40103 git=181cb92a epoch=1790997874 env=k1_emotiscope_live",
+      "frames": 67186,
+      "heap_free": 18476,
+      "heap_largest": 7156,
+      "mode": 0,
+      "saved": {
+        "bytes": 3351,
+        "crc": "62851093"
+      }
+    },
+    "source": {
+      "branch": "main",
+      "git": "a15b39be63880cd521424c76fbfa3e67ec91e9e1",
+      "lane": true,
+      "platformio_sha256": "1fe23e304ed49a5830680a25b3d425d95c4e1b970ca7d9cea0e4c23d0de96475",
+      "root": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3"
+    },
+    "usb_serial": "DC:54:75:EA:36:14"
+  },
+  "ok": false
+}

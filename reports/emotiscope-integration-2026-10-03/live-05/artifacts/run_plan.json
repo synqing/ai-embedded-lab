@@ -1,0 +1,31 @@
+{
+  "name": "emotiscope_usb_bench",
+  "recovery_policy": {
+    "enabled": false
+  },
+  "steps": [
+    {
+      "inputs": {
+        "action": "test",
+        "build_dir": "/Users/spectrasynq/ai-embedded-lab/_scratch/emotiscope-fresh-build",
+        "environment": "k1_emotiscope_live",
+        "expected_git": null,
+        "port": "/dev/tty.usbmodem12201",
+        "real_music_confirmed": true,
+        "resets": 1,
+        "saved": {
+          "bytes": 3351,
+          "crc": "62851093"
+        },
+        "seconds": 60,
+        "source": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/K1-S3",
+        "usb_serial": "DC:54:75:EA:36:14"
+      },
+      "name": "emotiscope-test",
+      "retry_budget": 0,
+      "type": "check.emotiscope"
+    }
+  ],
+  "timeout_s": 4000,
+  "upstream_revision": "a95dd2639019c6366c92d2bdb78561a9f89855eb"
+}

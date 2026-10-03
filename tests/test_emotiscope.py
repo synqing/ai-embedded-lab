@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from ael.adapters.emotiscope import identified_port, ownership, metrics, runtime, EmotiscopeAdapter, Link, native_status, boot_diagnostics
+from ael.adapters.emotiscope import identified_port, ownership, metrics, runtime, EmotiscopeAdapter, Link, native_status, boot_diagnostics, set_control
 from ael.runner import RunContext, run_plan
 from ael.adapter_registry import AdapterRegistry
 
@@ -74,6 +74,18 @@ class EmotiscopeTests(unittest.TestCase):
             self.assertFalse(result['ok']); self.assertEqual(len(result['steps']), 1)
             self.assertTrue((Path(d)/'artifacts/emotiscope-flash.json').exists())
 
+    def test_missing_write_ack_reconciles_without_repeating_write(self):
+        commands = []
+        def cmd(value):
+            commands.append(value)
+            return [] if value.startswith('klv_set') else ['KLV value=mirror n=1']
+        set_control(SimpleNamespace(command=cmd), 'mirror', 1)
+        self.assertEqual(commands, ['klv_set=mirror,1', 'klv_get=mirror'])
+        with self.assertRaisesRegex(RuntimeError, 'postcondition'):
+            set_control(SimpleNamespace(command=lambda value: [] if value.startswith('klv_set') else ['KLV value=mirror n=0']), 'mirror', 1)
+        with self.assertRaisesRegex(RuntimeError, 'rejected'):
+            set_control(SimpleNamespace(command=lambda _: ['KLV err=value']), 'mirror', 1)
+
     def test_torn_status_retry_and_real_fault_not_retried(self):
         good = ['KLV native frames=12 avg=100 max=200 invalid=0', 'KLV native ap=8 pcm=96 history=1']
         replies = iter([['KLV native frameKLV native ap=8 pcm=96 history=1'], good])
@@ -90,15 +102,15 @@ class EmotiscopeTests(unittest.TestCase):
             native_status(SimpleNamespace(command=lambda *_: []))
 
     def test_boot_errors_are_retained_and_unknown_errors_fail(self):
-        lines = ['ESP-ROM:esp32s3', 'E (1) quad_psram: PSRAM ID read error: 0x00ffffff', 'E (2) psramAddToHeap(): PSRAM not initialized!', 'KLV boot=saved']
+        lines = ['ESP-ROM:esp32s3', 'E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode', '[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!', '[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation', 'KLV boot=saved']
         result = boot_diagnostics(lines, '/dev/example', 'raw.log')
         self.assertFalse(result['ok'])  # Never disguise the upstream diagnostic FAIL.
         self.assertGreater(result['known_absent_psram_probe_errors'], 0)
-        for changed in (lines+['E (3) DMA failure'], lines+['ESP-ROM:esp32s3'], lines[:-1]):
+        for changed in (lines+['E (3) DMA failure'], lines+['[    75][E][dma.cpp:9] missing descriptor'], lines+['ESP-ROM:esp32s3'], lines[:-1]):
             with self.assertRaises(RuntimeError): boot_diagnostics(changed, '/dev/example', 'raw.log')
 
     def test_fatal_serial_and_unexpected_reset(self):
-        for data in (b'Guru Meditation\n', b'ESP-ROM:esp32s3\n', b'E (3) DMA failure\n'):
+        for data in (b'Guru Meditation\n', b'ESP-ROM:esp32s3\n', b'E (3) DMA failure\n', b'[    75][E][dma.cpp:9] missing descriptor\n'):
             link = object.__new__(Link)
             link.ser = SimpleNamespace(in_waiting=len(data),read=lambda _: data)
             link.raw=io.BytesIO();link.pending=b'';link.allow_boot=False

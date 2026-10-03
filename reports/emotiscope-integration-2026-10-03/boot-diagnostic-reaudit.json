@@ -1,0 +1,155 @@
+[
+  {
+    "ok": false,
+    "bytes": 1260,
+    "lines": 33,
+    "port": "/dev/tty.usbmodem12201",
+    "baud": 115200,
+    "crash_detected": false,
+    "reboot_loop_suspected": false,
+    "errors": [
+      {
+        "pattern": "\\bE\\s*\\(",
+        "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+        "lineno": 12
+      },
+      {
+        "pattern": "\\bERROR\\b",
+        "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+        "lineno": 12
+      }
+    ],
+    "errors_truncated": 0,
+    "warnings": [],
+    "warnings_truncated": 0,
+    "matched": {
+      "expect": {
+        "KLV boot=saved": 1
+      },
+      "forbid": {},
+      "boot": {
+        "count": 1,
+        "patterns": [
+          "ESP-ROM:"
+        ]
+      }
+    },
+    "missing_expect": [],
+    "forbid_matched": [],
+    "raw_log_path": "reports/emotiscope-integration-2026-10-03/live-03/logs/emotiscope.raw.log",
+    "error_summary": "UART error patterns detected",
+    "download_mode_detected": false,
+    "arduino_error_lines": [
+      "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+      "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation"
+    ],
+    "known_boot_diagnostics": [
+      "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+      "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+      "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation"
+    ],
+    "known_absent_psram_probe_errors": 2
+  },
+  {
+    "ok": false,
+    "bytes": 1260,
+    "lines": 33,
+    "port": "/dev/tty.usbmodem12201",
+    "baud": 115200,
+    "crash_detected": false,
+    "reboot_loop_suspected": false,
+    "errors": [
+      {
+        "pattern": "\\bE\\s*\\(",
+        "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+        "lineno": 12
+      },
+      {
+        "pattern": "\\bERROR\\b",
+        "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+        "lineno": 12
+      }
+    ],
+    "errors_truncated": 0,
+    "warnings": [],
+    "warnings_truncated": 0,
+    "matched": {
+      "expect": {
+        "KLV boot=saved": 1
+      },
+      "forbid": {},
+      "boot": {
+        "count": 1,
+        "patterns": [
+          "ESP-ROM:"
+        ]
+      }
+    },
+    "missing_expect": [],
+    "forbid_matched": [],
+    "raw_log_path": "reports/emotiscope-integration-2026-10-03/live-03/logs/emotiscope.raw.log",
+    "error_summary": "UART error patterns detected",
+    "download_mode_detected": false,
+    "arduino_error_lines": [
+      "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+      "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation"
+    ],
+    "known_boot_diagnostics": [
+      "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+      "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+      "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation"
+    ],
+    "known_absent_psram_probe_errors": 2
+  },
+  {
+    "ok": false,
+    "bytes": 1260,
+    "lines": 33,
+    "port": "/dev/tty.usbmodem12201",
+    "baud": 115200,
+    "crash_detected": false,
+    "reboot_loop_suspected": false,
+    "errors": [
+      {
+        "pattern": "\\bE\\s*\\(",
+        "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+        "lineno": 12
+      },
+      {
+        "pattern": "\\bERROR\\b",
+        "line": "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+        "lineno": 12
+      }
+    ],
+    "errors_truncated": 0,
+    "warnings": [],
+    "warnings_truncated": 0,
+    "matched": {
+      "expect": {
+        "KLV boot=saved": 1
+      },
+      "forbid": {},
+      "boot": {
+        "count": 1,
+        "patterns": [
+          "ESP-ROM:"
+        ]
+      }
+    },
+    "missing_expect": [],
+    "forbid_matched": [],
+    "raw_log_path": "reports/emotiscope-integration-2026-10-03/live-03/logs/emotiscope.raw.log",
+    "error_summary": "UART error patterns detected",
+    "download_mode_detected": false,
+    "arduino_error_lines": [
+      "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+      "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation"
+    ],
+    "known_boot_diagnostics": [
+      "E (198) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode",
+      "[    15][E][esp32-hal-psram.c:92] psramAddToHeap(): PSRAM not initialized!",
+      "[    75][E][vfs_api.cpp:99] open(): /littlefs/SHOW_STATE_V1.BIN does not exist, no permits for creation"
+    ],
+    "known_absent_psram_probe_errors": 2
+  }
+]

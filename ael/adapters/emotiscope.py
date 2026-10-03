@@ -23,7 +23,7 @@ USB_SERIAL = 'DC:54:75:EA:36:14'
 ENV = 'k1_emotiscope_live'
 CONTROLS = ('palette', 'position', 'brightness', 'saturation', 'mirror', 'speed', 'contrast')
 MODES = {'live': 0, 'waveform_tempo': 18, 'waveform_hybrid': 11, 'waveform_hybrid_k1': 32}
-UART_ERROR = re.compile('|'.join(_default_patterns('espidf')['errors']), re.IGNORECASE)
+UART_ERROR = re.compile('|'.join(_default_patterns('espidf')['errors']) + r'|\[E\]', re.IGNORECASE)
 FATAL = re.compile(r'Guru Meditation|abort\(\)|assert failed|Brownout|Task watchdog|TWDT|KLV boot=fail|KLV fault=|LoadProhibited|StoreProhibited|IllegalInstruction')
 
 
@@ -155,6 +155,12 @@ class Link:
 
     def expect(self, value, reply):
         lines = self.command(value)
+        if reply not in lines and value.startswith('klv_mode=') and not any(x.startswith('KLV err=') for x in lines):
+            # Never resend a mutation after a missing ACK: reconcile its state.
+            for _ in range(3):
+                observed = self.command('klv_render_status', .8)
+                if reply in observed:
+                    return
         require(reply in lines, f'{value}: missing {reply!r}; replies={lines}')
 
 
@@ -224,27 +230,43 @@ def boot_diagnostics(lines, port, raw_path):
     require(not result['missing_expect'] and not result['download_mode_detected'] and not result['crash_detected'],
             'Boot failed readiness/crash checks')
     # Retain the upstream FAIL and its errors. Only these diagnosed startup probes
-    # are known; every other error must fail the physical test.
-    unknown = [e for e in result['errors'] if not any(t in e['line'] for t in
-        ('quad_psram: PSRAM ID read error: 0x00ffffff', 'psramAddToHeap(): PSRAM not initialized!'))]
+    # and the optional show-state absence are known; every other error fails.
+    arduino_errors = [line for line in lines if re.search(r'\[E\]', line)]
+    known = (
+        r'E \(\d+\) quad_psram: PSRAM ID read error: 0x00ffffff, PSRAM chip not found or not supported, or wrong PSRAM line mode',
+        r'\[\s*\d+\]\[E\]\[esp32-hal-psram\.c:\d+\] psramAddToHeap\(\): PSRAM not initialized!',
+        r'\[\s*\d+\]\[E\]\[vfs_api\.cpp:\d+\] open\(\): /littlefs/SHOW_STATE_V1\.BIN does not exist, no permits for creation',
+    )
+    error_lines = sorted(set([e['line'] for e in result['errors']] + arduino_errors))
+    unknown = [line for line in error_lines if not any(re.fullmatch(p, line) for p in known)]
     require(not unknown, 'Uncharacterised boot errors: ' + str(unknown))
-    result['known_absent_psram_probe_errors'] = len(result['errors'])
+    result['arduino_error_lines'] = arduino_errors
+    result['known_boot_diagnostics'] = error_lines
+    result['known_absent_psram_probe_errors'] = sum('PSRAM' in line for line in error_lines)
     return result
 
 
-def controls(link):
-    result = {}
-    for key in CONTROLS:
+def read_control(link, key):
+    for _ in range(3):
         lines = link.command('klv_get=' + key)
         matches = [re.fullmatch(r'KLV value=' + key + r' n=(-?\d+)', x) for x in lines]
         values = [int(m[1]) for m in matches if m]
-        require(len(values) == 1, 'Missing control readback: ' + key)
-        result[key] = values[0]
-    return result
+        if len(values) == 1:
+            return values[0]
+    raise RuntimeError('Missing control readback: ' + key)
+
+
+def controls(link):
+    return {key: read_control(link, key) for key in CONTROLS}
 
 
 def set_control(link, key, value):
-    link.expect(f'klv_set={key},{value}', f'KLV value={key} n={value}')
+    lines = link.command(f'klv_set={key},{value}')
+    if f'KLV value={key} n={value}' in lines:
+        return
+    require(not any(x.startswith('KLV err=') for x in lines), 'Control rejected: ' + str(lines))
+    # A missing acknowledgement is ambiguous, not permission to repeat a write.
+    require(read_control(link, key) == value, 'Control postcondition mismatch: ' + key)
 
 
 def restore(link, original, mode):
