@@ -124,3 +124,79 @@ closed because full product/deployment admission remains open. DualMCU
 build is never automatically flashed; hardware side effects are never retried.
 
 For Titan image recovery, preserve the existing donor's `scripts/programme_rfp_swd.py`, E2 Lite identity and current image-bound admission procedure; this run validates owner recovery only. For standard image recovery, use the preserved [original recovery procedure](../reports/emotiscope-baseline-2026-10-03/README.md). Never write a Titan/Teensy image to `/dev/tty.usbmodem12201`.
+
+## Explicit native development bench trials
+
+`bench-trial-plan`, `bench-trial-flash`, `bench-trial-recover`,
+`bench-trial-observe` and Titan-only `bench-trial-control` run through the
+existing `check.prism_lane` runner with retry budget zero. They are development
+operations; general `flash`/`recover` and product-release refusal remain intact.
+Dual diagnostic profiles retain **BENCH_ONLY** classification. The adapter
+validates the actual build receipt, committed source, generated inputs, compiler,
+linked objects, image/map hashes and target before constructing a command.
+
+Use the Python3.11 installation used by the existing tools:
+
+```sh
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism \
+  --lane titan --source /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan \
+  --action bench-trial-plan --target titan-native \
+  --deployment-manifest /absolute/path/titan-native.json --out /fresh/output
+```
+
+Replace `bench-trial-plan` with the explicit operation only after its receipt
+inputs and scoped hardware prerequisites have been resolved. `bench-trial-plan`
+never opens hardware; successful planning does not mean a write is authorised.
+Plans lacking a resolved S3 interface deliberately emit no uploader argv.
+Supported targets are `prism_rt1062_t40_bench128_diag`,
+`prism_s3_ble_bench16_diag` and `titan-native`. No active dirty lane is built.
+
+The manifest schema `prism.bench-trial.v1` is a deployment input, **not** a task
+registry or formal certificate. It binds `source_commit`, `build_receipt`
+(path/hash), `image` (path/hash), exact `target`/`identity`, `permitted_range`,
+`port`, `recovery` (image, provenance, restore method), and actual `authority`
+decisions. Dual observation also binds `diagnostic_binding` and
+`source_binding_hash`; S3 permits only app0 at0x10000 with an erase end below
+0x650000. Titan binds the original RFP backend path/hash and reuses its sealed
+UID, SWD speed, E2Lite selection, power-off flags, range and `-run` command
+builder with the **native** image and receipt. No donor metadata is fabricated.
+The existing `K1_RFP_SWD_EXECUTE_OK=1` execution gate is retained.
+
+Before hardware use, `preflight` must bind a fresh (≤120seconds) JSON receipt
+with observed target/identity/port, `owner_clear`, actual observation `method`,
+and hashed `raw_evidence`. Teensy writing additionally requires
+`loader_targets:["20731830"]`, exact exclusive loader ownership and accepted
+settings-loss/recovery decisions. A product name alone is insufficient. Do not
+manufacture a preflight or set authority flags from assumptions. The operator
+must re-identify the interface immediately before use. AEL serialises hardware
+transactions with one process lock and refuses an existing serial owner.
+Opening S3 CDC may reset it; this must be accounted for before observation.
+
+Recovery consumes separately bound actual recovery bytes, never the candidate
+as a substitute current backup. S3 recovery is restricted to a covered app-slot
+slice; no bootloader/partition/NVS/full-flash erase is supported. Tool exit status
+and actual invocation/image hash are recorded separately from runtime boot and
+optical proof. Programming has no blind retry and its process is not killed by
+an arbitrary timeout midway through a flash.
+
+Titan observation uses native `K1S1/K1R1` CRC framing, INFO1, observation21/23/24/26,
+and UID/source/schema/boot checks. It records raw packets, decoded snapshots and
+rates computed from device capture timestamps/sample counts, never buffered
+host arrival times. Unsupported source scalar fields and per-half physical DMA
+rate remain unmeasured. For an explicit atomic control/save operation:
+
+```sh
+# request.json: {"fields":{"9":6,"15":100},"save":true}
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism \
+  --lane titan --source /absolute/Kx-Titan --target titan-native \
+  --action bench-trial-control --deployment-manifest /absolute/manifest.json \
+  --native-request /absolute/request.json --seconds 60 --out /fresh/control-output
+```
+
+Field9 is mode, field15 physical brightness, as defined by native ControlOwner;
+these are **not** historical control IDs or MIDI CC numbers. Atomic controls use
+current boot/revision, a fresh request identity and native binding0x50520001;
+save0x50520002 is a separate checked operation. Accepted/rendered/emitted remain
+distinct. Dual controls stay on the real selected BLE-MIDI path; the diagnostic
+collector is not a replacement control injector. Neither helper resets or
+reconnects hardware automatically, changes playback, or takes another owner.

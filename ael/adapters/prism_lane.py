@@ -261,13 +261,13 @@ def safe_file(root, relative):
     return file
 
 
-def validate_product_targets(output, declared, lane):
+def validate_product_targets(output, declared, lane, targets=None):
     """Bind native processor roles to immutable image/map bytes, without hardware access.
 
     This is one part of candidate build validation. It establishes neither full
     source admission nor timing, deployment permission or observed device identity.
     """
-    targets = PRODUCT_TARGETS[lane]
+    targets = PRODUCT_TARGETS[lane] if targets is None else targets
     actual = {p.relative_to(output).as_posix() for p in output.rglob('*.elf') if p.is_file()}
     require(actual == {spec[0] for spec in targets.values()}, 'Product application target set mismatch')
     executable_targets = {}
@@ -297,10 +297,11 @@ def validate_product_targets(output, declared, lane):
     return executable_targets
 
 
-def validate_product_receipt(record, output, source, lane, facts):
+def validate_product_receipt(record, output, source, lane, facts, *, bench_trial=False):
     """Validate actual candidate images; this grants no deployment admission."""
     require(record.get('schema') == 'prism-product-build.v1', 'Wrong product receipt schema')
-    require(record.get('classification') == 'PRODUCT_CANDIDATE', 'Wrong product classification')
+    expected_classification = 'BENCH_ONLY' if bench_trial and lane == 'dualmcu' else 'PRODUCT_CANDIDATE'
+    require(record.get('classification') == expected_classification, 'Wrong product classification')
     require(type(record.get('exit_code')) is int and record.get('exit_code') == 0 and record.get('hardware_access') is False
             and record.get('product_admitted') is False, 'Invalid candidate execution scope')
     require(record.get('development_core', False) is False, 'Development Core is not an independent pinned build')
@@ -338,18 +339,19 @@ def validate_product_receipt(record, output, source, lane, facts):
                     'SpectraSynq-K1-DualMCU-Firmware', 'SpectraSynq-K1-RA8P1-Firmware')),
                 'Product input depends on donor checkout')
         if group.startswith('vendor'):
-            siblings = [name for name in LANES.values() if name != source.name]
+            siblings = [name for name in LANES.values() if name != LANES[lane]]
             require(not any(part in Path(root).resolve().parts for part in siblings),
                     'Vendor input depends on another product lane')
         require(isinstance(rows, dict) and rows, 'Empty product input group')
         for name, digest in rows.items():
             require(not any(part in Path(name).parts for part in ('bench', '_scratch', 'reference')),
                     'Reference source in product input inventory')
-            file = safe_file(root, name)
+            generated = bench_trial and group == 'lane' and record.get('derived_inputs', {}).get('inputs/' + name) == digest
+            file = safe_file(output, 'inputs/' + name) if generated else safe_file(root, name)
             require(sha(file) == digest, 'Product input changed: ' + group + '/' + name)
             if group in ('lane', 'core'):
                 tracked_name = name if group == 'lane' else 'deps/PRISM-Core/' + name
-                require(tracked_name in tracked, 'Product input absent from bound lane commit: ' + tracked_name)
+                require(generated or tracked_name in tracked, 'Product input absent from bound lane commit: ' + tracked_name)
             bound_sources[prefix + name] = digest
     toolchains = inputs.get('toolchain', {})
     require(isinstance(toolchains, dict) and toolchains, 'Missing compiler inventory')
@@ -382,7 +384,7 @@ def validate_product_receipt(record, output, source, lane, facts):
                     and not any(part in library.resolve().parts for part in ('bench', 'reference')),
                     'Linked runtime library depends on donor/reference source')
             require(not any(part in library.resolve().parts for part in LANES.values()
-                            if part != source.name), 'Linked runtime library depends on another product lane')
+                            if part != LANES[lane]), 'Linked runtime library depends on another product lane')
     objects = record.get('linked_objects')
     require(isinstance(objects, list) and objects, 'Missing linked object inventory')
     named_objects = set()
@@ -403,10 +405,20 @@ def validate_product_receipt(record, output, source, lane, facts):
     require(any(p.suffix == '.elf' for p in images) and any(p.suffix == '.map' for p in images),
             'Product requires native ELF and dependency map')
     require({p.relative_to(output).as_posix() for p in images}.issubset(declared), 'Unbound product image')
-    executable_targets = validate_product_targets(output, declared, lane)
+    targets = None
+    if bench_trial and lane == 'dualmcu':
+        allowed = {'prism_rt1062': (40, True), 'prism_rt1062_t40': (40, True),
+                   'prism_s3_ble': (94, False), 'prism_rt1062_t40_bench128_diag': (40, True),
+                   'prism_s3_ble_bench16_diag': (94, False)}
+        selected = record.get('selected_targets', {})
+        require(selected and set(selected).issubset(allowed), 'Unknown bench build target')
+        require(all(record.get('target_classification', {}).get(t) == 'BENCH_ONLY'
+                    for t in selected if t.endswith('_diag')), 'Bench target classification changed')
+        targets = {t: ('build/' + t + '/' + t + '/firmware.elf', *allowed[t]) for t in selected}
+    executable_targets = validate_product_targets(output, declared, lane, targets)
     require(any(name.startswith('core/music/') for name in bound_sources), 'Product lacks shared musical runtime input')
     facts.update(product_receipt=record, executable_targets=executable_targets,
-                 qualification='PRODUCT_CANDIDATE: independent native compilation; full behaviour and physical gates remain open',
+                 qualification=expected_classification + ': independent native compilation; full behaviour and physical gates remain open',
                  binaries=[{'path': str(p), 'bytes': p.stat().st_size, 'sha256': sha(p)} for p in sorted(images)])
 
 
@@ -707,10 +719,22 @@ def recover_titan_owner(cfg, ctx, facts):
 
 
 class PrismLaneAdapter:
+    def _bench_result(self, ctx, facts):
+        path = evidence.write_evidence(ctx.run_dir, 'prism-lane.json', {'ok': True, 'facts': facts})
+        item = evidence.make_item(kind='prism.bench-trial', source='ael.adapters.prism_lane', ok=True,
+                                  summary='Explicit development bench operation; no product admission',
+                                  facts=facts, artifacts={'result': path})
+        return {'ok': True, 'retryable': False, 'error_summary': '', 'evidence': [item]}
+
     def execute(self, step, plan, ctx):
         cfg = step['inputs']; facts = {}; ok = False; error = ''
         try:
             lane, action = cfg['lane'], cfg['action']
+            if action.startswith('bench-trial-'):
+                from ael.adapters import prism_bench_trial
+                prism_bench_trial.execute(cfg, ctx, facts)
+                ok = True
+                return self._bench_result(ctx, facts)
             facts['source'] = source_facts(cfg['source'], lane)
             source = Path(cfg['source']).resolve()
             if action in ('flash', 'build', 'recover'):

@@ -12,8 +12,10 @@ def main():
     p.add_argument('--lane', required=True, choices=('dualmcu', 'titan'))
     p.add_argument('--source', required=True, type=Path)
     p.add_argument('--core-source', type=Path)
-    p.add_argument('--action', required=True, choices=('discover', 'core-test', 'donor-build', 'donor-recover', 'observe', 'bench-build', 'product-build', 'product-test', 'regression', 'diagnose', 'build', 'flash', 'recover'))
-    p.add_argument('--target', choices=('rt1062_production', 'rt1062_k1_migration_t40_ws2812_128', 's3_radio_bridge_ble'))
+    p.add_argument('--action', required=True, choices=('discover', 'core-test', 'donor-build', 'donor-recover', 'observe', 'bench-build', 'product-build', 'product-test', 'regression', 'diagnose', 'build', 'flash', 'recover', 'bench-trial-plan', 'bench-trial-flash', 'bench-trial-recover', 'bench-trial-observe', 'bench-trial-control'))
+    p.add_argument('--target', choices=('rt1062_production', 'rt1062_k1_migration_t40_ws2812_128', 's3_radio_bridge_ble', 'prism_rt1062_t40_bench128_diag', 'prism_s3_ble_bench16_diag', 'titan-native'))
+    p.add_argument('--deployment-manifest', type=Path)
+    p.add_argument('--native-request', type=Path, help='Explicit Titan atomic control/save request; not Dual injection')
     p.add_argument('--donor-source', type=Path)
     p.add_argument('--build-receipt', type=Path)
     p.add_argument('--owner-dir', type=Path, default=Path('/tmp/titan-emotiscope-control'))
@@ -28,6 +30,8 @@ def main():
     if a.action == 'bench-build' and a.lane == 'dualmcu' and not a.target: p.error('DualMCU bench build requires --target')
     if a.action in ('observe', 'donor-recover') and a.lane == 'titan' and not (a.donor_source and a.build_receipt):
         p.error('Titan requires --donor-source and --build-receipt')
+    if a.action.startswith('bench-trial-') and not (a.deployment_manifest and a.target):
+        p.error('bench-trial requires --deployment-manifest and --target')
     plan = load_pack(Path(__file__).resolve().parents[1] / 'packs/prism_lanes.json')
     cfg = {k: str(v.resolve()) if isinstance(v, Path) else v for k, v in vars(a).items() if k != 'out'}
     plan['steps'] = [{'name': a.lane + '-' + a.action, 'type': 'check.prism_lane', 'retry_budget': 0, 'inputs': cfg}]
