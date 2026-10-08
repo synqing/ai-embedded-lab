@@ -125,6 +125,21 @@ build is never automatically flashed; hardware side effects are never retried.
 
 For Titan image recovery, preserve the existing donor's `scripts/programme_rfp_swd.py`, E2 Lite identity and current image-bound admission procedure; this run validates owner recovery only. For standard image recovery, use the preserved [original recovery procedure](../reports/emotiscope-baseline-2026-10-03/README.md). Never write a Titan/Teensy image to `/dev/tty.usbmodem12201`.
 
+## Titan native flash: off-product output proof required (8 October 2026)
+
+`bench-trial-flash` for `titan-native` refuses, before any lock or hardware access,
+unless the manifest binds `output_qualification`: a JSON proof with schema
+`prism.titan.output-qualification.v1` for the exact image SHA-256, `off_product: true`,
+`method` in `pin-loopback` / `logic-capture` / `dummy-load-bench`, `lanes_verified`
+`["A","B"]`, `frames_completed >= 100`, `stuck_high_detected: false` and bound raw
+evidence. Recovery (`bench-trial-recover`) to the bound donor is exempt.
+
+Why: on 8 October 2026 three host-qualified native images were flashed onto the
+owner's Titan. The first never started capture or LEDs; the second drove the B half
+full white (lane B on GPT8 output A instead of GTIOC8B); the third completed no LED
+frame (141 timeouts) and drove the whole strip full white. The owner's strip is never
+the detector. Record: Kx-Titan `docs/migration/NATIVE-FIRST-BOOT-2026-10-08.md`.
+
 ## Explicit native development bench trials
 
 `bench-trial-plan`, `bench-trial-flash`, `bench-trial-recover`,
