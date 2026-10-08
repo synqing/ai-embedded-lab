@@ -110,6 +110,41 @@ def validate_manifest(cfg, facts):
     return m, source, image, backend
 
 
+# Scope-locked recovery admitted by Captain's 8 October takeover: these are
+# independently read actual bytes/receipts, not a candidate supplied as backup.
+TITAN_RECOVERY_UID = '545433931bd25436593630352d068363'
+TITAN_RECOVERY_HEX_SHA256 = 'df7a33785ac2a12b01e5065722ba9ce8bb758802e1bbd0d78e4bfc92007dd776'
+TITAN_RECOVERY_DERIVATION_SHA256 = 'e1222369db2558dadfba215b1cde3a4756a230dcd3b995042e2c5130f1f2eb7e'
+TITAN_RECOVERY_RECEIPT_SHA256 = 'ac4801e2666fe6fb03f47c438bcb32213d0cd978e4059b35da59589eee59294b'
+TITAN_RECOVERY_BUILD = 'becb0186f0a66fbb04b0e0f4a79c0480b8b963db0fe3f518a91af9bb2dd2b5c7'
+
+
+def require_titan_recovery(m):
+    recovery = m.get('recovery', {})
+    require(m.get('identity') == TITAN_RECOVERY_UID, 'Recovery wrong Titan UID')
+    image = bound_file(recovery['image'])
+    require(sha(image) == TITAN_RECOVERY_HEX_SHA256, 'Recovery must be exact known donor; candidate cannot bypass output HOLD')
+    derivation_file = bound_file(recovery['derivation'])
+    require(sha(derivation_file) == TITAN_RECOVERY_DERIVATION_SHA256, 'Unknown donor recovery derivation')
+    derivation = json.loads(derivation_file.read_text())
+    require(derivation.get('schema') == 'titan.recovery.inrange/1' and
+            derivation.get('derived_sha256') == TITAN_RECOVERY_HEX_SHA256 and
+            derivation.get('build_id') == TITAN_RECOVERY_BUILD, 'Wrong donor derivation identity')
+    receipt_file = bound_file(recovery['qualification_receipt'])
+    require(sha(receipt_file) == TITAN_RECOVERY_RECEIPT_SHA256, 'Unknown donor recovery execution receipt')
+    receipt = json.loads(receipt_file.read_text())
+    require(receipt.get('ok') is True, 'Donor recovery receipt was not successful')
+    facts = [item.get('facts', {}) for step in receipt.get('steps', [])
+             for item in step.get('result', {}).get('evidence', [])]
+    require(any(f.get('identity') == TITAN_RECOVERY_UID and
+                f.get('invoked_image_sha256') == TITAN_RECOVERY_HEX_SHA256 and
+                f.get('programmed') is True and f.get('tool_exit_verified') is True for f in facts),
+            'Receipt does not bind actual successful donor programming')
+    return {'image_sha256': sha(image), 'derivation_sha256': sha(derivation_file),
+            'execution_receipt_sha256': sha(receipt_file), 'build_source_sha256': TITAN_RECOVERY_BUILD,
+            'scope': 'known donor recovery only; no native candidate output qualification'}
+
+
 def authorise(m, backend, *, write):
     required = ['exclusive_owner', 'identity_verified', 'serial_open_reset_accounted']
     if write:
@@ -156,7 +191,11 @@ def require_output_qualification(m):
     require(isinstance(frames, int) and frames >= 100, 'Output proof needs at least 100 completed frames')
     require(proof.get('stuck_high_detected') is False, 'Output proof records a held-high data line')
     bound_file(proof['raw_evidence'])
-    return proof
+    # v1 assertions plus a raw-file hash cannot establish complete waveform,
+    # resident-image, per-lane timing or terminal-low acquisition. None of these
+    # methods has an implemented independent acquisition verifier in AEL.
+    # Keep the real output HOLD rather than admitting paperwork as device proof.
+    require(False, 'OUTPUT_QUALIFICATION_UNAVAILABLE: no supported independent off-product acquisition verifier; native flash HOLD')
 
 
 def rfp_backend(m):
@@ -211,9 +250,11 @@ def execute(cfg, ctx, facts):
             prepared = prepare_request(operation['evaluation_drive'])
             validate_scene_fields(operation.get('fields', {}), prepared)
     write = action in ('bench-trial-flash', 'bench-trial-recover')
-    observed = authorise(m, backend, write=write)
     if backend == 'titan' and action == 'bench-trial-flash':
         facts['output_qualification'] = require_output_qualification(m)
+    if backend == 'titan' and write:
+        facts['known_donor_recovery'] = require_titan_recovery(m)
+    observed = authorise(m, backend, write=write)
     lockpath = Path(__file__).resolve().parents[2] / '_scratch/prism-hardware.lock'
     lockpath.parent.mkdir(exist_ok=True)
     with lockpath.open('a') as lock:

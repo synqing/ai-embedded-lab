@@ -149,8 +149,10 @@ def _titan_output_proof(tmp_path, image_sha, **changes):
     return {'image': {'path': 'x', 'sha256': image_sha}, 'output_qualification': bound(path)}
 
 
-def test_titan_output_proof_accepts_a_complete_off_product_proof(tmp_path):
-    assert bench.require_output_qualification(_titan_output_proof(tmp_path, 'img'))['frames_completed'] == 120
+@pytest.mark.parametrize('method', bench.OUTPUT_PROOF_METHODS)
+def test_titan_output_assertions_and_two_row_csv_are_not_physical_proof(tmp_path, method):
+    with pytest.raises(RuntimeError, match='OUTPUT_QUALIFICATION_UNAVAILABLE'):
+        bench.require_output_qualification(_titan_output_proof(tmp_path, 'img', method=method))
 
 
 @pytest.mark.parametrize('change', [
@@ -179,3 +181,54 @@ def test_titan_native_flash_without_output_proof_never_reaches_hardware(tmp_path
     with pytest.raises(RuntimeError, match='output_qualification'):
         bench.execute(cfg, SimpleNamespace(run_dir=tmp_path, logs_dir=tmp_path), {})
     assert calls == []
+
+
+@pytest.fixture
+def known_donor_recovery(tmp_path, monkeypatch):
+    image = tmp_path / 'donor.hex'
+    image.write_text('explicit emulated donor recovery bytes')
+    derivation = tmp_path / 'derivation.json'
+    derivation.write_text(json.dumps({'schema': 'titan.recovery.inrange/1',
+            'derived_sha256': bench.sha(image), 'build_id': bench.TITAN_RECOVERY_BUILD}))
+    receipt = tmp_path / 'executed.json'
+    receipt.write_text(json.dumps({'ok': True, 'steps': [{'result': {'evidence': [{'facts': {
+            'identity': bench.TITAN_RECOVERY_UID, 'invoked_image_sha256': bench.sha(image),
+            'programmed': True, 'tool_exit_verified': True}}]}}]}))
+    # Test-only pins for explicit emulator files, never deployed policy changes.
+    monkeypatch.setattr(bench, 'TITAN_RECOVERY_HEX_SHA256', bench.sha(image))
+    monkeypatch.setattr(bench, 'TITAN_RECOVERY_DERIVATION_SHA256', bench.sha(derivation))
+    monkeypatch.setattr(bench, 'TITAN_RECOVERY_RECEIPT_SHA256', bench.sha(receipt))
+    return {'identity': bench.TITAN_RECOVERY_UID, 'recovery': {
+            'image': bound(image), 'derivation': bound(derivation), 'qualification_receipt': bound(receipt)}}
+
+
+def test_recovery_exemption_is_only_exact_known_donor(known_donor_recovery):
+    result = bench.require_titan_recovery(known_donor_recovery)
+    assert result['image_sha256'] == bench.TITAN_RECOVERY_HEX_SHA256
+
+
+@pytest.mark.parametrize('fault', ['candidate', 'uid', 'derivation', 'receipt'])
+def test_recovery_cannot_disguise_candidate_or_unsupported_receipt(known_donor_recovery, tmp_path, fault):
+    m = known_donor_recovery
+    if fault == 'uid':
+        m['identity'] = 'other'
+    else:
+        path = tmp_path / 'replacement'
+        path.write_text('new candidate or arbitrary evidence, not the known donor')
+        key = {'candidate': 'image', 'derivation': 'derivation', 'receipt': 'qualification_receipt'}[fault]
+        m['recovery'][key] = bound(path)
+    with pytest.raises(RuntimeError):
+        bench.require_titan_recovery(m)
+
+
+def test_candidate_disguised_as_recovery_never_queries_owner_or_invokes_hardware(tmp_path, monkeypatch):
+    image = tmp_path / 'candidate.hex'
+    image.write_text('candidate')
+    m = {'identity': bench.TITAN_RECOVERY_UID, 'recovery': {'image': bound(image)}}
+    monkeypatch.setattr(bench, 'validate_manifest', lambda cfg, facts: (m, tmp_path, image, 'titan'))
+    never = Mock(side_effect=AssertionError('Invalid recovery touched hardware'))
+    monkeypatch.setattr(bench, 'authorise', never)
+    monkeypatch.setattr(bench.subprocess, 'run', never)
+    with pytest.raises(RuntimeError, match='exact known donor'):
+        bench.execute({'action': 'bench-trial-recover'}, SimpleNamespace(logs_dir=tmp_path, run_dir=tmp_path), {})
+    never.assert_not_called()
