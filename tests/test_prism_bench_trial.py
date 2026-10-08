@@ -137,3 +137,45 @@ def test_snapshot_binds_nonzero_native_device_record():
     assert decoded['generation']==45 and decoded['pcm_peak']==.75 and decoded['sample_end']==2880
     body[744]^=1
     with pytest.raises(ValueError):native.snapshot(body,source)
+
+
+def _titan_output_proof(tmp_path, image_sha, **changes):
+    raw = tmp_path / 'loopback.csv'; raw.write_text('lane,frame,ok\nA,1,1\nB,1,1\n')
+    proof = {'schema': 'prism.titan.output-qualification.v1', 'image_sha256': image_sha, 'off_product': True,
+             'method': 'pin-loopback', 'lanes_verified': ['A', 'B'], 'frames_completed': 120,
+             'stuck_high_detected': False, 'raw_evidence': bound(raw)}
+    proof.update(changes)
+    path = tmp_path / 'output-proof.json'; path.write_text(json.dumps(proof))
+    return {'image': {'path': 'x', 'sha256': image_sha}, 'output_qualification': bound(path)}
+
+
+def test_titan_output_proof_accepts_a_complete_off_product_proof(tmp_path):
+    assert bench.require_output_qualification(_titan_output_proof(tmp_path, 'img'))['frames_completed'] == 120
+
+
+@pytest.mark.parametrize('change', [
+    {'schema': 'other'}, {'image_sha256': 'different-image'}, {'off_product': False}, {'method': 'owner-strip'},
+    {'lanes_verified': ['A']}, {'frames_completed': 10}, {'frames_completed': '200'}, {'stuck_high_detected': True},
+    {'stuck_high_detected': None}])
+def test_titan_output_proof_refuses_every_weakened_proof(tmp_path, change):
+    with pytest.raises(RuntimeError):
+        bench.require_output_qualification(_titan_output_proof(tmp_path, 'img', **change))
+
+
+def test_titan_output_proof_refuses_missing_or_changed_evidence(tmp_path):
+    with pytest.raises(RuntimeError):
+        bench.require_output_qualification({'image': {'sha256': 'img'}})
+    m = _titan_output_proof(tmp_path, 'img'); (tmp_path / 'loopback.csv').write_text('edited')
+    with pytest.raises(RuntimeError):
+        bench.require_output_qualification(m)
+
+
+def test_titan_native_flash_without_output_proof_never_reaches_hardware(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr(bench, 'validate_manifest', lambda cfg, facts: ({'image': {'sha256': 'img'}}, tmp_path, tmp_path / 'titan-native.hex', 'titan'))
+    monkeypatch.setattr(bench, 'authorise', lambda m, backend, write: {})
+    monkeypatch.setattr(bench.subprocess, 'run', lambda *a, **k: calls.append(a))
+    cfg = {'action': 'bench-trial-flash', 'lane': 'titan', 'target': 'titan-native'}
+    with pytest.raises(RuntimeError, match='output_qualification'):
+        bench.execute(cfg, SimpleNamespace(run_dir=tmp_path, logs_dir=tmp_path), {})
+    assert calls == []

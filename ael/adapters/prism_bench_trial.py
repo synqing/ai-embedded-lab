@@ -136,6 +136,29 @@ def authorise(m, backend, *, write):
     return observed
 
 
+OUTPUT_PROOF_METHODS = ('pin-loopback', 'logic-capture', 'dummy-load-bench')
+
+
+def require_output_qualification(m):
+    """Titan native images may drive the owner's LED strip only after their output
+    path completed frames off-product (8 Oct 2026: three host-qualified native images
+    stuck dark, then drove half and then the whole strip full white). The proof must be
+    for this exact image hash and both lanes; the owner's strip is never the detector."""
+    row = m.get('output_qualification')
+    require(isinstance(row, dict), 'Titan native flash requires output_qualification (off-product LED proof)')
+    proof = json.loads(bound_file(row).read_text())
+    require(proof.get('schema') == 'prism.titan.output-qualification.v1', 'Wrong output qualification schema')
+    require(proof.get('image_sha256') == m['image']['sha256'], 'Output proof is for a different image')
+    require(proof.get('off_product') is True, 'Output proof must not use the owner strip as detector')
+    require(proof.get('method') in OUTPUT_PROOF_METHODS, 'Unsupported output proof method')
+    require(sorted(proof.get('lanes_verified') or []) == ['A', 'B'], 'Both LED lanes must be verified')
+    frames = proof.get('frames_completed')
+    require(isinstance(frames, int) and frames >= 100, 'Output proof needs at least 100 completed frames')
+    require(proof.get('stuck_high_detected') is False, 'Output proof records a held-high data line')
+    bound_file(proof['raw_evidence'])
+    return proof
+
+
 def rfp_backend(m):
     require(m['rfp_backend']['path'] == str(RFP_BACKEND), 'Unsupported RFP backend')
     bound_file(m['rfp_backend'])
@@ -179,6 +202,8 @@ def execute(cfg, ctx, facts):
         return
     write = action in ('bench-trial-flash', 'bench-trial-recover')
     observed = authorise(m, backend, write=write)
+    if backend == 'titan' and action == 'bench-trial-flash':
+        facts['output_qualification'] = require_output_qualification(m)
     lockpath = Path(__file__).resolve().parents[2] / '_scratch/prism-hardware.lock'
     lockpath.parent.mkdir(exist_ok=True)
     with lockpath.open('a') as lock:
