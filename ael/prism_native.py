@@ -6,11 +6,12 @@ import base64
 import json
 from pathlib import Path
 import struct
+import subprocess
 import time
 import secrets
 import zlib
 
-SCHEMA = '7b371dd282b0120bd929afdcfb3e7004334f64b4bab52a34b8ce6f319960b540'
+SCHEMA = '5dda123060c60de0ff6777b63ab6c3cdc96ddd2ab4298b2501d781c8ab20c0b1'
 UID = '545433931bd25436593630352d068363'
 
 
@@ -50,12 +51,8 @@ def patch_payload(fields, boot, revision, command):
 
 
 def state(body):
-    if len(body) != 160 or struct.unpack_from('<I', body)[0] != 0x454D5354: raise ValueError('Wrong control state')
-    if body[108:140].hex() != SCHEMA: raise ValueError('Wrong control schema')
-    return {'boot': struct.unpack_from('<I', body, 12)[0], 'revision': struct.unpack_from('<I', body, 16)[0],
-            'request': struct.unpack_from('<I', body, 20)[0], 'mode': struct.unpack_from('<I', body, 60)[0],
-            'brightness': struct.unpack_from('<I', body, 68)[0], 'accepted': struct.unpack_from('<I', body, 76)[0],
-            'rendered': struct.unpack_from('<I', body, 80)[0], 'emitted': struct.unpack_from('<I', body, 84)[0]}
+    from ael.prism_control_checks import decode_state
+    return decode_state(body, SCHEMA)
 
 
 def snapshot(body, source_binding):
@@ -86,24 +83,51 @@ def window(first, last):
 
 def read_exact(port, n, timeout=3):
     deadline = time.monotonic() + timeout; output = bytearray()
-    while len(output) < n and time.monotonic() < deadline:
-        b = port.read(n - len(output))
-        if b: output.extend(b)
-    if len(output) != n: raise TimeoutError('Native response deadline; no automatic retry')
+    original_timeout = getattr(port, 'timeout', None)
+    try:
+        while len(output) < n and time.monotonic() < deadline:
+            if hasattr(port, 'timeout'):
+                remaining = max(0, deadline-time.monotonic())
+                port.timeout = min(original_timeout,remaining) if original_timeout is not None else remaining
+            b = port.read(n - len(output))
+            if b: output.extend(b)
+    except BaseException as exc:
+        exc.partial = bytes(output)
+        raise
+    finally:
+        if hasattr(port, 'timeout'): port.timeout = original_timeout
+    if len(output) != n:
+        error = TimeoutError('Native response deadline; no automatic retry')
+        error.partial = bytes(output)
+        raise error
     return bytes(output)
 
 
-def run_session(manifest, out, seconds, operation=None):
+def run_session(manifest, out, seconds, operation=None, *, deadline=None):
     op = json.loads(Path(operation).read_text()) if operation else None
+    if op and 'disconnect_check' in op:
+        from ael.prism_disconnect import prepare
+        if set(op) != {'disconnect_check'}:
+            raise ValueError('Disconnect check cannot combine with control, replay, completion, capture or SAVE')
+        prepare(op['disconnect_check'])
     if op and 'completion' in op:
         from ael.prism_completion import prepare
         if op.get('save') or 'evaluation_drive' in op or 'fields' in op:
             raise ValueError('Completion is session-only, mutually exclusive with drive and control PATCH')
         prepare(op['completion'])  # Before importing/opening a serial owner.
+    if op and 'isolated_capture' in op:
+        from ael.titan_isolated import preflight
+        if set(op) != {'isolated_capture'}:
+            raise ValueError('Isolated capture cannot combine with control, replay, completion or SAVE')
+        preflight(manifest, consume=False)
+        if deadline is None or deadline <= time.monotonic():
+            raise ValueError('Isolated session requires the transaction absolute deadline')
     import serial
     # Caller holds AEL's hardware transaction lock and validates sole ownership.
     port = serial.Serial(port=None, baudrate=115200, timeout=.2, write_timeout=1)
-    port.dtr = False; port.rts = False; port.port = manifest['port']
+    # Every admitted native CDC owner asserts DTR. Its actual falling edge on
+    # close is the device's client-loss signal; RTS never requests a reset.
+    port.dtr = True; port.rts = False; port.port = manifest['port']
     sequence = 0; cookie = 0x50524953
     raw = Path(out) / 'titan-native.jsonl'
     with raw.open('x') as log:
@@ -113,18 +137,42 @@ def run_session(manifest, out, seconds, operation=None):
             q = request(opcode, payload, sequence, cookie)
             from ael.prism_drive import uptime_ns
             before_ns = uptime_ns()
-            deadline_s = .02 if opcode == 0x50524402 else 3
-            if port.write(q) != len(q): raise IOError('Incomplete native request write')
-            header = read_exact(port, 32, deadline_s)
-            length = struct.unpack_from('<I', header, 16)[0]
-            if length > 4096: raise ValueError('Oversized native response')
-            remaining_s = max(0, deadline_s - (uptime_ns() - before_ns) / 1e9)
-            packet = header + read_exact(port, length, remaining_s)
-            log.write(json.dumps({'opcode': opcode, 'sequence': sequence,
-                                 'before_uptime_ns': before_ns, 'after_uptime_ns': uptime_ns(),
-                                 'request': base64.b64encode(q).decode(), 'response': base64.b64encode(packet).decode()}) + '\n')
-            log.flush()
-            return response(packet, sequence, cookie)
+            header=packet=b''; written=None; error=None; complete=False
+            try:
+                deadline_s = .02 if opcode == 0x50524402 else 3
+                if deadline is not None:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0: raise TimeoutError('Isolated transaction deadline before native write')
+                    port.write_timeout = min(1, remaining)
+                    deadline_s = min(deadline_s, remaining)
+                written=port.write(q)
+                if written != len(q): raise IOError('Incomplete native request write')
+                read_budget = max(0, deadline_s - (uptime_ns() - before_ns) / 1e9)
+                if deadline is not None:
+                    read_budget = min(read_budget, max(0, deadline - time.monotonic()))
+                    port.timeout = min(.2, read_budget)
+                header = read_exact(port, 32, read_budget)
+                packet=header
+                length = struct.unpack_from('<I', header, 16)[0]
+                if length > 4096: raise ValueError('Oversized native response')
+                remaining_s = max(0, deadline_s - (uptime_ns() - before_ns) / 1e9)
+                if deadline is not None:
+                    remaining_s = min(remaining_s, max(0, deadline - time.monotonic()))
+                    port.timeout = min(.2, remaining_s)
+                packet = header + read_exact(port, length, remaining_s)
+                complete=True
+                return response(packet, sequence, cookie)
+            except BaseException as exc:
+                if hasattr(exc,'partial'): packet=header+exc.partial
+                error=str(exc)
+                raise
+            finally:
+                log.write(json.dumps({'opcode': opcode, 'sequence': sequence,
+                    'before_uptime_ns': before_ns, 'after_uptime_ns': uptime_ns(),
+                    'request':base64.b64encode(q).decode(),'write_bytes':written,
+                    'response':base64.b64encode(packet).decode(),'response_complete':complete,
+                    'error':error})+'\n')
+                log.flush()
         try:
             port.open()
             info = json.loads(exchange(1))
@@ -138,6 +186,31 @@ def run_session(manifest, out, seconds, operation=None):
             result = {'identity': info, 'controls': [], 'records': 0}
             if operation:
                 exchange(0x50520001, bind_payload(boot))
+                if 'disconnect_check' in op:
+                    from ael.prism_disconnect import execute
+                    def owner_state():
+                        return {'port':port.port,'is_open':port.is_open,'dtr':port.dtr,'rts':port.rts}
+                    def close_owner():
+                        port.close()
+                        return owner_state()
+                    def reopen_owner():
+                        owner = subprocess.run(['lsof','-t',manifest['port']],capture_output=True,text=True,check=False,timeout=3)
+                        if owner.returncode != 1 or owner.stdout.strip() or owner.stderr.strip():
+                            raise ValueError('Interface owner appeared during disconnect; no takeover')
+                        port.dtr=True;port.rts=False;port.open()
+                        return owner_state()
+                    result['disconnect_check']=execute(exchange,close_owner,reopen_owner,manifest,
+                        op['disconnect_check'],out,info)
+                    result['runtime_boot_verified']=True
+                    result['optical_verified']=False
+                    return result
+                if 'isolated_capture' in op:
+                    from ael.titan_loopback import acquire
+                    result['isolated_capture'] = acquire(exchange, manifest, op['isolated_capture'], out, info,
+                                                        absolute_deadline=deadline)
+                    result['runtime_boot_verified'] = True
+                    result['optical_verified'] = False
+                    return result
                 if 'completion' in op:
                     from ael.prism_completion import execute
                     result['completion'] = execute(exchange, manifest, op['completion'], out, info)
@@ -155,8 +228,12 @@ def run_session(manifest, out, seconds, operation=None):
                 if prepared:
                     validate_scene_fields(op['fields'], prepared)
                 applied = state(exchange(25, patch_payload(op['fields'], boot, initial['revision'], command + 1)))
-                if applied['boot'] != boot or applied['request'] != command + 1: raise ValueError('Wrong applied control identity')
+                from ael.prism_control_checks import verify_applied, verify_readback
+                verify_applied(initial, applied, op['fields'], boot=boot, request=command + 1)
                 result['controls'].append(applied)
+                observed = state(exchange(25, struct.pack('<4I', 0x454D0101, command + 2, boot, 0)))
+                verify_readback(applied, observed, boot=boot, request=command + 2)
+                result['control_readback'] = observed
                 if prepared:
                     if op.get('save'):
                         raise ValueError('Experimental drive/scene is session-only; no save')

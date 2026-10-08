@@ -246,6 +246,12 @@ def execute(cfg, ctx, facts):
     # serial opening or starting this session's audio player.
     if cfg.get('native_request'):
         operation = json.loads(Path(cfg['native_request']).read_text())
+        require('isolated_capture' not in operation, 'Raw capture can run only through the isolated gateway transaction')
+        if 'disconnect_check' in operation:
+            from ael.prism_disconnect import prepare
+            require(action == 'bench-trial-control' and backend == 'titan' and set(operation) == {'disconnect_check'},
+                    'Disconnect check requires an exclusive Titan control operation')
+            prepare(operation['disconnect_check'])
         if 'completion' in operation:
             from ael.prism_completion import prepare
             require(action == 'bench-trial-control' and backend == 'titan', 'Completion requires explicit Titan control operation')
@@ -261,11 +267,10 @@ def execute(cfg, ctx, facts):
     if action == 'bench-trial-qualify-isolated':
         require(backend == 'titan', 'Isolated waveform operation is Titan-only')
         from ael.titan_capture import isolated_preflight
-        # Refuse inadequate acquisition before ownership/serial/programmer access.
-        # This distinct operation never reuses the donor recovery exemption.
-        isolated_preflight(m)
-        raise RuntimeError('Isolated acquisition did not provide an executable backend')
-    write = action in ('bench-trial-flash', 'bench-trial-recover')
+        # Physical records and scoped bootstrap admission precede any owner or
+        # programmer access. Ordinary deployment never shares this exception.
+        facts['isolated_preflight'] = isolated_preflight(m)
+    write = action in ('bench-trial-flash', 'bench-trial-recover', 'bench-trial-qualify-isolated')
     if backend == 'titan' and action == 'bench-trial-flash':
         facts['output_qualification'] = require_output_qualification(m)
     if backend == 'titan' and write:
@@ -277,10 +282,15 @@ def execute(cfg, ctx, facts):
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         if backend != 'teensy' or not write:
             require(isinstance(m.get('port'), str) and m['port'].startswith('/dev/cu.') and '*' not in m['port'], 'Explicit interface required')
-            owner = subprocess.run(['lsof', '-t', m['port']], capture_output=True, text=True, check=False)
-            require(owner.returncode == 1 and not owner.stdout.strip(), 'Interface owner exists or ownership check failed')
+            owner = subprocess.run(['lsof', '-t', m['port']], capture_output=True, text=True, check=False, timeout=3)
+            require(owner.returncode == 1 and not owner.stdout.strip() and not owner.stderr.strip(),
+                    'Interface owner exists or ownership check failed')
         if action == 'bench-trial-control':
             require(backend == 'titan' and m.get('authority', {}).get('native_control_authorised') is True and cfg.get('native_request'), 'Explicit Titan native control authority/request required')
+        if action == 'bench-trial-qualify-isolated':
+            from ael.titan_isolated import execute as execute_isolated
+            execute_isolated(m, source, image, ctx, facts)
+            return
         if write:
             if backend == 'titan':
                 require(os.environ.get('K1_RFP_SWD_EXECUTE_OK') == '1', 'Existing RFP root-owner execution gate K1_RFP_SWD_EXECUTE_OK=1 required')
