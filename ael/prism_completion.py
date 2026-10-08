@@ -10,7 +10,7 @@ from pathlib import Path
 import struct
 import time
 
-from ael.prism_drive import Refusal, bound_file, digest, uint
+from ael.prism_drive import Refusal, bound_file, digest, uint, uptime_ns, host_boot_session
 
 PROBE, COST, PREAMBLE = 0x50524406, 0x50524407, 0x50524408
 STAGES = ('capture', 'resample', 'analysis', 'proxy', 'observer', 'hop_total',
@@ -148,11 +148,15 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
     require_healthy(initial)
     boot = initial['boot_id']
     start = monotonic()
+    host_boot = host_boot_session()
     path = Path(out)/'titan-completion.jsonl'
     def current():
         info = json.loads(exchange(1));require_healthy(info,initial);return info
     with path.open('x') as log:
         def record(row):
+            row['host_uptime_ns']=uptime_ns()
+            row['host_clock']='CLOCK_UPTIME_RAW'
+            row['host_boot_session']=host_boot
             log.write(json.dumps(row,allow_nan=False)+'\n');log.flush()
         record({'event':'begin','identity':initial,'request':spec,'hardware_access':True})
         try:

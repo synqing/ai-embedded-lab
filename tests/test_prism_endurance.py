@@ -56,10 +56,11 @@ class Device:
 def test_same_owner_bounded_gaps_and_no_fabricated_pass(tmp_path,monkeypatch):
     monkeypatch.setattr('ael.prism_native.snapshot',lambda body,binding:json.loads(body))
     d=Device();result=execute(d.exchange,{'source_binding_hash':'b'*64},spec(),tmp_path,info(),
-                              monotonic=d.now,pause=d.pause,measure=d.measure)
+                              monotonic=d.now,pause=d.pause,measure=d.measure,
+                              verifier=lambda *args,**kwargs: {'music':{'status':'UNMEASURED'}})
     assert len(result['segments'])==15 and len(result['gaps'])==14
     assert result['elapsed_host_seconds']==970
-    assert not result['endurance_pass'] and result['playback_evidence']=='REQUIRED_SEPARATELY'
+    assert not result['endurance_pass'] and result['playback_evidence']['status']=='UNMEASURED'
     assert all(seconds==5 and before==after for seconds,before,after in d.pauses)
     assert len(d.calls)==14*8
     for row in result['gaps']:
@@ -73,7 +74,50 @@ def test_boot_change_preserves_failure_and_stops(tmp_path,monkeypatch):
     d=Device();d.boot_change=True
     with pytest.raises(Refusal,match='identity/boot'):
         execute(d.exchange,{'source_binding_hash':'b'*64},spec(),tmp_path,info(),
-                monotonic=d.now,pause=d.pause,measure=d.measure)
+                monotonic=d.now,pause=d.pause,measure=d.measure,
+                              verifier=lambda *args,**kwargs: {'music':{'status':'UNMEASURED'}})
     failure=json.loads((tmp_path/'endurance/failure.json').read_text())
     assert len(failure['segments'])==1 and not failure['endurance_pass']
     assert not (tmp_path/'endurance/window-02').exists()
+
+
+def test_actual_measure_logs_are_consumed_by_real_endurance_verifier(tmp_path,monkeypatch):
+    from tests.test_prism_completion_measure import MeasureBench,healthy,wire_cost
+    from ael import prism_completion as completion,prism_endurance as endurance
+    class Bench(MeasureBench):
+        def exchange(self,opcode,payload=b''):
+            if opcode==completion.COST:
+                import struct
+                boot,stage=struct.unpack('<II',payload)
+                return wire_cost(stage,int(self.seconds*200),1000)
+            return super().exchange(opcode,payload)
+    b=Bench()
+    monkeypatch.setattr(completion,'uptime_ns',lambda:int((b.seconds+1)*1e9))
+    monkeypatch.setattr(endurance,'uptime_ns',lambda:int((b.seconds+1)*1e9))
+    result=execute(b.exchange,{'source_binding_hash':'b'*64},spec(),tmp_path,healthy(),
+                   monotonic=b.clock,pause=b.pause)
+    assert result['verification']['covered_seconds']==970
+    assert result['verification']['source']=='LIVE_D'
+    assert result['verification']['music']['status']=='UNMEASURED'
+    assert not result['endurance_pass'] and not result['optical_verified']
+
+
+def test_owned_playlist_stops_on_measure_failure(tmp_path,monkeypatch):
+    import ael.prism_campaign as campaign
+    from tests.test_prism_completion_measure import MeasureBench,healthy
+    instances=[]
+    class Playlist:
+        def __init__(self,*args,**kwargs):
+            self.acquisition_nonce='f'*64;self.started=False;self.stopped=False;instances.append(self)
+        def start(self):self.started=True
+        def stop(self):self.stopped=True
+        def check(self):pass
+    monkeypatch.setattr(campaign,'CampaignPlaylist',Playlist)
+    b=MeasureBench();request=spec();request['playlist']={'test_only':True}
+    def fail(*args,**kwargs):raise Refusal('planted capture fault')
+    with pytest.raises(Refusal,match='planted capture fault'):
+        execute(b.exchange,{'source_binding_hash':'b'*64},request,tmp_path,healthy(),
+                monotonic=b.clock,pause=b.pause,measure=fail)
+    assert not instances[0].started
+    assert instances[-1].started and instances[-1].stopped
+    assert json.loads((tmp_path/'endurance/failure.json').read_text())['segments']==[]
