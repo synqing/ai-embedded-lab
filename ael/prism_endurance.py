@@ -100,6 +100,8 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
             path = child/'titan-completion.jsonl'
             segments.append({'path':str(path.resolve()),'sha256':hashlib.sha256(path.read_bytes()).hexdigest()})
             save(f'window-{index+1:02d}-result.json',result)
+            if monotonic()-started > 1100:
+                raise Refusal('Endurance observation exceeded bounded campaign duration')
             if not all(result.get(k) is True for k in ('proxy_budget_met','hop_deadline_met','render_deadline_met')):
                 raise Refusal('Endurance stage timing budget failed')
             if index == len(prepared['windows'])-1:
@@ -122,6 +124,8 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
         if playlist is not None:
             playlist.finish(timeout=max(0,min(60,1100-(monotonic()-started))))
             save('after-playlist.json',observe(prepared['windows'][-1]['live_source']))
+        if monotonic()-started > 1100:
+            raise Refusal('Endurance observation exceeded bounded campaign duration')
         verification = verifier([r['path'] for r in segments], [r['path'] for r in gaps],
                                 playback_ledger=playlist.ledger if playlist is not None else None,
                                 acquisition_nonce=nonce)

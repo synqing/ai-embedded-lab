@@ -121,3 +121,18 @@ def test_owned_playlist_stops_on_measure_failure(tmp_path,monkeypatch):
     assert not instances[0].started
     assert instances[-1].started and instances[-1].stopped
     assert json.loads((tmp_path/'endurance/failure.json').read_text())['segments']==[]
+
+
+def test_final_window_cannot_escape_campaign_deadline(tmp_path,monkeypatch):
+    monkeypatch.setattr('ael.prism_native.snapshot',lambda body,binding:json.loads(body))
+    d=Device();calls=0
+    def delayed(*args,**kwargs):
+        nonlocal calls
+        result=d.measure(*args,**kwargs);calls+=1
+        if calls==15:d.time+=200
+        return result
+    with pytest.raises(Refusal,match='bounded campaign duration'):
+        execute(d.exchange,{'source_binding_hash':'b'*64},spec(),tmp_path,info(),
+                monotonic=d.now,pause=d.pause,measure=delayed)
+    assert (tmp_path/'endurance/failure.json').is_file()
+    assert not (tmp_path/'endurance/collection.json').exists()
