@@ -245,6 +245,21 @@ def test_endurance_rejects_wrong_live_health_source(tmp_path):
     with pytest.raises(ValueError,match='differs from requested'):c.verify_endurance(windows,gaps)
 
 
+def test_disjoint_valid_windows_cannot_sum_to_continuous_endurance(tmp_path):
+    windows,gaps=evidence(tmp_path)
+    for i,path in enumerate(windows):
+        rows=[json.loads(line) for line in path.read_text().splitlines()]
+        for row in rows:
+            if 'snapshot' in row:row['snapshot']['capture_time_us']+=i*1000000000
+        path.write_text('\n'.join(json.dumps(r) for r in rows)+'\n')
+    for i,path in enumerate(gaps):
+        gap=json.loads(path.read_text())
+        for point in (gap['before'],gap['after']):point['snapshot']['capture_time_us']+=i*1000000000
+        path.write_text(json.dumps(gap))
+    with pytest.raises(ValueError,match='acquisition span'):
+        c.verify_endurance(windows,gaps)
+
+
 def test_existing_player_startup_is_bounded_and_stops_only_owned_child(tmp_path,monkeypatch):
     import threading
     from ael import prism_drive as drive

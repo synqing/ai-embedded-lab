@@ -349,6 +349,10 @@ def verify_endurance(window_logs, gap_files, *, playback_ledger=None, acquisitio
         elapsed=last['snapshot']['capture_time_us']-first['snapshot']['capture_time_us']
         require(59000000<=elapsed<=61000000 and begin['request']['seconds']==60,'Endurance requires measured sixty-second windows')
         windows.append((first,last,elapsed))
+    span=windows[-1][1]['snapshot']['capture_time_us']-windows[0][0]['snapshot']['capture_time_us']
+    # Match the existing collector's1100s campaign bound; disjoint long runs
+    # cannot become continuous endurance by adding their durations together.
+    require(0<span<=1100000000,'Endurance acquisition span exceeds bounded collector duration')
     covered=sum(w[2] for w in windows)
     for index,path in enumerate(gap_files):
         gap=json.loads(Path(path).read_text())
@@ -409,7 +413,7 @@ def verify_endurance(window_logs, gap_files, *, playback_ledger=None, acquisitio
                'distinct_songs_overlapping_observation':len(overlapping_songs),
                'overlap_with_observed_host_seconds':overlap,'temporal_alignment':'HOST_RENDER_CLOCK_OVERLAP' if overlap>=900 and len(overlapping_songs)>=3 and same_acquisition else 'UNMEASURED_OR_INSUFFICIENT',
                'acoustic_alignment':'UNMEASURED'}
-    return dict(scope='CONTINUOUS_COUNTER_HISTORY_WITH_SAMPLED_GAPS; no optical proof',covered_seconds=covered/1e6,
+    return dict(scope='CONTINUOUS_COUNTER_HISTORY_WITH_SAMPLED_GAPS; no optical proof',covered_seconds=covered/1e6,acquisition_span_seconds=span/1e6,
                 boundary_unobserved_us=bridges,source='LIVE_A' if sources=={0} else 'LIVE_D' if sources=={1} else 'MIXED_LIVE_A_D',
                 music=music,optical_verified=False,identity=identity)
 
