@@ -224,3 +224,41 @@ are in `waveform-pytest.log`. Governance `workflow_verify` actually refused
 The exact executed checks are host evidence; no device or product acceptance.
 Images are N/A for these source/parser edits: the producing agent inspected
 source diff, decoded consumer results and actual command refusals.
+
+### Completion session integration
+
+Waveform/preflight commit`73f19cc`; completion consumer integration`3989b86`
+follows parent module`0705200`. `prism_native.run_session` prepares a completion
+request before creating a serial object, forbids SAVE, fieldsPATCH and descriptor
+replay combinations, binds the existing native identity/session and calls the
+completion consumer through that same owner. A failed proxy/hop/render timing
+budget now raises a refusal after its measured evidence is preserved, preventing
+a successful AEL session result from concealing a failed budget.
+
+`tests/test_prism_completion_measure.py` exercises the actual measurement branch
+and framed serial-owner integration. It checks A/D source and observer controls,
+clock/cost distributions, missing stage data, identity/boot/counter changes,
+revived replay, frozen transmitter completion, changed audio epoch, rejected
+hops, transmitter firstfault and active fixture patterns. Snapshot opcode23
+reads current application state directly; opcode21 is not a refresh command.
+The measured timing scope is stage execution: it does not establish scheduler
+response deadlines, physical added delay or optical correctness.
+
+Executed results, without summing overlapping suites:
+
+- Selected fullPRISM suite before the final progress checks:300passed,12intentional
+  receipt-family skips; `_scratch/titan-completion-20261008/final-pytest.log`.
+- After final snapshot/transmitter checks:110affected tests passed;
+  `completion-pytest-final-repaired.log`. The preceding missing schema in the
+  test fixture remains recorded in `completion-pytest-final.log`; the fixture
+  was corrected to the actual `prism.titan.transmitter.v2` schema.
+- Expanded waveform/realCLI suite:42passed before moving four completion
+  preflight tests into the dedicated measurement file; `waveform-pytest.log`.
+- Actual compiled C++ nativepattern helper and independent Python generator
+  emitted identical115200bytes for120frames/lane; `native-pattern-parity.json`
+  records the exact headerhash and compiler command. This is host byte equality.
+
+All logs are under`_scratch/titan-completion-20261008/`. No device command was
+sent. AEL's schema pin is source-readback-bound to Kx native-contract hash
+`7b371dd282b0120bd929afdcfb3e7004334f64b4bab52a34b8ce6f319960b540`;
+a subsequent native contract edit requires a new exact pin and affected check.
