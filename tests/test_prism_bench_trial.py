@@ -72,7 +72,7 @@ def test_success_programmer_is_exact_app_only(prepared,tmp_path,monkeypatch):
     logs=tmp_path/'logs';logs.mkdir(); calls=[]
     def run(argv,**kwargs):
         calls.append(argv)
-        return SimpleNamespace(returncode=1 if argv[0]=='lsof' else 0,stdout='')
+        return SimpleNamespace(returncode=1 if argv[0]=='lsof' else 0,stdout='',stderr='')
     monkeypatch.setattr(bench.subprocess,'run',run)
     facts={};bench.execute(cfg,SimpleNamespace(run_dir=tmp_path,logs_dir=logs),facts)
     assert facts['programmed'] is True and facts['runtime_boot_verified'] is False

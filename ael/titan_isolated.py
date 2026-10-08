@@ -178,6 +178,8 @@ def execute(m, source, image, ctx, facts):
     require(os.environ.get("K1_RFP_SWD_EXECUTE_OK") == "1", "Existing RFP root-owner execution gate required")
     pre = preflight(m,consume=True)
     logs = Path(ctx.logs_dir)
+    facts.update(hardware_access=False, programmed=False, candidate_program_attempted=False,
+                 candidate_readback_verified=False)
     started = time.monotonic()
     capture_deadline=started+80
     def write_json(name,obj):
@@ -185,6 +187,7 @@ def execute(m, source, image, ctx, facts):
         with p.open("x") as f: json.dump(obj,f,indent=2)
         return {"path":str(p.resolve()),"sha256":digest(p.read_bytes())}
     def program(candidate, name):
+        nonlocal attempted
         expected=m['image'] if name=='candidate' else m['recovery']['image']
         require(bench.bound_file(expected) == candidate.resolve(),"Programming image changed after admission")
         argv = bench.programmer_argv(m,candidate,"titan",recover=name=="donor-recovery")
@@ -192,11 +195,17 @@ def execute(m, source, image, ctx, facts):
                     "identity":UID,"fixture_id":pre["fixture_id"],"invoked_unix":time.time()})
         log = logs/(name+".log")
         with log.open("xb") as out:
+            if name == "candidate":
+                attempted=True
+                facts.update(hardware_access=True, candidate_program_attempted=True)
             result = subprocess.run(argv,stdout=out,stderr=subprocess.STDOUT,check=False,
                                     timeout=30 if name=="candidate" else 35)
         evidence = verify_program_log(log.read_bytes(),returncode=result.returncode,argv=argv,
                                      image=candidate,spans=bench.hex_spans(candidate))
         bench.bound_file(expected)
+        if name == "candidate":
+            facts.update(programmed=True, candidate_readback_verified=True,
+                         candidate_readback_method=evidence["readback_method"])
         evidence.update(identity=UID,image_sha256=bench.sha(candidate),readback_sha256=bench.sha(candidate),
                         source_binding_hash=m["source_binding_hash"] if name=="candidate" else
                         bench.TITAN_RECOVERY_BUILD,completed_unix=time.time(),
@@ -205,7 +214,6 @@ def execute(m, source, image, ctx, facts):
         return write_json(name+"-programming-event.json",evidence)
     attempted=False
     try:
-        attempted=True
         event=program(image,"candidate")
         wait_for_interface(m["port"],capture_deadline)
         remaining=capture_deadline-time.monotonic()

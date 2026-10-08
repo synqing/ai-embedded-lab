@@ -136,7 +136,7 @@ def test_program_verify_failures(tmp_path,fault):
         isolated.verify_program_log(raw,returncode=code,argv=['rfp','-run','-pv',str(image)],image=image,spans=spans)
 
 
-@pytest.mark.parametrize('failure',[None,'program','capture','recovery'])
+@pytest.mark.parametrize('failure',[None,'program','capture','recovery','launch_ambiguous'])
 def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,monkeypatch,failure):
     from ael import prism_native
     m=admission(tmp_path,monkeypatch)
@@ -150,6 +150,7 @@ def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,mo
     def run(argv,stdout,**kwargs):
         is_recovery=argv[-1].endswith('donor.hex')
         events.append('recovery' if is_recovery else 'program')
+        if failure=='launch_ambiguous' and not is_recovery:raise TimeoutError('launch outcome unknown')
         stdout.write(rfp_log(Path(argv[-1])))
         bad=(failure=='program' and not is_recovery) or (failure=='recovery' and is_recovery)
         return SimpleNamespace(returncode=int(bad))
@@ -162,11 +163,15 @@ def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,mo
     monkeypatch.setattr(prism_native,'run_session',session)
     facts={}
     if failure:
-        with pytest.raises(RuntimeError):isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
+        with pytest.raises((RuntimeError,TimeoutError)):isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
     else:
         isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
-    assert events==(['program','recovery'] if failure=='program' else ['program','capture','recovery'])
+    assert events==(['program','recovery'] if failure in ('program','launch_ambiguous') else ['program','capture','recovery'])
     assert facts['known_donor_program_and_verify_completed'] is (failure!='recovery')
+    assert facts['hardware_access'] is True and facts['candidate_program_attempted'] is True
+    assert facts['programmed'] is (failure not in ('program','launch_ambiguous'))
+    assert facts['candidate_readback_verified'] == facts['programmed']
+    if facts['programmed']:assert facts['candidate_readback_method']=='RFP1.17 -pv target-memory comparison'
     assert (tmp_path/'isolated-transaction.json').is_file()
 
 
@@ -209,3 +214,27 @@ def test_actual_cli_template_is_useful_but_cannot_create_authority(tmp_path,monk
     assert run.returncode==2
     assert json.loads(run.stdout)['hardware_mutated'] is False
     assert 'Missing bound original record' in json.loads(run.stdout)['error']
+
+
+@pytest.mark.parametrize('failure',['image_changed','invocation_log_exists','raw_log_exists'])
+def test_preinvocation_failure_never_programs_or_recovers(tmp_path,monkeypatch,failure):
+    m=admission(tmp_path,monkeypatch)
+    real_preflight=isolated.preflight
+    def preflight(m,consume=False):
+        result=real_preflight(m,consume=consume,used_dir=tmp_path/'used')
+        if failure=='image_changed':Path(m['image']['path']).write_bytes(b'changed after admission')
+        elif failure=='invocation_log_exists':(tmp_path/'candidate-invocation.json').write_text('retained')
+        else:(tmp_path/'candidate.log').write_bytes(b'retained')
+        return result
+    monkeypatch.setattr(isolated,'preflight',preflight)
+    monkeypatch.setenv('K1_RFP_SWD_EXECUTE_OK','1')
+    monkeypatch.setattr(bench,'programmer_argv',lambda m,p,b,recover=False:['rfp','-run','-pv',str(p)])
+    run=Mock(side_effect=AssertionError('Pre-invocation refusal must not program even donor'))
+    monkeypatch.setattr(isolated.subprocess,'run',run)
+    facts={}
+    with pytest.raises((RuntimeError,FileExistsError)):
+        isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
+    run.assert_not_called()
+    assert facts['hardware_access'] is False and facts['programmed'] is False
+    assert facts['candidate_program_attempted'] is False and facts['candidate_readback_verified'] is False
+    assert 'donor_recovery_event' not in facts
