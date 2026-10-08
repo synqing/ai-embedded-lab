@@ -10,7 +10,7 @@ import time
 import secrets
 import zlib
 
-SCHEMA = '82cf001c2e21da98ac7047c8c594f9d3de8bfa57c607f3e136c143e5c9ce2be6'
+SCHEMA = '7b371dd282b0120bd929afdcfb3e7004334f64b4bab52a34b8ce6f319960b540'
 UID = '545433931bd25436593630352d068363'
 
 
@@ -94,6 +94,12 @@ def read_exact(port, n, timeout=3):
 
 
 def run_session(manifest, out, seconds, operation=None):
+    op = json.loads(Path(operation).read_text()) if operation else None
+    if op and 'completion' in op:
+        from ael.prism_completion import prepare
+        if op.get('save') or 'evaluation_drive' in op or 'fields' in op:
+            raise ValueError('Completion is session-only, mutually exclusive with drive and control PATCH')
+        prepare(op['completion'])  # Before importing/opening a serial owner.
     import serial
     # Caller holds AEL's hardware transaction lock and validates sole ownership.
     port = serial.Serial(port=None, baudrate=115200, timeout=.2, write_timeout=1)
@@ -131,8 +137,17 @@ def run_session(manifest, out, seconds, operation=None):
             if not isinstance(boot, int) or boot <= 0: raise ValueError('Invalid native boot identity')
             result = {'identity': info, 'controls': [], 'records': 0}
             if operation:
-                op = json.loads(Path(operation).read_text())
                 exchange(0x50520001, bind_payload(boot))
+                if 'completion' in op:
+                    from ael.prism_completion import execute
+                    result['completion'] = execute(exchange, manifest, op['completion'], out, info)
+                    measured = result['completion']
+                    if measured.get('kind') == 'measure' and not all(measured.get(k) is True for k in
+                            ('proxy_budget_met', 'hop_deadline_met', 'render_deadline_met')):
+                        raise ValueError('Native completion measurement failed a required timing budget; evidence preserved')
+                    result['runtime_boot_verified'] = True
+                    result['optical_verified'] = False
+                    return result
                 command = secrets.randbelow(0xFFFFFFFD) + 1
                 initial = state(exchange(25, struct.pack('<4I', 0x454D0101, command, boot, 0)))
                 from ael.prism_drive import prepare_request, validate_scene_fields, stream

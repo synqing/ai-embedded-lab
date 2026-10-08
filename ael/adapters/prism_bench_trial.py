@@ -246,6 +246,12 @@ def execute(cfg, ctx, facts):
     # serial opening or starting this session's audio player.
     if cfg.get('native_request'):
         operation = json.loads(Path(cfg['native_request']).read_text())
+        if 'completion' in operation:
+            from ael.prism_completion import prepare
+            require(action == 'bench-trial-control' and backend == 'titan', 'Completion requires explicit Titan control operation')
+            require(not operation.get('save') and 'evaluation_drive' not in operation and 'fields' not in operation,
+                    'Completion is session-only and mutually exclusive with drive/control PATCH')
+            prepare(operation['completion'])
         if 'evaluation_drive' in operation:
             from ael.prism_drive import prepare_request, validate_scene_fields
             require(action == 'bench-trial-control' and backend == 'titan', 'Drive replay requires explicit Titan control operation')
