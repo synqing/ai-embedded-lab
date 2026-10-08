@@ -19,6 +19,9 @@ ATOL, RTOL = 1e-5, 1e-4
 
 
 def prepare(spec):
+    if isinstance(spec, dict) and spec.get('kind') == 'endurance':
+        from ael.prism_endurance import prepare as prepare_endurance
+        return prepare_endurance(spec)
     if not isinstance(spec, dict) or spec.get('kind') not in ('golden', 'measure'):
         raise Refusal('Unknown Titan completion operation')
     result = dict(spec)
@@ -138,6 +141,9 @@ def require_healthy(info, before=None):
 
 def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic, pause=time.sleep):
     """Caller holds the one AEL lock and has bound UID/schema/source/boot."""
+    if isinstance(spec, dict) and spec.get('kind') == 'endurance':
+        from ael.prism_endurance import execute as execute_endurance
+        return execute_endurance(exchange, manifest, spec, out, initial, monotonic=monotonic, pause=pause)
     prepared = prepare(spec)
     require_healthy(initial)
     boot = initial['boot_id']
@@ -225,6 +231,10 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
                         'hop_deadline_met':costs[5]['cumulative_max_us']<=5000,
                         'render_deadline_met':costs[6]['cumulative_max_us']<=10000,
                         'optical_verified':False}
+            final_preamble=json.loads(exchange(PREAMBLE,struct.pack('<I',boot)))
+            record({'event':'preamble_after','data':final_preamble})
+            result['memory_before']=preamble
+            result['memory_after']=final_preamble
             result['final_identity']=current();record({'event':'result','data':result})
             return result
         except Exception as exc:
