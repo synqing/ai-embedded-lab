@@ -328,3 +328,151 @@ All logs are under`_scratch/titan-completion-20261008/`. No device command was
 sent. AEL's schema pin is source-readback-bound to Kx native-contract hash
 `7b371dd282b0120bd929afdcfb3e7004334f64b4bab52a34b8ce6f319960b540`;
 a subsequent native contract edit requires a new exact pin and affected check.
+
+## Implemented onboard raw acquisition — latest continuation
+
+Captain confirmed that no logic analyser or oscilloscope is available. The
+existing-resource alternative above now has an executable implementation:
+`ael/titan_loopback.py` consumes the native GPT7 external-input capture interface,
+and `ael/titan_isolated.py` runs the isolated transaction through the existing
+AEL gateway. The preceding statements that no acquisition backend exists are
+historical; **physical execution and positive timing qualification remain open**.
+The donor has not been touched in this work.
+
+The backend reads 100–120 separately identified capture epochs. Each retains
+both raw timestamp arrays, the independently counted input edges, original
+register/status bytes, raw USB frame brackets, ordered wire chunks and host
+times. It verifies 7680 physical edges and 3840 decoded bits per lane, the exact
+indexed pattern payload, observed initial/terminal LOW and reset intervals,
+counter/DMA agreement and the actual capture/counting resource configuration.
+It does not invent timestamps between epochs. Fault-state raw data is drained
+and saved before reporting failure. Truncated wire replies, including bytes
+received before a device disappearance, remain in the original transaction log.
+A secondary cancellation failure does not erase the first error.
+
+The timebase uses at least 128 consecutive actual USB FRMNUM transitions,
+continuing through a bracket after capture ends. USB2.0 section7.1.12,
+printed page159, bounds each full-speed frame to999500–1000500ns. The official
+[USB-IF specification archive](https://www.usb.org/sites/default/files/usb_20_20250603.zip)
+contains `usb_20.pdf`, SHA256
+`d39698a33486c399124af92bd02e4f978fd9a836b5cf4e52e6e4633eb1d89f61`.
+It is retained under `_scratch/titan-completion-20261008/`. The verifier derives
+a frequency interval from original read brackets and propagates it separately
+for each measured duration; it never applies a uniform10ns error to a5ms frame.
+
+**The pin-to-capture timing error remains unqualified.** RA8P1's minimum input
+pulse specification does not supply a maximum pad/synchroniser timing error.
+The raw collector therefore uses a clearly labelled quantisation-only model
+for consistency checks and returns
+`timing_qualification: UNQUALIFIED_PIN_TO_CAPTURE_ERROR`,
+`measured_waveform_pass:false` and `physical_qualification:false`, even when all
+raw counts and payloads are consistent. Changing a saved verdict or `origin`
+field cannot clear ordinary deployment: the consumer re-reads the raw files and
+retains HOLD. A manufacturer-supported or independently established bound for
+that input path is still needed, as are fitted-LED applicability and safe
+observation at the eventual DIN measurement point. This is not a request to
+approve an invented engineering allowance.
+
+### Isolated transaction and authority boundary
+
+Before any programming, the existing source/build/image validator, fresh target
+identity/owner checks and exact known-donor recovery checks still apply. The new
+operation additionally binds an original operator physical-confirmation message
+to the exact UID, image/source/build, named fixture, both excluded productDIN
+feeds and the proposed U18 jumpers7→33 and12→35. Software emit-off is rejected.
+This route observes3.3V MCU pads; it does not authorise connecting a5V DIN output
+to a MCU input. A hash binds the operator's original record; it does not establish
+physical truth or authorship by itself. The invoking owner must obtain that
+record from the real operator rather than generate an attestation.
+
+The completion directive's literal detector-readiness-before-programming rule
+remains explicit. The first candidate cannot show its runtime detector readiness
+before it has run. The operation therefore requires either fresh exact-image
+prior raw readiness, or an original, exact-scope
+`first-isolated-bootstrap-readiness-exception` decision covering runtime readiness
+after programming but before stimulus. **That exception has not been granted.**
+It is not a general-approval boolean. Its decision identifier is consumed once;
+replay fails. Exact-scope operator authorisation does not expire merely because
+preparation took time; physical observations and current ownership remain fresh
+requirements.
+
+After admission the gateway makes one candidate RFP `-pv` attempt, checks actual
+write-and-verify log coverage, waits read-only for the exact admitted CDC path,
+and opens one native owner. INFO/bind and detector resource readiness precede
+the first bounded stimulus. All native owners assert DTR and leave RTS false;
+closing the real owner supplies the native client-loss signal. Every exchange
+shares the transaction's absolute deadline, including writes, partial reads and
+cancellation. Capture ends by80s, reserving35s for one known-donor recovery
+attempt plus5s margin within the120s interruption scope. Failure still takes
+the recovery path. Recovery failure, including a missing/changed recovery file,
+is preserved; no second programming attempt or owner takeover occurs.
+
+The original successful donor RFP1.17 log was read, not rerun. The new parser
+accepted its actual target-memory verification range and original log SHA256
+`1cd9dbe2118363a23d08ebc758fc419445b7e1d58113a095ce4737214a602fc7`.
+`-pv` is a target-memory comparison, not a separately exported memory dump;
+exit0 without the actual verification stage, complete range, named probe,
+target and probe-power-OFF evidence fails.
+
+The agent prepares a template offline with:
+
+```sh
+python -m ael.titan_capture isolated-template --manifest EXACT-BENCH-MANIFEST.json --output NEW-ISOLATED-MANIFEST.json
+python -m ael.titan_capture isolated-preflight --manifest NEW-ISOLATED-MANIFEST.json
+```
+
+The template deliberately contains no physical confirmation or bootstrap
+authority and refuses until original records are supplied. Once actual authority
+and connection exist, the single existing gateway action is
+`python -m ael.prism --lane titan --source KX-TITAN --target titan-native --action bench-trial-qualify-isolated --deployment-manifest ADMITTED-MANIFEST.json --out NEW-RUN`.
+This is agent-facing tooling, not another sequence of programmer chores for
+Captain. No invocation against hardware has occurred.
+
+### Current host evidence
+
+New tests exercise the actual framed single-owner session, 100 complete paired
+epochs, independent ordered payload decoding, stale/malformed/status/register/
+edge-count failures, USB calibration faults, strict raw chunk identities,
+fault draining, partial header/body retention, device disappearance, delayed
+INFO/bind/chunk/cancel, single-use authority and recovery after failure.
+The actual C++ native Session helper also emits a host-model fixture into this
+independent Python parser under ASan/UBSan. That pairing exposed and fixed the
+initial-FRMNUM baseline versus first-transition distinction; it is explicitly
+HOST_MODEL_ONLY, never physical evidence.
+
+Controls now verify all requested and unchanged fields plus a fresh GET after
+PATCH through the same owner. The disconnect-check helper uses an actual
+close/reopen of that owner with DTR semantics and an ownership check; no reset
+or second writer is introduced. All tests use emulated endpoints.
+
+The final schema pin is source-readback-bound to
+`5dda123060c60de0ff6777b63ab6c3cdc96ddd2ab4298b2501d781c8ab20c0b1`.
+The native helper pairing and retained RFP parser results are
+`native-capture-model-pair.json` and `retained-rfp-log-parser.json` in the AEL
+scratch directory. Source/diff and actual consumer outputs were inspected;
+images are N/A for these software changes. The physical connector schematic
+inspection is recorded separately above.
+
+The actual final Kx checkout `6f21ea543fbb8eebe8895a1f7f409e2ca95111e6`
+was clean when the existing AEL validators consumed both final receipts. They
+accepted 34 sanitised positive cases plus two passthrough comparison executions
+(36 positive execution rows), 69 compiled faults and the actual bound native
+build. This remains host/build evidence. The image SHA256 is
+`b8faf6da7febe8133291d16ceaeef204c50547724d08c2e08e653d142e91d7e9`;
+source-profile SHA256 is
+`942db38d24a54c678ec9305c6d813d1df2eb10ba2c7fd57ff32658c3d6c8f18b`.
+Original final records are in `current-native-consumers-final.json` and
+`native-capture-model-pair-reviewed.json` under the AEL scratch directory.
+
+The concrete offline files `candidate-bench-manifest.json` and
+`isolated-candidate-manifest.json` bind that image/build/source and the sealed
+donor recovery. All authority flags are false; port, fresh identity preflight,
+physical confirmation and bootstrap authority are absent. The actual gateway
+command was executed with this manifest and refused the missing original
+physical-exclusion record before any hardware action. Its retained result is
+`isolated-final-refusal/result.json`. This demonstrates the real resume command
+and its current gate, rather than claiming fixture readiness from a template.
+
+The isolated acquisition/parser/transaction/session suite passed 101 host tests,
+including the compiled native helper and actual template/preflight CLI paths.
+These overlap earlier suites and are not added to their totals.
