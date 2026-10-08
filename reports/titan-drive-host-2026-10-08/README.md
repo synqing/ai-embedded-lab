@@ -105,7 +105,8 @@ workspace”; corrected semantic review rejected “Project is outside allowed r
 Trust was not widened. Direct named host checks ran and are reported as such.
 The final gate allowed a normal stop with no bound ledger and explicitly said this
 is not a completion certificate. Hindsight recall and standing-rule model were
-read through supported loopback; handback retention was submitted.
+read through supported loopback. Handback retention was attempted but the10-second
+request timed out; durable retention is not confirmed.
 
 Civilization Engine was queried for titan-native/evaluation-drive-host and
 HIGH_PRIORITY. The external engine is unavailable; context and pattern results

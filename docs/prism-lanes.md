@@ -127,8 +127,8 @@ For Titan image recovery, preserve the existing donor's `scripts/programme_rfp_s
 
 ## Titan native flash: off-product output proof required (8 October 2026)
 
-`bench-trial-flash` for `titan-native` refuses, before any lock or hardware access,
-unless the manifest binds `output_qualification`: a JSON proof with schema
+AEL currently holds **all native candidate flashes** before any lock or hardware
+access. The structural `output_qualification` input uses a JSON proof with schema
 `prism.titan.output-qualification.v1` for the exact image SHA-256, `off_product: true`,
 `method` in `pin-loopback` / `logic-capture` / `dummy-load-bench`, `lanes_verified`
 `["A","B"]`, `frames_completed >= 100`, `stuck_high_detected: false` and bound raw

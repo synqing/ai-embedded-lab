@@ -45,5 +45,6 @@
     "hardware_access": false,
     "compiler_rerun": false,
     "native_cpp_input_bound": true
-  }
+  },
+  "hindsight_retention": "Attempted supported loopback;10-second request timeout, not confirmed"
 }
