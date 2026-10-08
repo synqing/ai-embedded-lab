@@ -13,6 +13,8 @@ import threading
 import time
 from collections import deque
 from pathlib import Path
+from functools import lru_cache
+import uuid
 
 from ael.prism_native import UID, SCHEMA, bind_payload
 
@@ -62,6 +64,13 @@ def bound_file(spec):
 
 def uptime_ns():
     return time.clock_gettime_ns(time.CLOCK_UPTIME_RAW)
+
+
+@lru_cache(maxsize=1)
+def host_boot_session():
+    """Actual macOS boot identity; never a supplied request or guessed value."""
+    result=subprocess.run(['/usr/sbin/sysctl','-n','kern.bootsessionuuid'],capture_output=True,text=True,timeout=3,check=True)
+    return str(uuid.UUID(result.stdout.strip())).upper()
 
 
 class MediaClock:
@@ -116,14 +125,25 @@ def due_hops(speaker_sample, file_rate, sent, total):
 
 
 class Player:
-    def __init__(self, wav, log_path, binary=PLAYER, input_gain=1.0):
+    def __init__(self, wav, log_path, binary=PLAYER, input_gain=1.0, cancel_event=None, startup_timeout=3):
         self.log = open(log_path, 'x')
         self.proc = subprocess.Popen([str(binary), '--wav', str(wav), '--gain', str(input_gain)], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         try:
-            self.start = json.loads(self.proc.stdout.readline())
+            # A child which never writes its start line must not trap the sole
+            # owner or defeat playlist cancellation. This thread only reads.
+            first=[]
+            self.start_reader=threading.Thread(target=lambda:first.append(self.proc.stdout.readline()),daemon=True)
+            self.start_reader.start();deadline=time.monotonic()+startup_timeout
+            while self.start_reader.is_alive():
+                if time.monotonic()>=deadline or (cancel_event is not None and cancel_event.is_set()):
+                    raise Refusal('Media player startup deadline/cancellation')
+                self.start_reader.join(.02)
+            self.start = json.loads(first[0])
             if (self.start.get('event') != 'start' or self.start.get('clock') != 'CLOCK_UPTIME_RAW' or
                     self.start.get('input_gain') != input_gain):
                 raise Refusal('Media clock player did not start with required clock')
+            self.start['host_boot_session']=host_boot_session()
+            self.start['host_boot_session_origin']='Python owner wrapper: kern.bootsessionuuid'
         except Exception:
             self.abort()
             raise
@@ -149,8 +169,8 @@ class Player:
             self.error = exc
 
     def close(self):
-        code = self.proc.wait(timeout=5)
-        self.thread.join(timeout=2)
+        code = self.proc.wait(timeout=2)
+        self.thread.join(timeout=1)
         self.log.close()
         if self.error:
             raise self.error
@@ -162,9 +182,13 @@ class Player:
         # Only this session's own player is stopped; no existing music owner.
         if self.proc.poll() is None:
             self.proc.terminate()
-            self.proc.wait(timeout=5)
+            try:self.proc.wait(timeout=1)
+            except subprocess.TimeoutExpired:
+                self.proc.kill();self.proc.wait(timeout=1)
         if hasattr(self, 'thread'):
-            self.thread.join(timeout=2)
+            self.thread.join(timeout=1)
+        if hasattr(self, 'start_reader'):
+            self.start_reader.join(timeout=1)
         self.log.close()
 
 
@@ -471,13 +495,17 @@ class DriveSession:
         self.opened = False
 
 
-def stream(exchange, manifest, prepared, out, *, player_factory=Player, now=uptime_ns, wait=None):
+def stream(exchange, manifest, prepared, out, *, player_factory=Player, now=uptime_ns, wait=None, budget_factory=None):
     """Run one admitted source-bound trial; all injected tests use an emulator."""
     # Revalidate files at the actual playback boundary, after admission.
     prepared = prepare_request(prepared['spec'])
+    if budget_factory is None:
+        from ael.prism_campaign import playback_budget
+        budget_factory = playback_budget
     wait = wait or (lambda seconds: threading.Event().wait(seconds))
     session = DriveSession(exchange, manifest['source_binding_hash'], now)
     player = None
+    reservation = None
     result = {'classification': 'HOST_PACED_NATIVE_FIFO_EXPERIMENT',
               'hardware_scheduled': False, 'physical_timing_qualified': False,
               'optical_verified': False, 'teacher_status': HOLD, 'records': 0}
@@ -494,6 +522,9 @@ def stream(exchange, manifest, prepared, out, *, player_factory=Player, now=upti
                 session.status(check_session=False)
                 wait(.05)
             result['session_header'] = session.open(prepared, prepared['spec'].get('trial'))
+            # Durable full-duration reservation precedes the actual player.
+            # No JSON option can substitute the host-test dependency injection.
+            reservation = budget_factory(prepared)
             player = player_factory(prepared['media'], Path(out) / 'media-clock.jsonl',
                                     binary=prepared['player'], input_gain=prepared['input_gain'])
             if player.start.get('input_gain') != prepared['input_gain']:
@@ -579,8 +610,12 @@ def stream(exchange, manifest, prepared, out, *, player_factory=Player, now=upti
             try:
                 session.close()
             finally:
-                if player is not None:
-                    player.abort()
+                try:
+                    if player is not None:
+                        player.abort()
+                finally:
+                    if reservation is not None:
+                        reservation.complete(result.get('completed_stream') is True, Path(out) / 'media-clock.jsonl')
 
 
 def main():

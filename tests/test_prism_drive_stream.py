@@ -12,6 +12,35 @@ from ael import prism_native as wire
 SOURCE = 'ab' * 32
 
 
+def emulated_budget(prepared):
+    """Explicit no-playback test dependency; never selectable from a request."""
+    class Reservation:
+        def complete(self, success, player_log):
+            assert type(success) is bool
+    return Reservation()
+
+
+def test_stream_refuses_missing_budget_before_player_start(bundle,tmp_path):
+    clock=VirtualTime();endpoint=EmulatedEndpoint(clock)
+    def forbidden(*args,**kwargs):raise AssertionError('Player started without budget')
+    with pytest.raises(ValueError,match='durable campaign budget'):
+        d.stream(endpoint.exchange,{'source_binding_hash':SOURCE},d.prepare_request(bundle),tmp_path,
+                 player_factory=forbidden,now=clock.now,wait=clock.wait)
+
+
+def test_stream_reserves_before_player_and_keeps_failed_start_charged(bundle,tmp_path):
+    clock=VirtualTime();endpoint=EmulatedEndpoint(clock);events=[]
+    class Reservation:
+        def complete(self,success,log):events.append(('complete',success))
+    def budget(prepared):events.append('reserved');return Reservation()
+    def player(*args,**kwargs):
+        assert events==['reserved'];events.append('player');raise RuntimeError('deliberate failed player')
+    with pytest.raises(RuntimeError,match='failed player'):
+        d.stream(endpoint.exchange,{'source_binding_hash':SOURCE},d.prepare_request(bundle),tmp_path,
+                 player_factory=player,now=clock.now,wait=clock.wait,budget_factory=budget)
+    assert events==['reserved','player',('complete',False)]
+
+
 def write_bound(path, value):
     path.write_text(json.dumps(value) if isinstance(value, dict) else value)
     return {'path': str(path), 'sha256': d.file_hash(path)}
@@ -231,7 +260,7 @@ def test_stream_uses_actual_wire_and_media_clock_not_process_start(bundle, tmp_p
         for player in players:
             player.update()
     result = d.stream(endpoint.exchange, {'source_binding_hash': SOURCE}, prepared, tmp_path,
-                      player_factory=factory, now=clock.now, wait=wait)
+                      player_factory=factory, now=clock.now, wait=wait, budget_factory=emulated_budget)
     assert result['completed_stream'] and result['records'] == 40
     assert result['final_status']['phase'] == 'idle'
     assert result['final_status']['completed'] == 0
@@ -415,7 +444,7 @@ def test_stream_faults_end_own_player_and_never_dump_backlog(bundle, tmp_path, f
         return original_exchange(op, payload)
     with pytest.raises(d.Refusal, match=match):
         d.stream(exchange, {'source_binding_hash': SOURCE}, d.prepare_request(bundle), tmp_path,
-                 player_factory=factory, now=clock.now, wait=wait)
+                 player_factory=factory, now=clock.now, wait=wait, budget_factory=emulated_budget)
     assert players and players[0].aborted
     assert endpoint.traffic.count(d.CLOSE) == 1
     assert not endpoint.queue
@@ -459,15 +488,34 @@ def test_existing_native_owner_session_routes_actual_framed_drive_without_second
     operation.write_text(json.dumps({'fields': fields, 'evaluation_drive': bundle}))
 
     original_handle = endpoint.handle
+    control_words = [0] * 18
+    control_revision = 1
+    control_accepted = 0
     def handle(opcode, payload):
+        nonlocal control_revision, control_accepted
         if opcode == 25:
             body = bytearray(160)
             magic, command, boot, _ = struct.unpack_from('<4I', payload)
+            changed = transitioned = 0
             if magic == 0x454D0102:
                 command, boot = struct.unpack_from('<2I', payload, 8)
-            struct.pack_into('<I', body, 0, 0x454D5354)
-            struct.pack_into('<3I', body, 12, boot, 1, command)
+                old = list(control_words)
+                for offset in range(24, len(payload), 8):
+                    field, kind, word = struct.unpack_from('<HHI', payload, offset)
+                    control_words[field-1] = word
+                changed = int(old != control_words)
+                transitioned = int(old[8] != control_words[8])
+                if changed:
+                    control_revision += 1
+                    control_accepted = command
+            struct.pack_into('<6I', body, 0, 0x454D5354, 1, 1, boot, control_revision, command)
+            struct.pack_into('<9I', body, 24, *control_words[:8], control_words[2])
+            flags = sum(control_words[field-1] << bit for bit, field in enumerate((10,11,12,13,14,16,17)))
+            available = 0xffff & ~(0 if control_words[8] == 0 else 1<<5) & ~(0 if control_words[4] else 1<<13)
+            struct.pack_into('<12I', body, 60, control_words[8], flags, control_words[14], available,
+                             control_accepted, 0, 0, 0, 0, 0, changed, transitioned)
             body[108:140] = bytes.fromhex(d.SCHEMA)
+            struct.pack_into('<I', body, 140, control_words[17])
             return bytes(body), 0
         return original_handle(opcode, payload)
     endpoint.handle = handle
@@ -510,7 +558,7 @@ def test_existing_native_owner_session_routes_actual_framed_drive_without_second
     monkeypatch.setattr(serial, 'Serial', EmulatedSerialPort)
     monkeypatch.setattr(d, 'uptime_ns', clock.now)
     monkeypatch.setattr(d, 'stream', lambda exchange, manifest, prepared, out:
-        actual_stream(exchange, manifest, prepared, out, player_factory=factory, now=clock.now, wait=wait))
+        actual_stream(exchange, manifest, prepared, out, player_factory=factory, now=clock.now, wait=wait, budget_factory=emulated_budget))
     out = tmp_path / 'session'
     out.mkdir()
     result = wire.run_session({'port': 'EMULATED-NO-HARDWARE', 'source_binding_hash': SOURCE}, out, 10, operation)
