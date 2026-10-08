@@ -5,7 +5,22 @@ blocked by native output HOLD.** The full Titan brief and amendment remain in fo
 No serial, broker, reset, flash, playback, camera or other repository write occurred
 in this AEL lane. Teacher promotion remains AUTOMATIC_TEACHER_PROMOTION_HELD.
 
-## Implemented consequence
+## Current state — final integrated continuation
+
+The runnable onboard raw acquisition backend and isolated programming/recovery
+transaction are implemented; see [the latest implementation](#implemented-onboard-raw-acquisition--latest-continuation).
+Earlier sections below retain the chronological evidence and describe the code at
+those earlier checkpoints. Their statements that acquisition was absent or
+unimplemented are historical, not the current implementation status.
+
+Physical acquisition has not run. Exact operator isolation/fixture records and the
+scoped first-bootstrap readiness exception remain absent. Positive waveform
+qualification remains on HOLD because a primary or independently measured bound
+for pin-to-capture timing error is unavailable, and applicability of the pinned
+WS2816C-1313 timing document to the actually fitted LEDs is unresolved. No host
+model, compiled test or saved declaration closes either physical requirement.
+
+## Historical initial implementation
 
 The prior AEL code provided a media player and due-hop arithmetic but did not send
 drive records. Commit `cbe3c14` adds the actual CRC-framed native transport within
@@ -476,3 +491,52 @@ and its current gate, rather than claiming fixture readiness from a template.
 The isolated acquisition/parser/transaction/session suite passed 101 host tests,
 including the compiled native helper and actual template/preflight CLI paths.
 These overlap earlier suites and are not added to their totals.
+
+
+### Final integrated host checkpoint
+
+The sixteen affected PRISM/drive/control/completion/endurance/campaign/waveform/
+loopback/isolated-session test modules passed **583 tests, with12 intentional
+skips**, in46.94s. The first integrated run retained one stale ownership-test
+mock failure (missing stderr); the repaired mock supplies empty stderr and the
+production owner-clear check remains strict. Logs are
+`_scratch/titan-completion-20261008/final-integrated-pytest.log` and
+`final-integrated-pytest-repaired.log`.
+
+After that full run, commit `fccc4ce` moved candidate-attempt accounting to the
+actual subprocess boundary. A changed image or pre-existing invocation/raw log
+now refuses with zero candidate or donor programming; an ambiguous launch still
+attempts the sealed donor recovery. Hardware access, attempt and verified -pv
+readback are distinct facts. All42 affected isolated tests passed after this
+refinement (`final-isolated-invocation-boundary.log`); the full-suite count above
+is explicitly the preceding integrated source checkpoint.
+
+The Swift player rebuilt successfully without starting audio
+(`final-player-build.log`). Its binary hash remained
+`5145e61539dea4a71fe470e1388bd5e5fc9c864f6d806e84a542505bc5da80fd`.
+The actual r4-v2 A/C/D requests then passed `prepare_request` plus frozen-scene
+validation; the fifteen-window endurance request passed the real completion
+preparer. Their source-bound player hash did not change, so the requests were
+retained without a new revision. Readback is
+`campaign-r4-v2/post-player-build-preflight.json` under the same scratch root.
+
+The final Kx source/build receipts were consumed through the actual AEL
+validators at clean Kx HEAD `6f21ea543fbb8eebe8895a1f7f409e2ca95111e6`.
+`current-native-consumers-final.json` retains the result; the count is34 sanitised
+positive cases plus2 passthrough comparison executions,69 compiled fault cases
+and210 build/run rows. The exact candidate offline manifests retain null physical
+confirmation and bootstrap authority. The real isolated CLI refused before any
+hardware access (`isolated-final-refusal/result.json`). No capture, programming,
+serial owner change, playback or optical observation occurred.
+
+Remaining path: obtain the exact physical exclusion/jumper confirmation and
+scoped first-bootstrap authority; execute the bounded isolated transaction and
+retain genuine100-epoch raw results; establish a defensible pin-to-capture timing
+error bound and fitted LED timing applicability before positive electrical
+qualification; then pass the existing output gate and complete the separately
+admitted music/value/endurance and optical checks. Raw capture can expose count
+or payload failures before timing qualification is available. Host evidence
+cannot clear the conditional native-output HOLD. Images are not applicable to
+this source/CLI checkpoint: the final diff and actual consumer output were
+inspected; the earlier connector feasibility used the separately inspected
+schematic render.
