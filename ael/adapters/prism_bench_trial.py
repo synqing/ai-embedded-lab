@@ -182,6 +182,9 @@ def require_output_qualification(m):
     row = m.get('output_qualification')
     require(isinstance(row, dict), 'Titan native flash requires output_qualification (off-product LED proof)')
     proof = json.loads(bound_file(row).read_text())
+    if proof.get('schema') == 'prism.titan.output-qualification.v2':
+        from ael.titan_capture import consume_output_proof
+        return consume_output_proof(m, proof)
     require(proof.get('schema') == 'prism.titan.output-qualification.v1', 'Wrong output qualification schema')
     require(proof.get('image_sha256') == m['image']['sha256'], 'Output proof is for a different image')
     require(proof.get('off_product') is True, 'Output proof must not use the owner strip as detector')
@@ -249,6 +252,13 @@ def execute(cfg, ctx, facts):
             require(not operation.get('save'), 'Experimental drive is never saved')
             prepared = prepare_request(operation['evaluation_drive'])
             validate_scene_fields(operation.get('fields', {}), prepared)
+    if action == 'bench-trial-qualify-isolated':
+        require(backend == 'titan', 'Isolated waveform operation is Titan-only')
+        from ael.titan_capture import isolated_preflight
+        # Refuse inadequate acquisition before ownership/serial/programmer access.
+        # This distinct operation never reuses the donor recovery exemption.
+        isolated_preflight(m)
+        raise RuntimeError('Isolated acquisition did not provide an executable backend')
     write = action in ('bench-trial-flash', 'bench-trial-recover')
     if backend == 'titan' and action == 'bench-trial-flash':
         facts['output_qualification'] = require_output_qualification(m)

@@ -113,3 +113,114 @@ HIGH_PRIORITY. The external engine is unavailable; context and pattern results
 were empty. No hardware pattern was substituted and no success asset promoted.
 The reusable bounded host pattern is captured in
 [the existing PRISM bench skill](../../docs/skills/prism_lane_bench.md).
+
+## Raw waveform consumer and physical acquisition gap — continuation
+
+The original host takeover remains historical. The new consumer in
+`ael/titan_waveform.py` reads shared-clock raw transitions, counts and decodes
+every one of3840 bits in at least100 frames on each physical lane, checks exact
+payload/order, pulseHIGH/LOW, period, leading/inter-frame/terminal resetLOW and
+requires bothP601/P604. Malformed, truncated, one-sided, reordered and altered
+captures fail. An independent test decoder compares emitted frame order.
+`ael/titan_capture.py patterns` produces the exact documented native
+pattern-set-v1 payload: frame-major A then B,480 bytes each. All-ones is strictly
+for an electrically isolated fixture. No diagnostic pattern was sent.
+
+[Independent numerical requirements](waveform-requirements.json) come from
+Worldsemi's WS2816C-1313v1.1(20210603), page4, manufacturer-authored PDF mirrored
+by LCSC C5446703. SHA256
+`a9bf86bd23b324918456d39ff4f1e0e7e9a8220815da13605594b405ea41be96`.
+The cover saysC while interior headings sayB; fitted-device applicability is
+UNRESOLVED and is not certified by this verifier. Primary source URL is in the
+requirements. Published values: T0H200–320ns, T1H520–800ns, T0L800–1200ns,
+T1L480–1000ns, period>=1250ns, reset>280us. The chosen10ns maximum per-edge
+uncertainty is an experiment guard, not a manufacturer limit. Measured intervals,
+including two edge uncertainties, must fit inside those bounds. Native constants
+do not define the verifier's acceptance values. The source discrepancy exposed
+800nsHIGH+450nsLOW at1250ns as outside the published T1L minimum.
+
+The capture manifest binds raw bytes and expected bytes, UID, image/source/build,
+programming/readback event, physical pins, original fixture/instrument/settings/
+fitted-part records and acquisition time. It rejects mismatching candidate hashes,
+changed bytes, stale/future acquisition, capture-before-program and incomplete
+time coverage. These original records are bound inputs; their declarations are
+never reclassified as observed physical facts. Even a valid raw waveform verdict
+reports `physical_qualification:false`. V2 ordinary deployment re-runs the actual
+raw consumer, then independently refuses absent supported physical provenance.
+V1 paper proofs remain refused; the immutable donor exemption is unchanged.
+
+### Actual remaining capability
+
+**PackageB acquisition and PackageC physical proof are incomplete.**
+`bench-trial-qualify-isolated` is an implemented distinct, fail-closed gateway
+preflight. It does not yet have an executable programming/acquisition/readback/
+recovery backend. No supported adequate local producer was established, so adding
+a fake successful orchestrator would misrepresent the available capability.
+
+Read-only repository inventory, USB enumeration and ARP inspection found the
+RenesasCDC and E2Lite5AS079228B, with no identified analyser connected to Titan.
+Historical ESP32JTAG192.168.2.62 and meter192.168.4.1 are not current connections.
+Their endpoints were not contacted. The matching ESP32JTAG firmware source is
+documented at `/nvme1t/work/esp32jtag_firmware` on the earlier Linux setup; it is
+not available in this Mac checkout. AEL source documents16channels,264MHz max,
+`/instant_capture` status-byte+big-endian16 data and about496us at132MHz
+(`experiments/esp32jtag/port_d_loopback.py:266`), implying roughly65k samples.
+Exact current depth and timebase remain unobserved. Lowering the rate to fit a
+complete frame sacrifices pulse resolution: a5.36ms minimum acquisition including
+reset at each end needs<=12.2MHz for65k samples, approximately82ns/sample.
+The candidate1300ns/bit plus350us leading/trailing reset needs5.692ms.
+At100MHz it needs569200 simultaneous samples; the minimum protocol window needs
+536001. Even relaxing the experiment guard to30ns per edge leaves the documented
+depth inadequate. No local source documents lossless streaming, RLE, expandable
+external memory or sufficiently deep segmented capture. This is a documented
+interface/access gap, not a claim that FPGA silicon cannot be extended.
+The meter exposes aggregate digital/voltage values and has no raw edge API.
+
+Required wiring once a capable owned detector is established: electrically
+disconnect BOTH productDIN feeds fromP601/P604 (software emit-off is insufficient),
+connect physicalP601 to detectorCH0 andP604 toCH1 with shared signal ground, and
+verify detector input-voltage tolerance at that actual measurement point from its
+hardware manual before connection. No detector's current electrical tolerance or
+connector pinout has been established, so this is a signal mapping, not a
+wiring-ready instruction. The owner's sole working Titan must not be disconnected
+until its interruption/recovery authority and physical isolation evidence exist.
+
+Next implementation dependency is the identified analyser's current firmware/API
+and hardware manual showing shared-clock simultaneous capture of a complete
+5.692ms frame with adequate uncertainty (and either continuous100-frame capture
+or real lossless, ordered segments). Then implement the actual arm/status/read
+backend plus independent isolation observation and bounded acquire/program/
+readback/recovery integration. Current tested refusal is
+`BLOCKED_CAPTURE_CAPABILITY`, before any owner, serial or programmer access.
+No acquisition, flash, broker stop, camera, playback or instrument mutation ran.
+
+### Implemented commands and proof
+
+Run fromAEL with `/Users/spectrasynq/.platformio/penv/bin/python`:
+
+```sh
+python -m ael.titan_capture capability --backend esp32jtag-instant-v1
+python -m ael.titan_capture isolated-preflight --manifest _scratch/titan-completion-20261008/isolated-request.json
+python -m ael.titan_capture patterns --frames 120 --output NEW-expected-pairs.bin
+python -m ael.titan_waveform --manifest REAL-capture-manifest.json --output NEW-verdict.json
+```
+
+The first two commands were executed and refuse the precise capability gap.
+The120-frame pattern command was executed:115200bytes, SHA256
+`5e86b640708ef4b8ffc7cdc2f84fee7830369ae00cf040aed41ffe6e489c6053`.
+The real verifier CLI is exercised by a full100-frame-per-lane synthetic capture;
+that test also proves changing `origin` tophysical cannot admit it. Placeholder
+paths in the last two commands must be real evidence paths; no physical capture
+manifest currently exists. Read-only instrument status can later be obtained by
+`python -m ael.titan_capture status --endpoint https://IDENTIFIED-OWNED-INSTRUMENT`;
+only `/api/version` and `/la_status` are allowed, with TLS verification enabled.
+It does not arm acquisition or assert isolation.
+
+The focused regression log is
+`_scratch/titan-completion-20261008/pytest.log`; separate expanded raw CLI tests
+are in `waveform-pytest.log`. Governance `workflow_verify` actually refused
+`Verification project outside configured workspace`; suggestion reported
+`session_project_mismatch`. No registry was found/bound and no trust was widened.
+The exact executed checks are host evidence; no device or product acceptance.
+Images are N/A for these source/parser edits: the producing agent inspected
+source diff, decoded consumer results and actual command refusals.

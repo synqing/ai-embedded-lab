@@ -1,0 +1,29 @@
+{
+  "part": "WS2816C-1313",
+  "source_sha256": "a9bf86bd23b324918456d39ff4f1e0e7e9a8220815da13605594b405ea41be96",
+  "source_url": "https://datasheet.lcsc.com/datasheet/pdf/2f9452c1f8bf5827b31560b2a8aff4ad.pdf?productCode=C5446703",
+  "page": 4,
+  "t0h_ns": [
+    200,
+    320
+  ],
+  "t1h_ns": [
+    520,
+    800
+  ],
+  "t0l_ns": [
+    800,
+    1200
+  ],
+  "t1l_ns": [
+    480,
+    1000
+  ],
+  "period_min_ns": 1250,
+  "reset_min_ns_exclusive": 280000,
+  "bits_per_lane": 3840,
+  "frames_per_lane_min": 100,
+  "order": "G15..G0,R15..R0,B15..B0; MSB-first",
+  "max_edge_uncertainty_ns": 10,
+  "uncertainty_policy_origin": "experiment guard, not manufacturer requirement; interval fully inside specified bounds"
+}
