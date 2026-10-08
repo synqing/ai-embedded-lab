@@ -28,22 +28,27 @@ func emit(_ object: [String: Any]) {
 var args = CommandLine.arguments.dropFirst()
 var path: String? = nil
 var reportMs = 5.0
+var inputGain = 1.0
 while let a = args.popFirst() {
   switch a {
   case "--wav": path = args.popFirst()
+  case "--gain": inputGain = Double(args.popFirst() ?? "invalid") ?? .nan
   case "--report-ms": reportMs = Double(args.popFirst() ?? "5") ?? 5
   default:
     FileHandle.standardError.write("usage: media_clock_player --wav FILE [--report-ms 5]\n".data(using: .utf8)!)
     exit(2)
   }
 }
-guard let wav = path, let file = try? AVAudioFile(forReading: URL(fileURLWithPath: wav)) else {
+guard inputGain.isFinite, inputGain > 0, inputGain <= 1, reportMs.isFinite, reportMs >= 1, reportMs <= 20,
+      let wav = path, let file = try? AVAudioFile(forReading: URL(fileURLWithPath: wav)) else {
   FileHandle.standardError.write("cannot open wav\n".data(using: .utf8)!)
   exit(2)
 }
 let engine = AVAudioEngine()
 let player = AVAudioPlayerNode()
 engine.attach(player)
+// One frozen scalar for every source/arm, applied by the audio render graph.
+player.volume = Float(inputGain)
 engine.connect(player, to: engine.mainMixerNode, format: file.processingFormat)
 let rate = file.processingFormat.sampleRate
 let frames = file.length
@@ -54,6 +59,7 @@ do { try engine.start() } catch {
 }
 let latency = engine.outputNode.presentationLatency
 emit(["event": "start", "wav": wav, "file_rate": rate, "frames": frames,
+      "input_gain": inputGain, "gain_application": "AVAudioPlayerNode.volume-fixed-render-graph-scalar",
       "output_rate": engine.outputNode.outputFormat(forBus: 0).sampleRate,
       "latency_s": latency, "uptime_ns": uptimeNs(), "clock": "CLOCK_UPTIME_RAW"])
 player.play()

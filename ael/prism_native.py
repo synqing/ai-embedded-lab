@@ -84,8 +84,8 @@ def window(first, last):
             'physical_output_rate_measured':False, 'host_arrival_cadence_used':False}
 
 
-def read_exact(port, n):
-    deadline = time.monotonic() + 3; output = bytearray()
+def read_exact(port, n, timeout=3):
+    deadline = time.monotonic() + timeout; output = bytearray()
     while len(output) < n and time.monotonic() < deadline:
         b = port.read(n - len(output))
         if b: output.extend(b)
@@ -105,12 +105,17 @@ def run_session(manifest, out, seconds, operation=None):
             nonlocal sequence
             sequence += 1
             q = request(opcode, payload, sequence, cookie)
+            from ael.prism_drive import uptime_ns
+            before_ns = uptime_ns()
+            deadline_s = .02 if opcode == 0x50524402 else 3
             if port.write(q) != len(q): raise IOError('Incomplete native request write')
-            header = read_exact(port, 32)
+            header = read_exact(port, 32, deadline_s)
             length = struct.unpack_from('<I', header, 16)[0]
             if length > 4096: raise ValueError('Oversized native response')
-            packet = header + read_exact(port, length)
+            remaining_s = max(0, deadline_s - (uptime_ns() - before_ns) / 1e9)
+            packet = header + read_exact(port, length, remaining_s)
             log.write(json.dumps({'opcode': opcode, 'sequence': sequence,
+                                 'before_uptime_ns': before_ns, 'after_uptime_ns': uptime_ns(),
                                  'request': base64.b64encode(q).decode(), 'response': base64.b64encode(packet).decode()}) + '\n')
             log.flush()
             return response(packet, sequence, cookie)
@@ -130,9 +135,21 @@ def run_session(manifest, out, seconds, operation=None):
                 exchange(0x50520001, bind_payload(boot))
                 command = secrets.randbelow(0xFFFFFFFD) + 1
                 initial = state(exchange(25, struct.pack('<4I', 0x454D0101, command, boot, 0)))
+                from ael.prism_drive import prepare_request, validate_scene_fields, stream
+                prepared = prepare_request(op['evaluation_drive']) if 'evaluation_drive' in op else None
+                if prepared:
+                    validate_scene_fields(op['fields'], prepared)
                 applied = state(exchange(25, patch_payload(op['fields'], boot, initial['revision'], command + 1)))
                 if applied['boot'] != boot or applied['request'] != command + 1: raise ValueError('Wrong applied control identity')
                 result['controls'].append(applied)
+                if prepared:
+                    if op.get('save'):
+                        raise ValueError('Experimental drive/scene is session-only; no save')
+                    port.timeout = .005
+                    result['evaluation_drive'] = stream(exchange, manifest, prepared, out)
+                    result['runtime_boot_verified'] = True
+                    result['optical_verified'] = False
+                    return result
                 if op.get('save') is True:
                     exchange(0x50520002, struct.pack('<2I', boot, applied['revision']))
                     result['save_returned_success'] = True

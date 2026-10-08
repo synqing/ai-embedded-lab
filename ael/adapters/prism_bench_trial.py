@@ -200,6 +200,16 @@ def execute(cfg, ctx, facts):
         facts['programmer_argv'] = None if backend == 's3' and not m.get('port') else programmer_argv(m, image, backend)
         if facts['programmer_argv'] is None: facts['interface_gate'] = 'Explicit freshly resolved S3 port required; no guessed argv'
         return
+    # A malformed trace/media/scene request must fail before ownership checks,
+    # serial opening or starting this session's audio player.
+    if cfg.get('native_request'):
+        operation = json.loads(Path(cfg['native_request']).read_text())
+        if 'evaluation_drive' in operation:
+            from ael.prism_drive import prepare_request, validate_scene_fields
+            require(action == 'bench-trial-control' and backend == 'titan', 'Drive replay requires explicit Titan control operation')
+            require(not operation.get('save'), 'Experimental drive is never saved')
+            prepared = prepare_request(operation['evaluation_drive'])
+            validate_scene_fields(operation.get('fields', {}), prepared)
     write = action in ('bench-trial-flash', 'bench-trial-recover')
     observed = authorise(m, backend, write=write)
     if backend == 'titan' and action == 'bench-trial-flash':
