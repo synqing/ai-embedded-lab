@@ -176,6 +176,71 @@ external memory or sufficiently deep segmented capture. This is a documented
 interface/access gap, not a claim that FPGA silicon cannot be extended.
 The meter exposes aggregate digital/voltage values and has no raw edge API.
 
+The final read-only capability check also inspected the channel configuration:
+`experiments/esp32jtag/portb_reset_test.py:205` disables fifteen trigger channels,
+then still reads two bytes per sample at line245. The `channels` array selects
+trigger modes; no available contract says that selecting two or eight channels
+increases capture depth. The golden instrument manifest is a template containing
+placeholder identity values, not evidence of a deeper connected instrument.
+
+### Existing Titan input-capture alternative — source-supported, unimplemented
+
+The retained donor source `platform/ra8p1/ws281x_p601_loopback.c` samples the actual
+PORT6 input register using GPT2 and DMA4. It is a coarse, one-shot GPIO sampler,
+not an adequate two-lane timestamp backend. Its scorer separately requires
+`uniform_sampling_qualified`; its source does not establish that qualification.
+No donor implementation was copied.
+
+There is a more capable documented route within the existing MCU. RA8P1 manual
+R01UH1064EJ0130, section23.3.1.3/page994 and Table23.21/page1006 describe hardware
+input capture on both edges of each GPT input. The RA8P1 datasheet pin tables
+map P603/P602 to GPT7 A/B. The actual Titan Mini schematic sheet13 was rendered
+and visually inspected (`_scratch/titan-completion-20261008/u18-readonly.png`):
+U18 pin7 is P601, pin12 P604, pin33 P603 and pin35 P602. Proposed loopback jumpers
+would therefore be 7→33 and12→35. **These are proposed new connections, not
+existing wiring or evidence of isolation.** The schematic is
+`sdk-bsp-ra8p1-titan-mini/docs/Titan_Mini_schematic_v1.0.pdf`.
+
+Current native source allocates GPT0/1/6/8 and DMA0..3. GPT7 with DMA4/5 could
+retain two streams of physically captured timestamps without sharing those
+channels. FSP `bsp_elc.h` exposes GPT7 captureA/B events0x1C0/0x1C1 and ELC E/F
+peripherals4/5. Manual page910 documents GTUPSR bits20/21 for counting E/F events;
+source-unallocated GPT2/3 could count every input-capture event independently of
+DMA and continue through the terminal reset. This is a concrete route to detect
+DMA loss: GTCCRA/B overwrite on new captures and DMA status alone has no event
+overrun counter. Native interrupt vectors4/5 already belong to microphone
+errors; a recorder must not reuse the existing `irq=channel` allocation for
+DMA4/5. New vectors or a documented polled configuration would be needed.
+
+A frame pair requires 7680 timestamps per lane, 61440 bytes total. A bounded
+capture→host-drain→rearm protocol could retain 100 separate windows without a 6MB
+allocation. Every window would need observed initial LOW, physical edge counts,
+DMA residual/status, complete terminal reset observation, clock/configuration
+readback and its own acquisition epoch. Separate windows cannot be joined with
+invented inter-window timestamps to satisfy the present continuous-file parser.
+Fixture-only stepping, raw chunk transport and segmented verification are not
+implemented. Outside that isolated operation, autonomous music must continue.
+
+This route remains insufficient for physical qualification today. The board
+schematic labels the crystal24MHz without a component identity or tolerance;
+the shared transmitter/capture clock does not independently prove absolute
+nanoseconds. The documented native configuration is nominally GPTCLK300MHz and
+PCLKD250MHz, not a measured frequency. Datasheet Table2.58/page143 also bounds
+the minimum detectable input pulse; it is not an analogue glitch detector.
+An existing-resource calibration avenue is the USB hardware frame number:
+manual section37.3.13/page2066 says missing full-speed SOF does not advance
+FRMNUM, whereas the SOFR interrupt can be interpolated locally. Consecutive
+hardware FRMNUM changes bracketed by GPT reads could therefore supply an
+independent reference, subject to authoritative host SOF tolerance, bounded read
+brackets and rejection of reset, suspend or missed frames. That calibration and
+its uncertainty propagation are not implemented or measured here.
+Finally, U18 observes MCU pads, not the post-level-shifter DIN signal. A direct 5V DIN-to-MCU
+jumper is not authorised or electrically qualified. Fitted-part applicability,
+safe observation at the actual DIN measurement point, timebase bounds and fresh
+physical isolation remain unresolved. This investigation establishes a possible
+implementation path using existing resources, not a requirement to buy hardware
+and not an adequate implemented backend. No pins were connected or reconfigured.
+
 Required wiring once a capable owned detector is established: electrically
 disconnect BOTH productDIN feeds fromP601/P604 (software emit-off is insufficient),
 connect physicalP601 to detectorCH0 andP604 toCH1 with shared signal ground, and
@@ -185,12 +250,13 @@ connector pinout has been established, so this is a signal mapping, not a
 wiring-ready instruction. The owner's sole working Titan must not be disconnected
 until its interruption/recovery authority and physical isolation evidence exist.
 
-Next implementation dependency is the identified analyser's current firmware/API
+An external-analyser implementation depends on its identified current firmware/API
 and hardware manual showing shared-clock simultaneous capture of a complete
 5.692ms frame with adequate uncertainty (and either continuous100-frame capture
 or real lossless, ordered segments). Then implement the actual arm/status/read
 backend plus independent isolation observation and bounded acquire/program/
-readback/recovery integration. Current tested refusal is
+readback/recovery integration. The internal-capture alternative has the distinct
+implementation and qualification gaps above. Current tested refusal is
 `BLOCKED_CAPTURE_CAPABILITY`, before any owner, serial or programmer access.
 No acquisition, flash, broker stop, camera, playback or instrument mutation ran.
 
