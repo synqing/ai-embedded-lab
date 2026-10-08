@@ -20,3 +20,29 @@ firmware hashes match. Preserve a failed or missing receipt as failure even
 when a command exits zero. Keep `build`/`flash` refusal until clean product
 source and deployment profiles have separately been admitted. `diagnose` only
 reports capabilities and the remaining path; it never opens the serial device.
+
+
+## Evaluation-drive takeover pattern — 8 October 2026
+
+A media-clock player plus due-hop arithmetic was not a descriptor transport.
+Read the real native wire and queue contract, implement the framed stream under
+the existing owner, and test that actual owner-to-parser route with an explicit
+emulated endpoint. Keep its status separate from real hardware.
+
+Require source recomputation receipts and exact frozen identities before audio
+or serial side effects. Re-hashing a shifted trace does not establish alignment:
+it must still match independently recomputed source evidence. Bind once-scaled
+playback bytes, apply unity engine gain, and check that start receipt. Trace
+event time, availability horizon and offline/causal status are separate fields.
+
+Start a fresh monotonic trial, verify the native initial scene reset, pace from
+actual render reports, retain clock correlation uncertainty and bind each
+native arrival to the accepted source sequence. Poll before history overwrites;
+refuse lateness/backlog instead of dumping old descriptors. A seek, reset,
+expiry, client loss or ambiguous exchange ends the trial without retry.
+
+An asserted off-product proof plus raw hash is not acquired waveform evidence.
+With no independent acquisition verifier, preserve
+`OUTPUT_QUALIFICATION_UNAVAILABLE` and native output HOLD. The owner's strip is
+never a detector. A recovery exemption must bind a known donor's exact bytes
+and executed receipt; a newly named candidate is not recovery.

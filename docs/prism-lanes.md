@@ -132,7 +132,17 @@ unless the manifest binds `output_qualification`: a JSON proof with schema
 `prism.titan.output-qualification.v1` for the exact image SHA-256, `off_product: true`,
 `method` in `pin-loopback` / `logic-capture` / `dummy-load-bench`, `lanes_verified`
 `["A","B"]`, `frames_completed >= 100`, `stuck_high_detected: false` and bound raw
-evidence. Recovery (`bench-trial-recover`) to the bound donor is exempt.
+evidence. These v1 fields are structural assertions. AEL currently has no independent
+acquisition verifier for any of these methods, so even structurally complete proofs
+refuse with `OUTPUT_QUALIFICATION_UNAVAILABLE`: native flash remains HOLD. A two-row
+CSV cannot establish 120 completed frames or electrical timing.
+
+Recovery (`bench-trial-recover`) is exempt only for the scope-locked known donor
+HEX SHA256 `df7a33785ac2a12b01e5065722ba9ce8bb758802e1bbd0d78e4bfc92007dd776`,
+UID `545433931bd25436593630352d068363`. Its recovery object must bind `derivation`
+and `qualification_receipt` files in addition to `image`, recipe and provenance.
+AEL checks the actual immutable derivation and successful executed recovery receipt
+and rejects a candidate disguised as recovery before owner or hardware access.
 
 Why: on 8 October 2026 three host-qualified native images were flashed onto the
 owner's Titan. The first never started capture or LEDs; the second drove the B half
@@ -215,3 +225,53 @@ save0x50520002 is a separate checked operation. Accepted/rendered/emitted remain
 distinct. Dual controls stay on the real selected BLE-MIDI path; the diagnostic
 collector is not a replacement control injector. Neither helper resets or
 reconnects hardware automatically, changes playback, or takes another owner.
+
+
+## Source-bound Titan evaluation-drive replay (host implementation)
+
+The implemented replay stays inside `bench-trial-control` and its current
+manifest, native-control authority, exclusive owner, lock and zero-retry path.
+Prepare a request offline with `python -m ael.prism_drive`: required arguments
+are `--trace --freeze --verification --verifier --media --timing --arm --out`.
+Each file argument is an actual path; preparation hashes it and refuses changed
+source/recomputation evidence. The output is the `--native-request` consumed by
+the existing control action. Preparation opens no port and plays no audio.
+
+Trace schema `titan.music_value.trace/2` uses 12800 Hz, 64-sample hops and the
+frozen common Analog scene. The original source, once attenuated FLOAT playback,
+transformed PCM, level tool, independent source-recomputation receipt, verifier,
+trace, freeze and player binary are bound. Input conversion gain is 0.5;
+the transformed playback runs with unity engine gain, explicitly checked in
+the player's start report. No second attenuation or per-arm normalisation occurs.
+B remains unavailable where a genuine designated drum stem is absent; C carries
+the offline flag and unqualified teacher status.
+
+Replay uses existing CRC-framed native opcodes 0x50524401–04 after UID, schema,
+source and boot binding. Trial IDs increase within a boot; the session header
+hash includes source and media identities. It requires the native
+`programme-and-precision-reset-on-open-v1` initial-state contract and an exact
+reset-counter increment before sending records. Full frozen controls are applied
+once; experimental settings are never saved.
+
+Records leave the host only after their media window has played. The audio
+render-position clock, reported latency and explicitly declared route offset
+define pacing. Device clock offset/drift and uncertainty estimates come from
+bounded status-exchange brackets. Defaults bound chunks to four records, host
+lateness to 20 ms, clock freshness to 100 ms and pending arrival witnesses to32.
+High watermark, old boot, expired session, clock rewind, stale playback and
+ambiguous response abort without retry. The owner port closes on exit; the
+native 250 ms lease and 150 ms fade preserve finite fallback.
+
+Native v1 is a FIFO consumed by the rendering path; this is not future device
+deadline scheduling. Separate pacing and source-bound arrival logs retain
+accepted sequence and device timestamps. Consumed, rendered and completed
+counters remain native witnesses. Physical timestamps, acoustic route timing
+and optical appearance remain unqualified unless independently measured.
+A render-only timing file may explicitly use
+`{"extra_s":0,"uncertainty_s":null,"basis":"render-only-unqualified"}`.
+A measured-route declaration requires a bound evidence file and finite
+uncertainty; no offset is inferred from packet arrival.
+
+See [host closeout](../reports/titan-drive-host-2026-10-08/README.md) and the
+[existing bench procedure](skills/prism_lane_bench.md). Native output HOLD still
+prevents an actual physical experiment.

@@ -1,0 +1,49 @@
+{
+  "scope": "HOST_ONLY; no hardware or playback",
+  "code_commits": [
+    "cbe3c14",
+    "13c7edd"
+  ],
+  "source_files_sha256": {
+    "ael/prism_drive.py": "c166b73ebf615c6152c8e3e6759db62efa525e0e7f9f1821bfa1b73fecf64e2d",
+    "ael/prism_native.py": "a429772c05586e3fe0c0bd835ef782c3d3200dbcb33df395edaeb4181c8bb3dc",
+    "ael/adapters/prism_bench_trial.py": "a0fdd0d5788f98a58082e75e20209ca432eb906b91312998e11736cfa64ae4cc",
+    "tools/media_clock_player/main.swift": "1ff0d960657906a2940e945674cd3a655b187f4a37a6238de38e6fa55a14e499",
+    "tools/media_clock_player/media_clock_player": "5145e61539dea4a71fe470e1388bd5e5fc9c864f6d806e84a542505bc5da80fd",
+    "tests/test_prism_drive_stream.py": "02caec846a6976aebd5d9d426c58fd948ce8837402c89d52b42621f8b54f497c",
+    "tests/test_prism_bench_trial.py": "26692240e12fd7d264f267d094d723496ce3085d5b3262e999b44eb30622bd47"
+  },
+  "test_command": "/Users/spectrasynq/.platformio/penv/bin/python -m pytest -q -x tests/test_prism_drive.py tests/test_prism_drive_stream.py tests/test_prism_bench_trial.py tests/test_prism_lane.py tests/test_prism_native_checks.py tests/test_prism_product.py",
+  "test_log_sha256": "1f56a7898fbddde122a42354bb43aef3189ca6bdffd042e3507a0d13c24bb3b2",
+  "observed_tests": {
+    "passed": 223,
+    "skipped": 12,
+    "skip_context": "12 deliberate inapplicable receipt-family branches; not hardware coverage"
+  },
+  "actual_trace_freeze_sha256": "a77405f82e9eb14a791ff44877a9d629bfa5f20e5f3002eb64ca580a56334535",
+  "actual_arm_preparations": 22,
+  "governance_session": "57758bd57e56f3683481e439",
+  "governance_verification": "BLOCKED: Verification project outside configured workspace; no trust widening",
+  "governance_registry": "none applicable found; no completion certificate",
+  "camera_capture": false,
+  "hardware_access": false,
+  "playback": false,
+  "optical_verified": false,
+  "physical_timing_qualified": false,
+  "teacher_status": "AUTOMATIC_TEACHER_PROMOTION_HELD",
+  "native_check_consumer": {
+    "receipt": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/music_visual_value_20261008/takeover/native-integration-check-final/receipt.json",
+    "receipt_sha256": "52b455d805c1ce0a11e6b5d19553937dacb3e0984f034afd8dc551892d79af11",
+    "source_commit": "70b8c3290ce3f4bf804f278af68779c2214c91e0",
+    "qualification": "NATIVE_HOST_CANDIDATE_CHECKS: observed owned application checks; full inventory and physical gates remain open",
+    "positive_executions": 30,
+    "compiled_faults": 44,
+    "level_trace_cases": [
+      "level_trace compile",
+      "level_trace sanitised"
+    ],
+    "hardware_access": false,
+    "compiler_rerun": false,
+    "native_cpp_input_bound": true
+  }
+}

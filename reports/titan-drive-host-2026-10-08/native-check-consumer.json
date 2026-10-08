@@ -1,0 +1,15 @@
+{
+  "receipt": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/music_visual_value_20261008/takeover/native-integration-check-final/receipt.json",
+  "receipt_sha256": "52b455d805c1ce0a11e6b5d19553937dacb3e0984f034afd8dc551892d79af11",
+  "source_commit": "70b8c3290ce3f4bf804f278af68779c2214c91e0",
+  "qualification": "NATIVE_HOST_CANDIDATE_CHECKS: observed owned application checks; full inventory and physical gates remain open",
+  "positive_executions": 30,
+  "compiled_faults": 44,
+  "level_trace_cases": [
+    "level_trace compile",
+    "level_trace sanitised"
+  ],
+  "hardware_access": false,
+  "compiler_rerun": false,
+  "native_cpp_input_bound": true
+}
