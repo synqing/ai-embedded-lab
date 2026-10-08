@@ -193,3 +193,107 @@ def test_log_is_immutable(tmp_path):
         run(owner, tmp_path)
     assert path.read_text() == 'retained failure\n'
     assert not owner.calls
+
+
+@pytest.mark.parametrize('conflict', [False, True])
+def test_real_run_session_same_serial_owner_seam(monkeypatch, tmp_path, conflict):
+    import base64
+    import subprocess
+    import zlib
+    import serial
+    owner = Owner()
+    owner.opened = False
+    ports = []
+    sequences = []
+    cookies = set()
+    lsof_calls = []
+
+    class EmulatedSerial:
+        def __init__(self, **kwargs):
+            assert kwargs['port'] is None
+            self.data = b''
+            self.open_count = 0
+            self.timeout = kwargs['timeout']
+            self.write_timeout = kwargs['write_timeout']
+            ports.append(self)
+
+        @property
+        def is_open(self):
+            return owner.opened
+
+        def open(self):
+            assert self.dtr is True and self.rts is False
+            assert self.port == owner.manifest['port']
+            self.open_count += 1
+            if self.open_count == 1:
+                owner.opened = True
+            else:
+                owner.reopen()
+
+        def close(self):
+            owner.close()
+
+        def write(self, packet):
+            assert owner.opened
+            opcode, seq, cookie, size, crc, version, hcrc = struct.unpack_from('<7I', packet, 4)
+            assert packet[:4] == b'K1S1' and version == 1
+            assert zlib.crc32(packet[:28]) == hcrc
+            assert len(packet[32:]) == size and zlib.crc32(packet[32:]) == crc
+            sequences.append(seq)
+            cookies.add(cookie)
+            body = owner.exchange(opcode, packet[32:])
+            header = b'K1R1' + struct.pack('<6I', 0, seq, cookie, len(body), 0, zlib.crc32(body))
+            self.data = header + struct.pack('<I', zlib.crc32(header)) + body
+            return len(packet)
+
+        def read(self, size):
+            out, self.data = self.data[:size], self.data[size:]
+            return out
+
+    def owner_inventory(argv, **kwargs):
+        assert not owner.opened
+        assert argv == ['lsof', '-t', owner.manifest['port']]
+        assert kwargs['timeout'] == 3
+        lsof_calls.append(argv)
+        return subprocess.CompletedProcess(argv, 0 if conflict else 1, '987\n' if conflict else '', '')
+
+    actual_execute = d.execute
+    monkeypatch.setattr(serial, 'Serial', EmulatedSerial)
+    monkeypatch.setattr(native.subprocess, 'run', owner_inventory)
+    monkeypatch.setattr(d, 'execute', lambda *args: actual_execute(
+        *args, monotonic=lambda: owner.time, pause=owner.pause))
+    operation = tmp_path/'operation.json'
+    operation.write_text(json.dumps({'disconnect_check': {'seconds': 2}}))
+    if conflict:
+        with pytest.raises(ValueError, match='owner appeared'):
+            native.run_session(owner.manifest, tmp_path, 5, operation)
+        assert ports[0].open_count == 1
+        assert json.loads((tmp_path/'titan-disconnect.jsonl').read_text().splitlines()[-1])['event'] == 'failure'
+    else:
+        result = native.run_session(owner.manifest, tmp_path, 5, operation)
+        assert result['disconnect_check']['reconnected_live_source'] == 'A'
+        assert result['runtime_boot_verified'] and not result['optical_verified']
+        assert ports[0].open_count == 2
+    assert len(ports) == 1 and len(lsof_calls) == 1
+    assert not owner.opened
+    assert sequences == list(range(1, len(sequences)+1)) and len(cookies) == 1
+    raw = [json.loads(x) for x in (tmp_path/'titan-native.jsonl').read_text().splitlines()]
+    for row in raw:
+        native.response(base64.b64decode(row['response']), row['sequence'], next(iter(cookies)))
+
+
+@pytest.mark.parametrize('operation', [
+    {'disconnect_check': {'seconds': 0}},
+    {'disconnect_check': {'seconds': 2}, 'save': True},
+    {'disconnect_check': {'seconds': 2}, 'evaluation_drive': {}},
+    {'disconnect_check': {'seconds': 2}, 'completion': {}},
+])
+def test_run_session_refuses_invalid_operation_before_serial(monkeypatch, tmp_path, operation):
+    import serial
+    def forbidden(**kwargs):
+        raise AssertionError('Invalid operation reached serial creation')
+    monkeypatch.setattr(serial, 'Serial', forbidden)
+    path = tmp_path/'invalid.json'
+    path.write_text(json.dumps(operation))
+    with pytest.raises((Refusal, ValueError)):
+        native.run_session(Owner().manifest, tmp_path, 5, path)
