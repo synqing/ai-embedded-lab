@@ -59,7 +59,14 @@ def operator_record(row, schema, scope, *, physical_freshness=False):
     require(r.get("actor") == "Captain" and r.get("origin") == "operator-message",
             "Actual operator message required; agent attestation is insufficient")
     require(r.get("scope") == scope, "Operator record does not cover exact isolated scope")
+    validity = r.get("validity", "recent-observation") if physical_freshness else None
     if physical_freshness:
+        require(validity in ("recent-observation", "until-wiring-change"),
+                "Unknown physical confirmation validity")
+        require(not r.get("wiring_change_reported", False) and
+                not r.get("wiring_change_requested", False),
+                "Physical fixture changed or a wiring change was requested")
+    if physical_freshness and validity == "recent-observation":
         _fresh(r.get("observed_unix"))
     else:
         issued=r.get("observed_unix")
@@ -70,6 +77,14 @@ def operator_record(row, schema, scope, *, physical_freshness=False):
             "Missing original operator message reference")
     require(isinstance(r.get("exact_quote"),str) and len(r["exact_quote"].strip()) >= 2 and
             r["exact_quote"] in message, "Original operator statement is not retained")
+    if validity == "until-wiring-change":
+        # Captain may explicitly keep this exact fixture unchanged throughout
+        # a session. Preserve the actual observation time; never restamp it.
+        # The invoking owner must retire this record before requesting a wiring
+        # change, or immediately on receiving any report that it changed.
+        quote = r.get("continuity_quote")
+        require(isinstance(quote, str) and len(quote.strip()) >= 16 and quote in message,
+                "Standing fixture validity needs the original operator instruction")
     request = json.loads(bound(r["reviewed_request"]))
     require(request.get("scope") == scope, "Operator reviewed a different request")
     return r

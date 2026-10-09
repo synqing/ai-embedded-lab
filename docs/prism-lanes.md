@@ -197,6 +197,19 @@ must re-identify the interface immediately before use. AEL serialises hardware
 transactions with one process lock and refuses an existing serial owner.
 Opening S3 CDC may reset it; this must be accounted for before observation.
 
+For the isolated Titan fixture, Captain's explicit instruction that the wiring
+remains unchanged until he reports a change or the agent requests one may be
+retained in the existing physical-confirmation record as
+`validity: "until-wiring-change"`, with `continuity_quote` copied from the bound
+original message. Keep its original observation time. This instruction changes
+the validity of that physical fact only: live target/owner preflight still needs
+fresh evidence, image scope must still match, each transaction authority remains
+single use, and programming/capture/recovery deadlines are unchanged. Retire the
+record immediately when a wiring change is reported or requested; records marked
+`wiring_change_reported` or `wiring_change_requested` are rejected. Without the
+explicit standing instruction, the existing 120-second physical freshness check
+continues to apply. Neither form releases the connected-strip HOLD.
+
 Recovery consumes separately bound actual recovery bytes, never the candidate
 as a substitute current backup. S3 recovery is restricted to a covered app-slot
 slice; no bootloader/partition/NVS/full-flash erase is supported. Tool exit status

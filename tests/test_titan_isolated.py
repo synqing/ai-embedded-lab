@@ -69,6 +69,47 @@ def test_exact_scope_authorisation_does_not_expire_while_preparing(tmp_path,monk
     assert isolated.preflight(m)['preprogram_readiness']=='first-isolated-bootstrap-readiness-exception'
 
 
+def standing_fixture(m,tmp):
+    message=bind(tmp,'standing-fixture-message.txt',
+                 b'TEST ONLY: The wires remain connected as confirmed until I report a change or you request one.')
+    def change(r):
+        r.update(observed_unix=1.,original_message=message,exact_quote='TEST ONLY:',
+                 validity='until-wiring-change',
+                 continuity_quote='The wires remain connected as confirmed until I report a change or you request one.')
+    replace_record(m,'physical_confirmation',tmp,change)
+
+
+def test_explicit_standing_fixture_confirmation_keeps_original_time(tmp_path,monkeypatch):
+    m=admission(tmp_path,monkeypatch)
+    standing_fixture(m,tmp_path)
+    isolated.preflight(m)
+    r=json.loads(Path(m['isolated_qualification']['physical_confirmation']['path']).read_text())
+    assert r['observed_unix']==1.
+
+
+@pytest.mark.parametrize('field,value',[
+    ('validity','forever'),('continuity_quote',''),
+    ('continuity_quote','invented operator instruction'),('observed_unix',1001.),
+    ('observed_unix',float('nan')),('wiring_change_reported',True),
+    ('wiring_change_requested',True),
+])
+def test_standing_fixture_is_not_generic_or_unrevokable_permission(tmp_path,monkeypatch,field,value):
+    m=admission(tmp_path,monkeypatch)
+    standing_fixture(m,tmp_path)
+    replace_record(m,'physical_confirmation',tmp_path,lambda r:r.update({field:value}))
+    with pytest.raises(RuntimeError):isolated.preflight(m)
+
+
+def test_standing_fixture_does_not_extend_image_scope_or_replay_authority(tmp_path,monkeypatch):
+    m=admission(tmp_path,monkeypatch)
+    standing_fixture(m,tmp_path)
+    isolated.preflight(m,consume=True,used_dir=tmp_path/'used')
+    with pytest.raises(RuntimeError,match='already consumed'):
+        isolated.preflight(m,consume=True,used_dir=tmp_path/'used')
+    m['image']['sha256']='e'*64
+    with pytest.raises(RuntimeError,match='scope'):isolated.preflight(m)
+
+
 @pytest.mark.parametrize('key,field,value',[
     ('physical_confirmation','actor','agent'),
     ('physical_confirmation','origin','manifest'),
