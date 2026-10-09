@@ -288,6 +288,14 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
         path = output / name
         with path.open("xb") as f: f.write(data)
         return {"path": str(path.resolve()), "sha256": digest(data)}
+    def transmitter_snapshot(name):
+        require(clock() < deadline,"Transaction expired before transmitter observation")
+        transmitter_raw=exchange(0x50524c02,struct.pack("<I",boot))
+        save(name,transmitter_raw)
+        transmitter=json.loads(transmitter_raw)
+        require(transmitter.get("schema") == "prism.titan.transmitter.v2",
+                "Unexpected transmitter diagnostic schema")
+    has_transmitter_status=info.get("capabilities",{}).get("transmitter_status_opcode") == 0x50524c02
     try:
         ready_raw=exchange(STATUS,struct.pack("<2I",boot,0))
         save("initial-detector-status.bin",ready_raw)
@@ -300,13 +308,8 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
         # startup can already have failed before the recorder is armed; a later
         # recorder deadline alone cannot identify that failure. This is a read,
         # not another stimulus, and stays inside the same absolute deadline.
-        if info.get("capabilities",{}).get("transmitter_status_opcode") == 0x50524c02:
-            require(clock() < deadline,"Transaction expired before transmitter observation")
-            transmitter_raw=exchange(0x50524c02,struct.pack("<I",boot))
-            save("initial-transmitter-status.json",transmitter_raw)
-            transmitter=json.loads(transmitter_raw)
-            require(transmitter.get("schema") == "prism.titan.transmitter.v2",
-                    "Unexpected transmitter diagnostic schema")
+        if has_transmitter_status:
+            transmitter_snapshot("initial-transmitter-status.json")
         for pattern in range(count):
             current = pattern + 1
             require(clock() < deadline, "Bounded acquisition deadline")
@@ -342,6 +345,16 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                     "Capture changed while draining")
             require([final[k] for k in ("cursor_a","cursor_b","cursor_sof")] ==
                     [s["words_a"],s["words_b"],s["sof_rows"]*4], "Incomplete raw drain")
+            if s["state"] != 6 and has_transmitter_status:
+                # Raw detector data is already durable. Observe the output
+                # owner at failure without replaying ARM or extending recovery.
+                try:
+                    transmitter_snapshot(f"{current:03d}-failed-transmitter-status.json")
+                    require(clock() < deadline,"Transaction expired before failed runtime observation")
+                    save(f"{current:03d}-failed-info.json",exchange(1))
+                except Exception as diagnostic_error:
+                    save(f"{current:03d}-failed-diagnostic-error.json",
+                         (json.dumps({"error":str(diagnostic_error)})+"\n").encode())
             try:
                 require(s["state"] == 6 and s["fault"] == 0,"Native detector fault/cancel; raw retained")
                 result = verify_one(raw, [Path(r["path"]).read_bytes() for r in streams[:2]],

@@ -210,6 +210,10 @@ def test_acquisition_retains_startup_transmitter_fault_before_arm(tmp_path,malfo
     assert (loop.ARM not in detector.calls) is malformed
     assert (tmp_path/'loopback/initial-transmitter-status.json').read_bytes()==raw
     assert (tmp_path/'loopback/failure.json').exists()
+    if not malformed:
+        assert detector.calls.count(0x50524c02)==2 and detector.calls.count(loop.ARM)==1
+        assert (tmp_path/'loopback/001-failed-transmitter-status.json').read_bytes()==raw
+        assert json.loads((tmp_path/'loopback/001-failed-info.json').read_text())['boot_id']==7
 
 
 def test_actual_acquisition_command_path_drains100_epochs_and_reconsumes_raw(tmp_path,monkeypatch):
