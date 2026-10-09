@@ -89,6 +89,11 @@ def test_failed_wire_reply_retains_actual_partial_bytes(tmp_path,monkeypatch,fau
     record=json.loads((tmp_path/'titan-native.jsonl').read_text().splitlines()[0])
     assert len(base64.b64decode(record['response']))>=minimum
     assert record['error'] and not record['response_complete']
+    reads=record['header_reads']+record['body_reads']
+    assert sum(r['bytes'] for r in reads)==len(base64.b64decode(record['response']))
+    assert all(r['ended_monotonic']>=r['started_monotonic'] for r in reads)
+    if fault in ('short_header','short_body'):
+        assert any(r['bytes']==0 for r in reads)
     assert len(ports)==1 and ports[0].closed and loop.ARM not in detector.calls
 
 

@@ -81,7 +81,7 @@ def window(first, last):
             'physical_output_rate_measured':False, 'host_arrival_cadence_used':False}
 
 
-def read_exact(port, n, timeout=3):
+def read_exact(port, n, timeout=3, *, progress=None):
     deadline = time.monotonic() + timeout; output = bytearray()
     original_timeout = getattr(port, 'timeout', None)
     try:
@@ -89,8 +89,13 @@ def read_exact(port, n, timeout=3):
             if hasattr(port, 'timeout'):
                 remaining = max(0, deadline-time.monotonic())
                 port.timeout = min(original_timeout,remaining) if original_timeout is not None else remaining
+            started = time.monotonic()
             b = port.read(n - len(output))
             if b: output.extend(b)
+            if progress is not None:
+                progress.append({'started_monotonic':started,
+                                 'ended_monotonic':time.monotonic(),
+                                 'bytes':len(b), 'total_bytes':len(output)})
     except BaseException as exc:
         exc.partial = bytes(output)
         raise
@@ -138,6 +143,7 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None):
             from ael.prism_drive import uptime_ns
             before_ns = uptime_ns()
             header=packet=b''; written=None; error=None; complete=False
+            header_reads=[]; body_reads=[]
             try:
                 deadline_s = .02 if opcode == 0x50524402 else 3
                 if deadline is not None:
@@ -151,7 +157,7 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None):
                 if deadline is not None:
                     read_budget = min(read_budget, max(0, deadline - time.monotonic()))
                     port.timeout = min(.2, read_budget)
-                header = read_exact(port, 32, read_budget)
+                header = read_exact(port, 32, read_budget, progress=header_reads)
                 packet=header
                 length = struct.unpack_from('<I', header, 16)[0]
                 if length > 4096: raise ValueError('Oversized native response')
@@ -159,7 +165,7 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None):
                 if deadline is not None:
                     remaining_s = min(remaining_s, max(0, deadline - time.monotonic()))
                     port.timeout = min(.2, remaining_s)
-                packet = header + read_exact(port, length, remaining_s)
+                packet = header + read_exact(port, length, remaining_s, progress=body_reads)
                 complete=True
                 return response(packet, sequence, cookie)
             except BaseException as exc:
@@ -171,7 +177,7 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None):
                     'before_uptime_ns': before_ns, 'after_uptime_ns': uptime_ns(),
                     'request':base64.b64encode(q).decode(),'write_bytes':written,
                     'response':base64.b64encode(packet).decode(),'response_complete':complete,
-                    'error':error})+'\n')
+                    'error':error, 'header_reads':header_reads,'body_reads':body_reads})+'\n')
                 log.flush()
         try:
             port.open()
