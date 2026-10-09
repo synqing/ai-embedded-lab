@@ -296,6 +296,17 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                 ready["nominal_gpt_hz"] == 300000000 and ready["nominal_pclkd_hz"] == 250000000 and
                 ready["gptckcr"] == 6 and ready["gptckdivcr"] == 1 and ready["gtclkcr"] == 0,
                 "Post-program detector resource readiness failed before stimulus")
+        # Retain the existing transmitter's first-fault snapshot. Autonomous
+        # startup can already have failed before the recorder is armed; a later
+        # recorder deadline alone cannot identify that failure. This is a read,
+        # not another stimulus, and stays inside the same absolute deadline.
+        if info.get("capabilities",{}).get("transmitter_status_opcode") == 0x50524c02:
+            require(clock() < deadline,"Transaction expired before transmitter observation")
+            transmitter_raw=exchange(0x50524c02,struct.pack("<I",boot))
+            save("initial-transmitter-status.json",transmitter_raw)
+            transmitter=json.loads(transmitter_raw)
+            require(transmitter.get("schema") == "prism.titan.transmitter.v2",
+                    "Unexpected transmitter diagnostic schema")
         for pattern in range(count):
             current = pattern + 1
             require(clock() < deadline, "Bounded acquisition deadline")

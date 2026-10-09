@@ -191,6 +191,27 @@ def test_acquisition_retains_failed_raw_before_cancel(tmp_path,cancel_fault):
     assert (tmp_path/'loopback/cancel-failure.json').exists() is cancel_fault
 
 
+@pytest.mark.parametrize('malformed',[False,True])
+def test_acquisition_retains_startup_transmitter_fault_before_arm(tmp_path,malformed):
+    detector=Detector(fault=True)
+    detector.info['capabilities']['transmitter_status_opcode']=0x50524c02
+    raw=b'not-json' if malformed else json.dumps({
+        'schema':'prism.titan.transmitter.v2','first_fault':1,
+        'first_falls':[0,0],'first_remaining':[3837,3837]}).encode()
+    def exchange(opcode,payload=b''):
+        if opcode==0x50524c02:
+            detector.calls.append(opcode)
+            assert payload==struct.pack('<I',7)
+            return raw
+        return detector.exchange(opcode,payload)
+    with pytest.raises((RuntimeError,json.JSONDecodeError)):
+        loop.acquire(exchange,{'source_binding_hash':'b'*64},{'frames':100},tmp_path,detector.info)
+    assert detector.calls[:2]==[loop.STATUS,0x50524c02]
+    assert (loop.ARM not in detector.calls) is malformed
+    assert (tmp_path/'loopback/initial-transmitter-status.json').read_bytes()==raw
+    assert (tmp_path/'loopback/failure.json').exists()
+
+
 def test_actual_acquisition_command_path_drains100_epochs_and_reconsumes_raw(tmp_path,monkeypatch):
     from test_titan_isolated import rfp_log
     detector=Detector()
