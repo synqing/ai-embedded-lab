@@ -167,6 +167,55 @@ def wait_for_interface(port, deadline, *, clock=time.monotonic, sleep=time.sleep
     raise TimeoutError("Exact admitted CDC path did not reappear before capture deadline")
 
 
+def usb_inventory():
+    from serial.tools.list_ports import comports
+    return list(comports())
+
+
+def usb_anchor(port, *, inventory=usb_inventory):
+    """Bind the freshly identified donor's physical USB location before flashing."""
+    rows = [p for p in inventory() if p.device == port and
+            p.vid == 0x045b and p.pid == 0x5310]
+    require(len(rows) == 1, "Missing/ambiguous admitted donor USB interface")
+    p = rows[0]
+    require(isinstance(p.location, str) and p.location, "Missing donor USB location")
+    return {"device":p.device, "location":p.location, "serial":p.serial_number,
+            "vid":p.vid, "pid":p.pid}
+
+
+def wait_for_native_interface(anchor, deadline, *, clock=time.monotonic,
+                              sleep=time.sleep, inventory=usb_inventory):
+    """Resolve re-enumeration without opening arbitrary ports.
+
+    Native platform/titan/usb.h formats BSP UID bytes in address order;
+    board_uid.h formats those same bytes in reverse order for application INFO.
+    Both serial and original USB socket must match. INFO UID/schema/source checks
+    in run_session still precede binding, readiness and diagnostic stimulus.
+    """
+    serial = bytes.fromhex(UID)[::-1].hex()
+    while clock() < deadline:
+        rows = [p for p in inventory() if p.vid == 0x045b and p.pid == 0x5310 and
+                p.location == anchor["location"] and
+                isinstance(p.serial_number, str) and p.serial_number.lower() == serial and
+                p.device.startswith('/dev/cu.') and '*' not in p.device]
+        require(len(rows) <= 1, "Ambiguous native USB identity at admitted socket")
+        if rows:
+            p = rows[0]
+            return {"device":p.device, "location":p.location, "serial":p.serial_number,
+                    "vid":p.vid, "pid":p.pid}
+        sleep(min(.1, max(0, deadline-clock())))
+    raise TimeoutError("Native USB identity did not reappear at admitted socket before capture deadline")
+
+
+def require_interface_unowned(port, deadline):
+    remaining = deadline-time.monotonic()
+    require(remaining > 0, "No candidate budget remains for interface ownership")
+    owner = subprocess.run(['lsof','-t',port],capture_output=True,text=True,
+                           check=False,timeout=min(3,remaining))
+    require(owner.returncode == 1 and not owner.stdout.strip() and not owner.stderr.strip(),
+            "Resolved native interface is owned or ownership check failed")
+
+
 def execute(m, source, image, ctx, facts):
     """Called under the existing hardware lock, after normal owner admission.
 
@@ -214,13 +263,20 @@ def execute(m, source, image, ctx, facts):
         return write_json(name+"-programming-event.json",evidence)
     attempted=False
     try:
+        anchor=usb_anchor(m["port"])
+        facts["donor_usb_anchor"]=anchor
+        write_json("donor-usb-anchor.json",anchor)
         event=program(image,"candidate")
-        wait_for_interface(m["port"],capture_deadline)
+        resolved=wait_for_native_interface(anchor,capture_deadline)
+        facts["native_usb_interface"]=resolved
+        write_json("native-usb-interface.json",resolved)
+        require_interface_unowned(resolved["device"],capture_deadline)
         remaining=capture_deadline-time.monotonic()
         require(remaining >= 1,"Candidate programming exhausted bounded interruption")
         operation=write_json("isolated-operation.json",{"isolated_capture":{
             "frames":m["isolated_qualification"]["frames"],"budget_seconds":min(60,remaining)}})
-        runtime=dict(m,isolated_programming_event=event,isolated_fixture_id=pre["fixture_id"])
+        runtime=dict(m,port=resolved["device"],isolated_programming_event=event,
+                     isolated_fixture_id=pre["fixture_id"])
         facts["isolated_capture"]=run_session(runtime,logs,80,operation["path"],deadline=capture_deadline)
         require(time.monotonic() <= capture_deadline,"Capture exceeded recovery reserve")
         facts["candidate_programming_event"]=event
