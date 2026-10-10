@@ -863,3 +863,19 @@ Donor program/verify and fresh application identity confirmed; internal34.129s.
 Broker restored and paired advancing telemetry saved.26 candidate transactions;
 9 accepted individual digital pairs; no complete100-pair campaign. Orange product
 harness OFF and loopbacks unchanged. Native-to-product HOLD remains.
+
+### Attempt27 — terminal-session service lifecycle verified
+
+Firmware `b036a26804df56d07907ee9c4c3b98001d9b06d4`, HEX
+`340a87b5a790a3eff9e625f32af07919274a04d3b4ba90c021b2d9e689d39256`.
+Run `isolated-direct-usb-terminal`: fullpattern6 raw consistency PASS; capture
+12.413ms. Explicit admitted terminal-session flag keeps USB service through
+final observations and closes on validatedCANCEL/disconnect. Maximum8 steps
+per checkpoint, measured max230288cycles=230.288us;245calls.
+Arm-to-drain0.600866s (excludes terminal checks/verification), improved from
+0.741789s but still insufficient100-pair margin under unchanged60sbudget.
+No further blind step-count tuning justified; next source-bound decision must
+identify driver servicing frequency or remaining batching/host overhead.
+Donor programming/application identity verified; internal33.767s; broker restored
+with advancing paired telemetry saved.27transactions,10 accepted individual
+digitalpairs, no completed100-pair campaign. ProductharnessOFF unchanged.
