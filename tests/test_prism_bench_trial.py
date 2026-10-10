@@ -129,14 +129,97 @@ def test_stalled_native_reader_has_finite_deadline(monkeypatch):
 
 def test_snapshot_binds_nonzero_native_device_record():
     body=bytearray(1184);struct.pack_into('<I',body,0,0x53564C54)
+    struct.pack_into('<HH',body,4,1,25)
     source='ab'*32
     body[728:744]=bytes.fromhex(native.UID);body[744:776]=bytes.fromhex(source);body[776:808]=bytes.fromhex(native.SCHEMA)
     struct.pack_into('<Q',body,8,45);struct.pack_into('<Q',body,32,225000)
     struct.pack_into('<Q',body,48,2880);struct.pack_into('<f',body,96,.75)
     decoded=native.snapshot(body,source)
     assert decoded['generation']==45 and decoded['pcm_peak']==.75 and decoded['sample_end']==2880
+    assert decoded['capture_valid'] is True and decoded['warming'] is False and decoded['stale'] is False
+    assert decoded['flags']==25 and decoded['last_invalidate_reason_name']=='None'
     body[744]^=1
     with pytest.raises(ValueError):native.snapshot(body,source)
+
+
+@pytest.mark.parametrize('flags,valid,warming,stale',[(25,True,False,False),(26,False,True,False),(30,False,True,True)])
+def test_snapshot_actual_schema_validity_and_persistent_reason(flags,valid,warming,stale):
+    body=bytearray(1184)
+    struct.pack_into('<IHH',body,0,0x53564C54,1,flags)
+    body[728:744]=bytes.fromhex(native.UID)
+    body[744:776]=bytes.fromhex('ab'*32)
+    body[776:808]=bytes.fromhex(native.SCHEMA)
+    struct.pack_into('<Q',body,32,1000000)  # Nonzero time never replaces flags.
+    struct.pack_into('<I',body,616,0x50520005)
+    decoded=native.snapshot(body,'ab'*32)
+    assert (decoded['capture_valid'],decoded['warming'],decoded['stale'])==(valid,warming,stale)
+    assert decoded['last_invalidate_reason']==0x50520005
+    assert decoded['last_invalidate_reason_name']=='RingOverwrite'
+    assert decoded['physical_timestamp_valid'] is False
+    for offset,value in ((4,2),(6,0),(6,27),(6,57)):
+        corrupt=bytearray(body);struct.pack_into('<H',corrupt,offset,value)
+        with pytest.raises(ValueError,match='version/flags'):native.snapshot(corrupt,'ab'*32)
+
+
+def test_snapshot_differential_decode_retained_device_corpus():
+    # Independent byte-slice interpretation of the original firmware encoder,
+    # compared in emitted order over the retained failed device transaction.
+    # The raw acquisition remains local evidence, never manufactured by this test.
+    import base64
+    source=Path('/Users/spectrasynq/ai-embedded-lab/_scratch/titan-completion-20261008/r2-repair-cost-d-off-20/logs/titan-native.jsonl')
+    if not source.is_file():pytest.skip('Retained local Titan raw device corpus unavailable')
+    seen=[]
+    for row in map(json.loads,source.read_text().splitlines()):
+        if row['opcode']!=23 or not row.get('response_complete'):continue
+        packet=base64.b64decode(row['response'])
+        body=native.response(packet,row['sequence'],0x50524953)
+        oracle_flags=int.from_bytes(body[6:8],'little')
+        oracle_reason=int.from_bytes(body[616:620],'little')
+        decoded=native.snapshot(body,body[744:776].hex())
+        actual=(decoded['flags'],decoded['capture_valid'],decoded['warming'],decoded['stale'],
+                decoded['last_invalidate_reason'],decoded['epoch'],decoded['capture_time_us'],decoded['sample_end'])
+        independent=(oracle_flags,oracle_flags%2==1,(oracle_flags//2)%2==1,(oracle_flags//4)%2==1,
+            oracle_reason,int.from_bytes(body[16:24],'little'),int.from_bytes(body[32:40],'little'),int.from_bytes(body[48:56],'little'))
+        assert actual==independent
+        seen.append(actual)
+    assert len(seen)==2 and [r[5] for r in seen]==[0,33]
+    assert all(not r[1] and r[4]==0x50520005 for r in seen)
+
+
+def test_capture_queue_frozen_witness_and_stage_attribution():
+    body=bytearray(1536)
+    struct.pack_into('<10I',body,0,0x51544C54,1,1536,1000000000,22,20,2,4,41431,1)
+    struct.pack_into('<4Q',body,40,2,17,1,20)
+    struct.pack_into('<Q',body,72,55330)
+    struct.pack_into('<5I',body,80,1,2,1,2,33)
+    struct.pack_into('<I',body,100,1)
+    struct.pack_into('<Q',body,104,100500)
+    struct.pack_into('<9I',body,112,123,18,1,41431,1,1,9,1,9)
+    struct.pack_into('<QQII',body,208+24,1,55330000,55330000,0)
+    struct.pack_into('<Q6I',body,472,99990,55330000,55330000,1,18,1,1)
+    struct.pack_into('<Q6I',body,504,100500,4000000,1000000,2,22,20,2)
+    struct.pack_into('<Q6I',body,984,99990,55330000,55330000,1,18,1,1)
+    decoded=native.capture_queue(bytes(body))
+    assert decoded['overwrite_events']==2 and decoded['dropped_blocks']==17 and decoded['copy_races']==1
+    assert decoded['longest_consumption_gap_us']==55330 and decoded['longest_gap_start_backlog']==1
+    assert decoded['first_fault_valid']==1 and decoded['first_producer']==18 and decoded['first_consumer']==1
+    assert decoded['history'][0]['stage']=='coefficients' and decoded['history'][1]['stage']=='resample_excluding_hops'
+    assert decoded['first_history']==decoded['history'][:1]
+    assert decoded['history_overwritten']==33 and decoded['first_history_overwritten']==9
+    assert decoded['stages'][1]['maximum_cycles']==55330000
+    for offset,value in ((0,0),(4,2),(8,1535),(24,3),(28,1),(84,11),(92,17),(100,2),(140,17),(484,55330001)):
+        corrupt=bytearray(body);struct.pack_into('<I',corrupt,offset,value)
+        with pytest.raises(ValueError):native.capture_queue(bytes(corrupt))
+
+
+def test_window_rejects_invalid_metadata_source_change_and_counter_wrap():
+    first=dict(epoch=1,capture_valid=True,warming=False,stale=False,source_rate=41431,
+        source_binding='ab'*32,capture_time_us=1000000,sample_end=12800,hops=200,
+        rejected_hops=0,logical_frame=120)
+    last={**first,'capture_time_us':2000000,'sample_end':25600,'hops':400,'logical_frame':220}
+    for change in ({'capture_valid':False},{'stale':True},{'warming':True},{'source_rate':41430},
+                   {'source_binding':'cd'*32},{'hops':0},{'logical_frame':0},{'rejected_hops':-1}):
+        with pytest.raises(ValueError):native.window(first,{**last,**change})
 
 
 def _titan_output_proof(tmp_path, image_sha, **changes):

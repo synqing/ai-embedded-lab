@@ -98,6 +98,8 @@ class Owner:
             self.snapshots += 1
             body = bytearray(1184)
             struct.pack_into('<I', body, 0, 0x53564C54)
+            struct.pack_into('<HH', body, 4, 1, 25)
+            struct.pack_into('<I', body, 624, 41431)
             body[728:744] = bytes.fromhex(native.UID)
             body[744:776] = bytes.fromhex('a'*64)
             body[776:808] = bytes.fromhex(native.SCHEMA)

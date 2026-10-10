@@ -58,11 +58,28 @@ def state(body):
 
 def snapshot(body, source_binding):
     if len(body) != 1184 or struct.unpack_from('<I', body)[0] != 0x53564C54: raise ValueError('Wrong native snapshot')
+    version, flags = struct.unpack_from('<HH', body, 4)
+    # Observation::snapshot/flags encode this fixed schema. Bit0 qualifies the
+    # native source; bit1 is warming, bit2 is stale, bit3 marks unqualified
+    # physical timestamps and bit4 is the current output setting. Time alone
+    # cannot make capture metadata valid.
+    if version != 1 or flags & ~31 or bool(flags & 1) == bool(flags & 2):
+        raise ValueError('Unsupported native snapshot version/flags')
     if body[728:744].hex() != UID or body[744:776].hex() != source_binding or body[776:808].hex() != SCHEMA:
         raise ValueError('Snapshot UID/source/schema mismatch')
     u32 = lambda p: struct.unpack_from('<I', body, p)[0]
     u64 = lambda p: struct.unpack_from('<Q', body, p)[0]
-    return {'generation':u64(8), 'epoch':u64(16), 'capture_time_us':u64(32), 'publish_time_us':u64(40),
+    reasons = {0:'None', 0x50520001:'HostRecovery', 0x50520002:'DriverError',
+               0x50520003:'Stall', 0x50520004:'SequenceWrap',
+               0x50520005:'RingOverwrite', 0x50520006:'Restart'}
+    reason = u32(616)
+    return {'snapshot_version':version, 'flags':flags, 'capture_valid':bool(flags & 1),
+            'warming':bool(flags & 2), 'stale':bool(flags & 4),
+            'physical_timestamp_valid':not bool(flags & 8),
+            'uid':body[728:744].hex(), 'source_binding':body[744:776].hex(),
+            'schema_sha256':body[776:808].hex(),
+            'last_invalidate_reason':reason, 'last_invalidate_reason_name':reasons.get(reason, 'Unknown'),
+            'generation':u64(8), 'epoch':u64(16), 'capture_time_us':u64(32), 'publish_time_us':u64(40),
             'sample_end':u64(48), 'pcm_peak':struct.unpack_from('<f',body,96)[0],
             'revision':u32(604), 'hops':u32(608), 'rejected_hops':u32(612),
             'source_rate':u32(624), 'ap_cycles':u32(632), 'vp_cycles':u32(636),
@@ -70,11 +87,74 @@ def snapshot(body, source_binding):
             'accepted_request':u32(832), 'emitted_request':u32(840)}
 
 
+CAPTURE_QUEUE = 0x50524C04
+CAPTURE_STAGES = ('none', 'coefficients', 'resample_excluding_hops', 'runtime',
+                  'source', 'bank', 'observer', 'proxy', 'render', 'usb', 'hop')
+
+
+def capture_queue(body):
+    """Decode the additive boot-bound capture witness; snapshot stays1184bytes."""
+    if len(body) != 1536 or struct.unpack_from('<3I', body) != (0x51544C54, 1, 1536):
+        raise ValueError('Unsupported capture queue witness length/schema')
+    u32 = lambda p: struct.unpack_from('<I', body, p)[0]
+    u64 = lambda p: struct.unpack_from('<Q', body, p)[0]
+    result = dict(schema='prism.titan.capture-queue.v1', clock_hz=u32(12),
+        producer=u32(16), consumer=u32(20), unread=u32(24), max_unread=u32(28),
+        source_rate=u32(32), coefficient_builds=u32(36), overwrite_events=u64(40),
+        dropped_blocks=u64(48), copy_races=u64(56), consumed_blocks=u64(64),
+        longest_consumption_gap_us=u64(72), longest_gap_start_backlog=u32(80),
+        current_stage=u32(84), last_stage=u32(88), history_count=u32(92),
+        history_overwritten=u32(96), first_fault_valid=u32(100),
+        first_time_us=u64(104), first_cycles=u32(112), first_producer=u32(116),
+        first_consumer=u32(120), first_rate=u32(124), first_coefficient_builds=u32(128),
+        first_stage=u32(132), first_last_stage=u32(136), first_history_count=u32(140),
+        first_history_overwritten=u32(144), preroll_blocks=u64(152),
+        valid_stream_boundary_us=u64(160), overhead_last_cycles=u32(168),
+        overhead_max_cycles=u32(172), overhead_count=u64(176),
+        overhead_sum_cycles=u64(184), interval_overflow=u32(192),
+        irq_overhead_max_cycles=u32(196), first_history_copy_race=u32(200))
+    if not result['clock_hz'] or result['first_fault_valid'] not in (0, 1):
+        raise ValueError('Invalid capture queue witness clock/first fault')
+    if result['unread'] != ((result['producer']-result['consumer']) & 0xFFFFFFFF) or result['max_unread'] < result['unread']:
+        raise ValueError('Inconsistent capture queue witness backlog')
+    for key in ('current_stage','last_stage','first_stage','first_last_stage'):
+        if result[key] >= len(CAPTURE_STAGES): raise ValueError('Unknown capture queue stage')
+    if result['history_count'] > 16 or result['first_history_count'] > 16:
+        raise ValueError('Oversized bounded capture queue history')
+    if result['first_history_copy_race'] not in (0, 1):
+        raise ValueError('Invalid capture queue first-history copy-race flag')
+    result['stages'] = []
+    for stage in range(len(CAPTURE_STAGES)):
+        count, total, maximum, overflow = struct.unpack_from('<QQII', body, 208+stage*24)
+        result['stages'].append(dict(stage=CAPTURE_STAGES[stage], count=count,
+                                    sum_cycles=total, maximum_cycles=maximum, overflow=overflow))
+    def history(offset, count):
+        rows=[]
+        for i in range(count):
+            start, wall, exclusive, stage, producer, consumer, backlog = struct.unpack_from('<Q6I', body, offset+i*32)
+            if stage >= len(CAPTURE_STAGES) or exclusive > wall:
+                raise ValueError('Invalid capture queue stage history')
+            rows.append(dict(start_us=start, wall_cycles=wall, exclusive_cycles=exclusive,
+                stage=CAPTURE_STAGES[stage], producer=producer, consumer=consumer, start_backlog=backlog))
+        return rows
+    result['history'] = history(472, result['history_count'])
+    result['first_history'] = history(984, result['first_history_count'])
+    return result
+
+
 def window(first, last):
+    for snap in (first, last):
+        if 'capture_valid' in snap and (snap['capture_valid'] is not True or snap.get('warming') is not False or snap.get('stale') is not False):
+            raise ValueError('Invalid native capture metadata in window')
     if first['epoch'] != last['epoch']: raise ValueError('Capture epoch changed in settled window')
+    for key in ('uid','source_binding','schema_sha256','source_rate'):
+        if key in first and first.get(key) != last.get(key): raise ValueError('Capture source identity changed: '+key)
     dt = last['capture_time_us'] - first['capture_time_us']
     samples = last['sample_end'] - first['sample_end']; hops = last['hops'] - first['hops']
     if dt <= 0 or samples <= 0 or hops <= 0: raise ValueError('Native capture did not advance')
+    for key in ('rejected_hops', 'logical_frame'):
+        if type(first[key]) is not int or type(last[key]) is not int or last[key] < first[key]:
+            raise ValueError('Native counter reset/wrap: '+key)
     return {'device_window_us':dt, 'analysis_samples':samples, 'analysis_hops':hops,
             'analysis_sample_rate_hz':samples*1000000/dt, 'analysis_hop_rate_hz':hops*1000000/dt,
             'rejected_hop_delta':last['rejected_hops']-first['rejected_hops'],
@@ -248,6 +328,8 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
                     result['completion'] = execute(exchange, manifest, op['completion'], out, info,
                                                    **({'deadline': deadline} if deadline is not None else {}))
                     measured = result['completion']
+                    if measured.get('kind') == 'measure' and measured.get('startup', {}).get('status') != 'PASS':
+                        raise ValueError('Native completion startup failed; boot-to-ready evidence preserved')
                     if measured.get('kind') == 'measure' and not all(measured.get(k) is True for k in
                             ('proxy_budget_met', 'hop_deadline_met', 'render_deadline_met')):
                         raise ValueError('Native completion measurement failed a required timing budget; evidence preserved')

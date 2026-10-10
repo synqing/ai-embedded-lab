@@ -4,6 +4,7 @@ This module never opens a port, programmes a target, plays audio or admits an
 image. The gateway provides the identity-checked exchange and output gate.
 """
 import hashlib
+import base64
 import json
 import math
 from pathlib import Path
@@ -16,6 +17,7 @@ PROBE, COST, PREAMBLE = 0x50524406, 0x50524407, 0x50524408
 STAGES = ('capture', 'resample', 'analysis', 'proxy', 'observer', 'hop_total',
           'render_including_pack', 'pack', 'usb', 'active_loop')
 ATOL, RTOL = 1e-5, 1e-4
+READINESS_MAX_SECONDS, FINAL_READOUT_RESERVE_SECONDS = 10., 5.
 
 
 def prepare(spec):
@@ -147,7 +149,6 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
         from ael.prism_endurance import execute as execute_endurance
         return execute_endurance(exchange, manifest, spec, out, initial, monotonic=monotonic, pause=pause)
     prepared = prepare(spec)
-    require_healthy(initial)
     boot = initial['boot_id']
     start = monotonic()
     cutoff = start + 120
@@ -155,8 +156,9 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
         if type(deadline) not in (int, float) or not math.isfinite(deadline):
             raise Refusal('Invalid completion absolute deadline')
         cutoff = min(cutoff, deadline)
+    exchange_cutoff = cutoff
     def check_deadline():
-        if monotonic() >= cutoff:
+        if monotonic() >= min(cutoff,exchange_cutoff):
             raise Refusal('Completion absolute deadline exhausted; preserve donor recovery reserve')
     original_exchange = exchange
     def exchange(opcode, payload=b''):
@@ -167,7 +169,7 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
     host_boot = host_boot_session()
     path = Path(out)/'titan-completion.jsonl'
     def current():
-        info = json.loads(exchange(1));require_healthy(info,initial);return info
+        return json.loads(exchange(1))
     with path.open('x') as log:
         def record(row):
             row['host_uptime_ns']=uptime_ns()
@@ -176,6 +178,7 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
             log.write(json.dumps(row,allow_nan=False)+'\n');log.flush()
         record({'event':'begin','identity':initial,'request':spec,'hardware_access':True})
         try:
+            require_healthy(initial)
             preamble = json.loads(exchange(PREAMBLE,struct.pack('<I',boot)))
             record({'event':'preamble','data':preamble})
             if prepared['kind'] == 'golden':
@@ -209,37 +212,144 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
                     raise Refusal('Descriptor session must finish before live measurement')
                 exchange(0x50524405,struct.pack('<II',boot,0 if prepared['live_source']=='A' else 1))
                 exchange(PREAMBLE,struct.pack('<II',boot,int(prepared['observer_enabled'])))
-                from ael.prism_native import snapshot, window
-                def progress():
-                    snap=snapshot(exchange(23),manifest['source_binding_hash'])
-                    tx=json.loads(exchange(0x50524c02,struct.pack('<I',boot)))
+                from ael.prism_native import snapshot, window, capture_queue, CAPTURE_QUEUE
+                def decoded(row, key, opcode, decoder, payload=b''):
+                    raw=exchange(opcode,payload)
+                    try:
+                        row[key]=decoder(raw)
+                    except BaseException as exc:
+                        record({'event':'decode_failure','observation_event':row['event'],
+                            'field':key,'opcode':opcode,'raw_reply_base64':base64.b64encode(raw).decode(),
+                            'message':str(exc)})
+                        raise
+                def observe(event, phase):
+                    row={'event':event,'phase':phase,'observation_complete':False}
+                    try:
+                        decoded(row,'identity',1,json.loads)
+                        decoded(row,'drive',0x50524403,json.loads,struct.pack('<I',boot))
+                        decoded(row,'snapshot',23,lambda raw:snapshot(raw,manifest['source_binding_hash']))
+                        decoded(row,'transmitter',0x50524c02,json.loads,struct.pack('<I',boot))
+                        decoded(row,'capture_queue',CAPTURE_QUEUE,capture_queue,struct.pack('<I',boot))
+                        row['observation_complete']=True
+                    finally:
+                        # Preserve even the first failing/partially decoded observation.
+                        # Acceptance checks below never precede this durable row.
+                        record(row)
+                    return row
+                def healthy(row):
+                    require_healthy(row['identity'],initial)
+                    status=row['drive'];tx=row['transmitter'];queue=row['capture_queue']
+                    if status.get('active') or status.get('phase')!='idle' or status.get('live_source') != (0 if prepared['live_source']=='A' else 1):
+                        raise Refusal('Replay revived or live source changed')
                     if tx.get('schema')!='prism.titan.transmitter.v2' or any(tx.get(k)!=0 for k in ('first_fault','failures','last_fsp_error','pattern_requested')):
                         raise Refusal('Transmitter fault or fixture pattern active')
-                    if type(tx.get('wire_reset_completions')) is not int:
+                    if type(tx.get('wire_reset_completions')) is not int or tx['wire_reset_completions']<0:
                         raise Refusal('Missing sampled transmitter completion count')
-                    return snap,tx
-                first_snapshot,first_tx=progress()
-                record({'event':'progress_before','snapshot':first_snapshot,'transmitter':first_tx})
+                    if queue['clock_hz']!=row['identity']['clock_hz']:
+                        raise Refusal('Capture witness clock changed')
+                    if queue['interval_overflow'] or any(stage['overflow'] for stage in queue['stages']):
+                        raise Refusal('Capture witness interval/cost overflow')
+                def ready(row):
+                    snap=row['snapshot'];queue=row['capture_queue']
+                    return (snap['capture_valid'] is True and snap['warming'] is False and snap['stale'] is False
+                        and all(type(snap.get(k)) is int and snap[k]>0 for k in ('epoch','capture_time_us','sample_end','hops'))
+                        and 14000<=snap['source_rate']<=64000 and queue['source_rate']==snap['source_rate'])
+                def advancing(before_row, after_row):
+                    a,b=before_row['snapshot'],after_row['snapshot']
+                    window(a,b)
+                    if a['rejected_hops']!=b['rejected_hops'] or b['logical_frame']<=a['logical_frame']:
+                        raise Refusal('Rejected hop or stalled render')
+                    a,b=before_row['transmitter'],after_row['transmitter']
+                    if b['wire_reset_completions']<=a['wire_reset_completions']:
+                        raise Refusal('Transmitter stopped or counter reset/wrap')
+                    a,b=before_row['capture_queue'],after_row['capture_queue']
+                    for key in ('overwrite_events','dropped_blocks','copy_races','preroll_blocks'):
+                        if b[key]!=a[key]: raise Refusal('Capture loss or counter reset/wrap: '+key)
+                    if b['consumed_blocks']<=a['consumed_blocks']:
+                        raise Refusal('Input consumption stopped or counter reset/wrap')
+                    if b['first_fault_valid']!=a['first_fault_valid'] or (a['first_fault_valid'] and any(
+                            b[key]!=a[key] for key in ('first_time_us','first_cycles','first_producer',
+                                'first_consumer','first_rate','first_coefficient_builds','first_stage',
+                                'first_last_stage','first_history_count','first_history_overwritten',
+                                'first_history_copy_race','first_history'))):
+                        raise Refusal('New capture first fault or frozen witness changed')
+                readiness_start=monotonic()
+                readiness_cutoff=min(readiness_start+READINESS_MAX_SECONDS,
+                    cutoff-prepared['seconds']-FINAL_READOUT_RESERVE_SECONDS)
+                if readiness_cutoff<=readiness_start:
+                    raise Refusal('Full measurement and final readout cannot fit completion absolute deadline')
+                record({'event':'readiness_begin','absolute_cutoff':cutoff,
+                    'readiness_cutoff':readiness_cutoff,'full_window_seconds':prepared['seconds'],
+                    'final_readout_reserve_seconds':FINAL_READOUT_RESERVE_SECONDS})
+                exchange_cutoff=readiness_cutoff
+                previous_ready=None;startup_faults=[];readiness_samples=0
+                while True:
+                    if monotonic()>=readiness_cutoff:
+                        record({'event':'boot_to_ready','status':'FAIL','reason':'never ready within admitted cutoff',
+                                'faults':startup_faults,'observations':readiness_samples})
+                        raise Refusal('Capture never ready within completion absolute deadline/readiness cutoff')
+                    row=observe('readiness_health','startup');readiness_samples+=1
+                    healthy(row)
+                    snap=row['snapshot'];queue=row['capture_queue']
+                    fault={'last_invalidate_reason':snap['last_invalidate_reason'],
+                        'last_invalidate_reason_name':snap['last_invalidate_reason_name'],
+                        **{k:queue[k] for k in ('overwrite_events','dropped_blocks','copy_races','first_fault_valid')}}
+                    if any(fault[k] for k in ('last_invalidate_reason','overwrite_events','dropped_blocks','copy_races','first_fault_valid')) and fault not in startup_faults:
+                        startup_faults.append(fault)
+                    if ready(row):
+                        if previous_ready is not None:
+                            advancing(previous_ready,row)
+                            first=row
+                            break
+                        previous_ready=row
+                    else:
+                        previous_ready=None
+                    pause(min(.25,max(0,readiness_cutoff-monotonic())))
+                startup={'status':'FAIL' if startup_faults else 'PASS','faults':startup_faults,
+                    'observations':readiness_samples,'readiness_seconds':monotonic()-readiness_start,
+                    'valid_stream_boundary_us':first['capture_queue']['valid_stream_boundary_us'],
+                    'planned_preroll_blocks':first['capture_queue']['preroll_blocks'],
+                    'scope':'boot-to-ready witness; two observations establish readiness, not endurance'}
+                record({'event':'boot_to_ready',**startup})
+                exchange_cutoff=cutoff
+                first_snapshot,first_tx=first['snapshot'],first['transmitter']
+                record({'event':'progress_before','snapshot':first_snapshot,'transmitter':first_tx,
+                        'capture_queue':first['capture_queue']})
                 before=[decode_cost(exchange(COST,struct.pack('<II',boot,i)),i) for i in range(len(STAGES))]
                 record({'event':'cost_before','data':before})
                 end=monotonic()+prepared['seconds'];samples=0
-                if end >= cutoff:
-                    raise Refusal('Full measurement window cannot fit completion absolute deadline')
+                if end+FINAL_READOUT_RESERVE_SECONDS >= cutoff:
+                    raise Refusal('Full measurement and final readout cannot fit completion absolute deadline')
+                record({'event':'measurement_begin','full_window_seconds':prepared['seconds'],
+                        'measurement_end_monotonic':end})
+                previous=first
                 while monotonic()<end:
                     check_deadline()
-                    info=current();status=json.loads(exchange(0x50524403,struct.pack('<I',boot)))
-                    if status.get('active') or status.get('live_source') != (0 if prepared['live_source']=='A' else 1):
-                        raise Refusal('Replay revived or live source changed')
-                    snap,tx=progress()
-                    if snap['epoch']!=first_snapshot['epoch'] or snap['rejected_hops']!=first_snapshot['rejected_hops'] or tx['wire_reset_completions']<first_tx['wire_reset_completions']:
-                        raise Refusal('Capture gap, rejected hop or transmitter counter reset')
-                    record({'event':'health','identity':info,'drive':status,'snapshot':snap,'transmitter':tx});samples+=1
+                    # The first visit follows cost collection without assuming that
+                    # its query duration advanced audio. Wait for a sampled interval.
                     pause(min(.25,max(0,end-monotonic()),max(0,cutoff-monotonic())))
                     check_deadline()
+                    row=observe('health','measurement');samples+=1
+                    healthy(row)
+                    if not ready(row): raise Refusal('Invalid capture metadata after readiness')
+                    advancing(previous,row);previous=row
                 after=[decode_cost(exchange(COST,struct.pack('<II',boot,i)),i) for i in range(len(STAGES))]
                 record({'event':'cost_after','data':after})
-                final_snapshot,final_tx=progress()
-                record({'event':'progress_after','snapshot':final_snapshot,'transmitter':final_tx})
+                final=observe('progress_after','final')
+                healthy(final)
+                if not ready(final): raise Refusal('Invalid final capture metadata')
+                # Final reads can follow immediately; require nondecreasing progress
+                # from the last sample and advancing progress over the whole window.
+                for key in ('capture_time_us','sample_end','hops','logical_frame'):
+                    if final['snapshot'][key]<previous['snapshot'][key]:
+                        raise Refusal('Final capture counter reset/wrap: '+key)
+                for key in ('consumed_blocks',):
+                    if final['capture_queue'][key]<previous['capture_queue'][key]:
+                        raise Refusal('Final input counter reset/wrap: '+key)
+                if final['transmitter']['wire_reset_completions']<previous['transmitter']['wire_reset_completions']:
+                    raise Refusal('Final transmitter counter reset/wrap')
+                advancing(first,final)
+                final_snapshot,final_tx=final['snapshot'],final['transmitter']
                 audio_window=window(first_snapshot,final_snapshot)
                 if audio_window['rejected_hop_delta']!=0 or audio_window['logical_frame_delta']<=0 or final_tx['wire_reset_completions']<=first_tx['wire_reset_completions']:
                     raise Refusal('Lost/rejected audio or stalled render/transmitter')
@@ -248,6 +358,8 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
                 if any(c['count']==0 for c in costs if c['stage'] in required):
                     raise Refusal('Missing stage measurement')
                 result={'kind':'measure','health_samples':samples,'costs':costs,'physical_latency':'UNMEASURED',
+                        'startup':startup,'live_continuity_met':True,'measurement_seconds':prepared['seconds'],
+                        'capture_queue_before':first['capture_queue'],'capture_queue_after':final['capture_queue'],
                         'audio_window':audio_window,'sampled_wire_reset_completion_delta':final_tx['wire_reset_completions']-first_tx['wire_reset_completions'],
                         'timing_scope':'Measured stage execution only; scheduler response deadlines and physical latency require separate verification',
                         'proxy_budget_met':costs[3]['p99_us_interval'][1]<=1000,
@@ -258,7 +370,9 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
             record({'event':'preamble_after','data':final_preamble})
             result['memory_before']=preamble
             result['memory_after']=final_preamble
-            result['final_identity']=current();record({'event':'result','data':result})
+            result['final_identity']=current();record({'event':'final_identity','identity':result['final_identity']})
+            require_healthy(result['final_identity'],initial)
+            record({'event':'result','data':result})
             return result
         except BaseException as exc:
             record({'event':'failure','message':str(exc)})

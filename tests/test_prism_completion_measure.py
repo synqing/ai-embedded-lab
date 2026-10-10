@@ -47,6 +47,7 @@ def wire_cost(stage,count,cycles):
 class MeasureBench:
     def __init__(self,fault=None):
         self.seconds=0.;self.calls=[];self.source=0;self.observer=None;self.fault=fault
+        self.cost_baselines=[];self.snapshot_count=0
     def pause(self,dt):self.seconds+=dt
     def clock(self):return self.seconds
     def exchange(self,opcode,payload=b''):
@@ -56,21 +57,43 @@ class MeasureBench:
             if self.fault=='boot':info['boot_id']=8
             if self.fault=='counter':info['capture_restart_attempts']=1
             if self.fault=='identity':info['uid']='other'
+            if self.fault=='postcounter' and self.seconds>.25:info['capture_restart_attempts']=1
             return json.dumps(info).encode()
         if opcode==completion.PREAMBLE:
             if len(payload)==8:self.observer=struct.unpack('<II',payload)[1]
             return b'{}'
         if opcode==21:return b''
         if opcode==23:
+            self.snapshot_count+=1
             body=bytearray(1184);struct.pack_into('<I',body,0,0x53564C54)
+            warming=self.fault=='neverready' or (self.fault in ('warmup','startupoverwrite') and self.snapshot_count==1)
+            struct.pack_into('<HH',body,4,1,26 if warming else 25)
             body[728:744]=bytes.fromhex(native.UID);body[744:776]=bytes.fromhex('b'*64);body[776:808]=bytes.fromhex(native.SCHEMA)
-            epoch=2 if self.fault=='audiogap' and self.seconds else 1
+            epoch=2 if self.fault=='audiogap' and self.seconds>.25 else 1
             struct.pack_into('<Q',body,16,epoch)
             struct.pack_into('<Q',body,32,1000000+int(self.seconds*1000000))
             struct.pack_into('<Q',body,48,12800+int(self.seconds*12800))
             struct.pack_into('<I',body,608,200+int(self.seconds*200))
-            struct.pack_into('<I',body,612,int(self.fault=='rejectedhop' and self.seconds>0))
+            struct.pack_into('<I',body,612,int(self.fault=='rejectedhop' and self.seconds>.25))
+            struct.pack_into('<I',body,616,0x50520005 if self.fault=='startupoverwrite' else 0)
+            struct.pack_into('<I',body,624,41431)
             struct.pack_into('<I',body,820,100+int(self.seconds*100))
+            if self.fault=='framewrap' and self.seconds>.25:struct.pack_into('<I',body,820,0)
+            if self.fault=='invalidafter' and self.seconds>.25:struct.pack_into('<H',body,6,26)
+            if self.fault=='baddecode' and self.seconds>.25:return bytes(body[:-1])
+            if self.fault=='finalinvalid' and sum(op==completion.COST for op,_ in self.calls)>=20:struct.pack_into('<H',body,6,26)
+            return bytes(body)
+        if opcode==native.CAPTURE_QUEUE:
+            body=bytearray(1536)
+            struct.pack_into('<10I',body,0,0x51544C54,1,1536,1000000000,
+                100+int(self.seconds*300),99+int(self.seconds*300),1,2,41431,1)
+            loss=int(self.fault=='overwrite' and self.seconds>.25) or int(self.fault=='startupoverwrite')
+            struct.pack_into('<4Q',body,40,loss,loss*10,0,99+int(self.seconds*300))
+            struct.pack_into('<I',body,100,loss)
+            if loss:struct.pack_into('<Q',body,104,10000)
+            struct.pack_into('<Q',body,160,100000)
+            if self.fault=='reset' and self.seconds>.25:struct.pack_into('<Q',body,64,0)
+            if self.fault=='lostreset':struct.pack_into('<Q',body,48,1 if self.seconds<=.25 else 0)
             return bytes(body)
         if opcode==0x50524C02:
             return json.dumps({'schema':'prism.titan.transmitter.v2','first_fault':int(self.fault=='txfault'),'failures':0,'pattern_requested':int(self.fault=='pattern'),'last_fsp_error':0,
@@ -81,7 +104,8 @@ class MeasureBench:
             boot,self.source=struct.unpack('<II',payload);assert boot==7;return b'{}'
         if opcode==completion.COST:
             boot,stage=struct.unpack('<II',payload);assert boot==7
-            n=10 if self.seconds else 0
+            self.cost_baselines.append(self.seconds)
+            n=int(self.seconds*100)
             if self.fault=='missing' and stage==2:n=0
             cycles=2000000 if self.fault=='budget' and stage==3 else 1000
             return wire_cost(stage,n,cycles)
@@ -94,7 +118,8 @@ def test_actual_measure_branch_source_observer_and_cost(tmp_path,source,observer
     b=MeasureBench();spec={'kind':'measure','seconds':1,'live_source':source,'observer_enabled':observer}
     result=completion.execute(b.exchange,{'source_binding_hash':'b'*64},spec,tmp_path,healthy(),monotonic=b.clock,pause=b.pause)
     assert b.source==int(source=='D') and b.observer==int(observer)
-    assert result['health_samples']==4 and all(x['count']==10 for x in result['costs'])
+    assert result['health_samples']==4 and all(x['count']==100 for x in result['costs'])
+    assert result['startup']['status']=='PASS' and result['startup']['observations']==2
     assert result['proxy_budget_met'] and result['hop_deadline_met'] and result['render_deadline_met']
     assert result['physical_latency']=='UNMEASURED' and not result['optical_verified']
     assert [json.loads(x)['event'] for x in (tmp_path/'titan-completion.jsonl').read_text().splitlines()][-1]=='result'
@@ -283,3 +308,136 @@ def test_endurance_cannot_drop_isolated_deadline(tmp_path):
     with pytest.raises(completion.Refusal,match='Endurance'):
         completion.execute(exchange,{}, {'kind':'endurance'},tmp_path,{},deadline=80.)
     exchange.assert_not_called()
+
+
+def measure(bench,tmp_path,seconds=1,deadline=None):
+    return completion.execute(bench.exchange,{'source_binding_hash':'b'*64},
+        dict(kind='measure',seconds=seconds,live_source='D',observer_enabled=False),
+        tmp_path,healthy(),monotonic=bench.clock,pause=bench.pause,deadline=deadline)
+
+
+def recorded(tmp_path):
+    return [json.loads(line) for line in (tmp_path/'titan-completion.jsonl').read_text().splitlines()]
+
+
+def test_invalid_capture_baseline_waits_for_two_valid_observations(tmp_path):
+    bench=MeasureBench('warmup');result=measure(bench,tmp_path)
+    readiness=[r for r in recorded(tmp_path) if r['event']=='readiness_health']
+    assert [r['snapshot']['capture_valid'] for r in readiness]==[False,True,True]
+    assert result['startup']['status']=='PASS' and result['startup']['observations']==3
+    assert min(bench.cost_baselines)==.5
+    events=[r['event'] for r in recorded(tmp_path)]
+    assert events.index('boot_to_ready')<events.index('cost_before')<events.index('measurement_begin')
+
+
+def test_never_ready_stops_before_existing_cutoff_and_retains_full_window_reserve(tmp_path):
+    bench=MeasureBench('neverready')
+    with pytest.raises(completion.Refusal,match='never ready'):
+        measure(bench,tmp_path,seconds=20,deadline=30)
+    assert bench.seconds==5 and not bench.cost_baselines
+    rows=recorded(tmp_path)
+    assert rows[-2]['event']=='boot_to_ready' and rows[-2]['status']=='FAIL'
+    assert rows[1]['event']=='preamble'
+    assert not any(r['event']=='measurement_begin' for r in rows)
+
+
+def test_readiness_exchange_overrun_cannot_consume_measurement_reserve(tmp_path):
+    bench=MeasureBench()
+    def delayed(op,payload=b''):
+        reply=bench.exchange(op,payload)
+        if op==native.CAPTURE_QUEUE:bench.seconds=5.01
+        return reply
+    with pytest.raises(completion.Refusal,match='absolute deadline'):
+        completion.execute(delayed,{'source_binding_hash':'b'*64},
+            dict(kind='measure',seconds=20,live_source='D',observer_enabled=False),
+            tmp_path,healthy(),monotonic=bench.clock,pause=bench.pause,deadline=30)
+    rows=recorded(tmp_path)
+    assert rows[-2]['event']=='readiness_health' and rows[-2]['observation_complete'] is False
+    assert bench.cost_baselines==[] and bench.seconds==5.01
+
+
+def test_startup_overwrite_remains_failure_after_valid_readiness(tmp_path):
+    bench=MeasureBench('startupoverwrite');result=measure(bench,tmp_path)
+    assert result['startup']['status']=='FAIL'
+    assert result['startup']['faults']==[dict(last_invalidate_reason=0x50520005,
+        last_invalidate_reason_name='RingOverwrite',overwrite_events=1,dropped_blocks=10,
+        copy_races=0,first_fault_valid=1)]
+    assert result['live_continuity_met'] and result['proxy_budget_met']
+    readiness=[r for r in recorded(tmp_path) if r['event']=='readiness_health']
+    assert readiness[0]['snapshot']['capture_valid'] is False
+    assert readiness[-1]['snapshot']['capture_valid'] is True
+    assert next(r for r in recorded(tmp_path) if r['event']=='boot_to_ready')['status']=='FAIL'
+
+
+@pytest.mark.parametrize('fault',['overwrite','audiogap','invalidafter','reset','framewrap','postcounter','lostreset'])
+def test_postready_first_failure_is_retained_before_rejection(tmp_path,fault):
+    bench=MeasureBench(fault)
+    with pytest.raises((completion.Refusal,ValueError)):
+        measure(bench,tmp_path)
+    rows=recorded(tmp_path)
+    assert rows[-1]['event']=='failure'
+    failed=rows[-2]
+    assert failed['event']=='health' and failed['observation_complete'] is True
+    assert failed['phase']=='measurement'
+    if fault=='overwrite':assert failed['capture_queue']['overwrite_events']==1
+    if fault=='audiogap':assert failed['snapshot']['epoch']==2
+    assert not any(r['event']=='result' for r in rows)
+
+
+def test_failed_snapshot_decode_keeps_raw_reply_and_partial_health(tmp_path):
+    import base64
+    bench=MeasureBench('baddecode')
+    with pytest.raises(ValueError,match='snapshot'):
+        measure(bench,tmp_path)
+    rows=recorded(tmp_path)
+    failure=next(r for r in rows if r['event']=='decode_failure')
+    raw=base64.b64decode(failure['raw_reply_base64'])
+    assert failure['field']=='snapshot' and failure['opcode']==23
+    assert len(raw)==1183 and raw[:4]==b'TLVS' and failure['message']
+    assert rows[-2]['event']=='health' and rows[-2]['observation_complete'] is False
+    assert rows[-2]['identity']['boot_id']==7 and 'snapshot' not in rows[-2]
+
+
+def test_final_invalid_capture_observation_is_checked_and_retained(tmp_path):
+    bench=MeasureBench('finalinvalid')
+    with pytest.raises(completion.Refusal,match='final capture'):
+        measure(bench,tmp_path)
+    rows=recorded(tmp_path)
+    assert rows[-2]['event']=='progress_after'
+    assert rows[-2]['snapshot']['capture_valid'] is False
+    assert rows[-1]['event']=='failure'
+
+
+def test_healthy_advancing_capture_completes_full_twenty_seconds(tmp_path):
+    bench=MeasureBench();result=measure(bench,tmp_path,seconds=20,deadline=30)
+    assert bench.seconds==20.25
+    assert result['measurement_seconds']==20 and result['health_samples']==80
+    assert result['audio_window']['device_window_us']==20000000
+    assert all(r['count']==2000 for r in result['costs'])
+    assert result['capture_queue_after']['consumed_blocks']-result['capture_queue_before']['consumed_blocks']==6000
+    assert result['startup']['status']=='PASS' and result['live_continuity_met']
+
+
+def test_run_session_refuses_startup_failure_even_when_settled_cost_passes(tmp_path,monkeypatch):
+    import serial
+    bench=MeasureBench('startupoverwrite')
+    class Port:
+        def __init__(self,**kwargs):self.buffer=b''
+        def open(self):pass
+        def close(self):pass
+        def write(self,packet):
+            opcode,seq,cookie=struct.unpack_from('<3I',packet,4)
+            body=bench.exchange(opcode,packet[32:])
+            header=b'K1R1'+struct.pack('<6I',0,seq,cookie,len(body),0,zlib.crc32(body))
+            self.buffer=header+struct.pack('<I',zlib.crc32(header))+body
+            return len(packet)
+        def read(self,n):raw,self.buffer=self.buffer[:n],self.buffer[n:];return raw
+    monkeypatch.setattr(serial,'Serial',Port)
+    original=completion.execute
+    monkeypatch.setattr(completion,'execute',lambda ex,m,s,o,i,**kw:
+        original(ex,m,s,o,i,monotonic=bench.clock,pause=bench.pause,**kw))
+    op=tmp_path/'operation.json';op.write_text(json.dumps({'completion':dict(kind='measure',seconds=1,live_source='D',observer_enabled=False)}))
+    with pytest.raises(ValueError,match='startup failed'):
+        native.run_session({'port':'EMULATED-NO-HARDWARE','source_binding_hash':'b'*64},tmp_path,80,op)
+    result=recorded(tmp_path)[-1]['data']
+    assert result['startup']['status']=='FAIL' and result['proxy_budget_met']
