@@ -1,9 +1,10 @@
 # Titan evaluation-drive host completion — 8 October 2026
 
-**Scope: host implementation and evidence admission only. Physical execution remains
-blocked by native output HOLD.** The full Titan brief and amendment remain in force.
-No serial, broker, reset, flash, playback, camera or other repository write occurred
-in this AEL lane. Teacher promotion remains AUTOMATIC_TEACHER_PROMOTION_HELD.
+**Current scope: host implementation plus isolated device fault isolation and verified
+donor recovery. Native connection to the product remains on HOLD.** The opening
+8October work was host-only; the subsequent actual hardware attempts are recorded
+below. The full Titan brief and sequencing amendment remain in force. Teacher
+promotion remains AUTOMATIC_TEACHER_PROMOTION_HELD.
 
 ## Current state — final integrated continuation
 
@@ -546,3 +547,82 @@ cannot clear the conditional native-output HOLD. Images are not applicable to
 this source/CLI checkpoint: the final diff and actual consumer output were
 inspected; the earlier connector feasibility used the separately inspected
 schematic render.
+
+## 10 October: implemented split-edge recorder, first measured attempt
+
+Firmware implementation `35e9362`, startup boundary test `e4e37e1`, and active
+mutation coverage `2312262`; AEL collector/transaction `aaf83ef` and backend
+dispatch `f2b15e2`. The matching build3 HEX is
+`effacfa64ac8cf6a778126af1ada44e6bad7dc51c5a5919ec385c38aed9eecd5`,
+source profile `18bbfe0614214c4ca5d405f1bbe8cc578438bd1560657215cec21df4411cd615`.
+The 158 affected host tests and native-check4's 214 build/execution rows pass.
+Earlier regression failures are preserved: obsolete mutation anchors and an
+unused helper mutation were corrected to test the actual four-stream paths.
+
+Actual transaction 16: `_scratch/titan-completion-20261008/isolated-split-edge-fast`.
+Candidate programming/readback and native startup succeeded. Both input lanes
+counted 256 edges, with exactly 128 timestamps in EACH of four polarity streams;
+there were no adjacent duplicate timestamps. The short diagnostic nevertheless
+FAILED with recorder fault5 (deadline). No complete frame or campaign acceptance
+is claimed. Rising intervals were 389 ticks (95 occurrences) and 393 (32);
+falling intervals were exactly390 (127), on both lanes. These raw results are
+retained unchanged; the exact-period verifier has not been relaxed to accept them.
+Microphone DMA callbacks advanced290 to414 on both channels at threshold encoding1.
+
+The final SOF lower bound42675102 already covered trailing_end42569598, but the
+owner reached its timeout check at44720240 before consuming the queued evidence.
+A bounded service-latency repair is being investigated; the20ms limit and actual
+audio workload remain unchanged. Source-derived IRQ/ELC timing uncertainty is a
+separate unresolved acceptance question.
+
+The transaction restored and verified the sealed donor in32.823s total internal
+transaction time; fresh application INFO identified full donor build
+`becb0186f0a66fbb04b0e0f4a79c0480b8b963db0fe3f518a91af9bb2dd2b5c7`.
+`recovered-donor-confirmed/handoff-info.json` and `recovered-broker-live.json`
+retain recovery identity and active broker evidence. Orange harness remains
+excluded under Captain's standing physical confirmation; no wiring request or
+optical-restoration claim is made. The connected-product HOLD continues.
+
+### Split-edge service repair and second measured attempt
+
+Commit `8bc1e0721388b11e6208508ea4088b534083c388` services the recorder before
+and after audio processing, retaining end-of-loop service. Audio processing and
+20ms acquisition deadline are unchanged. Affected sanitised lifecycle regression
+passes, including refusal of genuinely late completion. Build4 HEX:
+`e70cc38ddad8b0a4873a9a98f2c43f601e3371adc3f501e220610318faccb287`;
+profile `fea1e97a236b56273658b5d70c6202e25f9fcf0cbc5047264492403d45a21adc`.
+
+Transaction17 evidence: `_scratch/titan-completion-20261008/isolated-split-edge-service`.
+Native identity matched, boot17, recorder state6/fault0. All four streams contain
+128 timestamps; both counters256; zero duplicate entries. Capture arm-to-end
+was12.465ms. Both falling streams have127 intervals of390 ticks. A rising:
+96 intervals389 and31 intervals393; B rising:95 intervals389 and32 intervals393.
+The verifier correctly retained FAIL at `Lane 0 first rising period mismatch at
+bit 0`. No acceptance threshold was changed. Microphone callbacks315→400 each;
+the collector's unchanged audio-health checks passed before this interval failure.
+
+The short capture is therefore NOT ACCEPTED; complete streamed frame and frozen
+100-pair campaign are NOT TESTED on this image. The completion/service defect is
+repaired in this bounded test; complete payload and sustained audio reliability
+remain unproved. Total candidate-programming transactions are17, with zero
+accepted full-frame pairs. Neither short run exercised streamed LED DMA payload.
+
+Manual R01UH1064EJ0130 Rev1.30 §20.4.4 pp845–846 documents the asynchronous ELC
+path; §23.2.47 p985 and actual GTCLKCR0 confirm asynchronous GPTCLK. The formula
+5 source-clock cycles +4 destination-clock cycles does not specify a complete
+pad→IRQ→capture min/max jitter bound. §14.2.12/§14.5.6's three-sample filter rule
+applies only when enabled; observed IRQCR1 has filtering OFF. Enabling that filter
+would not independently establish downstream timing uncertainty. No invented ±5,
+±28 or fitted-offset allowance was applied. The precise missing evidence is a
+manufacturer-supported maximum edge-to-edge IRQ27/28→ELC→GPT4 timing variation,
+or a source-justified capture configuration that removes this uncertainty. This
+blocks the declared interval acceptance, not all isolated diagnostic work.
+
+Donor programming/readback completed within32.747s internal transaction time,
+then fresh application INFO identified the sealed full becb0186 build. Broker
+was restored; evidence is `recovered-donor-confirmed/handoff-info.json` and
+`recovered-broker-live.json`. Product harness remains OFF; two loopbacks unchanged.
+Next engineering action: establish that timing bound/configuration, retain the
+failed captures, then rerun the short acceptance before the full transition-rich
+frame and100-pair schedule. No third GPIO or owner wiring intervention is justified
+by these results. Electrical/product qualification remains separate.
