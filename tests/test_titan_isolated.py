@@ -365,3 +365,15 @@ def test_capture_gateway_routes_both_loopback_backends_through_admission(tmp_pat
     replace_record(m,'physical_confirmation',tmp_path,lambda r:r.update(actor='agent'))
     with pytest.raises(RuntimeError,match='Actual operator message required'):
         isolated_preflight(m)
+
+
+def test_direct_backend_requires_actual_new_endpoint_scope(tmp_path,monkeypatch):
+    m=admission(tmp_path,monkeypatch)
+    old_scope=isolated._scope(m)
+    m['isolated_qualification']['backend']=isolated.DIRECT_BACKEND
+    scope=isolated._scope(m)
+    assert scope['jumpers']==[['U18.7/P601','U18.33/P603'],['U18.12/P604','U18.36/P714']]
+    assert scope['backend']==isolated.DIRECT_BACKEND and scope['capture_schema']==3
+    assert old_scope['jumpers']==isolated.JUMPERS
+    from ael.titan_capture import isolated_preflight
+    with pytest.raises(RuntimeError,match='exact isolated scope'):isolated_preflight(m)

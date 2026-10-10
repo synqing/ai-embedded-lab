@@ -17,9 +17,10 @@ import sys
 import time
 
 from ael.titan_waveform import UID, bound, digest, require
-from ael.titan_loopback import BACKEND, SPLIT_BACKEND
+from ael.titan_loopback import BACKEND, SPLIT_BACKEND, DIRECT_BACKEND
 
 JUMPERS = [["U18.7/P601", "U18.33/P603"], ["U18.12/P604", "U18.35/P602"]]
+DIRECT_JUMPERS = [["U18.7/P601", "U18.33/P603"], ["U18.12/P604", "U18.36/P714"]]
 EXCLUSION = ["P601-product-DIN", "P604-product-DIN"]
 OPERATION = "titan-isolated-waveform-v2"
 
@@ -43,8 +44,9 @@ def _scope(m):
             "source_binding_hash":m["source_binding_hash"], "source_commit":m["source_commit"],
             "build_receipt_sha256":m["build_receipt"]["sha256"],
             "recovery_sha256":TITAN_RECOVERY_HEX_SHA256,
-            "jumpers":JUMPERS, "electrically_excluded":EXCLUSION,
+            "jumpers":DIRECT_JUMPERS if m["isolated_qualification"].get("backend") == DIRECT_BACKEND else JUMPERS, "electrically_excluded":EXCLUSION,
             "operation":OPERATION, "frames":m["isolated_qualification"]["frames"],
+            **({"backend":DIRECT_BACKEND,"capture_schema":3} if m["isolated_qualification"].get("backend") == DIRECT_BACKEND else {}),
             "maximum_interruption_seconds":120,
             **({"pattern":m["isolated_qualification"]["pattern"]} if "pattern" in m["isolated_qualification"] else {}),
             **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}
@@ -94,7 +96,7 @@ def operator_record(row, schema, scope, *, physical_freshness=False):
 
 def preflight(m, *, consume=False, used_dir=None):
     q = m.get("isolated_qualification",{})
-    require(q.get("operation") == OPERATION and q.get("backend") in (BACKEND,SPLIT_BACKEND),
+    require(q.get("operation") == OPERATION and q.get("backend") in (BACKEND,SPLIT_BACKEND,DIRECT_BACKEND),
             "BLOCKED_CAPTURE_CAPABILITY: unsupported isolated backend")
     require(m.get("identity") == UID and m.get("target") == "titan-native", "Wrong isolated target")
     require(type(q.get("frames")) is int and 100 <= q["frames"] <= 120, "Need100..120 bounded frames")

@@ -263,6 +263,7 @@ def test_actual_native_session_encoder_to_independent_host_parser(tmp_path):
     subprocess.run([str(binary)],check=True,capture_output=True,
                    env={**os.environ,'PRISM_FIXTURE_EXPORT':str(tmp_path)})
     lanes=[(tmp_path/f'{lane}.u32le.bin').read_bytes() for lane in ('a-rising','a-falling','b-rising','b-falling')]
+    assert struct.unpack_from('<I',(tmp_path/'status.u32le.bin').read_bytes())[0]==3
     verdict=loop.verify_epoch((tmp_path/'status.u32le.bin').read_bytes(),lanes,
                              (tmp_path/'sof.u32le.bin').read_bytes(),boot=9,epoch=1,pattern=119)
     assert verdict['raw_capture_consistent'] and not verdict['physical_qualification']
@@ -377,9 +378,11 @@ def test_microphone_progress_requires_both_channels_and_no_new_errors():
 
 
 class SplitDetector(Detector):
+    make_fixture=staticmethod(split_fixture)
+    pack_fixture=staticmethod(split_packed)
     def __init__(self,fault=False):
         super().__init__(fault=fault)
-        self.s,self.lanes,self.sof=split_fixture()
+        self.s,self.lanes,self.sof=self.make_fixture()
         self.s.update(epoch=0,state=0)
         for name in loop.SPLIT_NAMES:
             self.s['words_'+name]=0;self.s['remaining_'+name]=3872
@@ -396,13 +399,13 @@ class SplitDetector(Detector):
                 {'callbacks':self.callbacks,'threshold_register':1} for _ in (0,1)]}).encode()
         if opcode in (loop.ARM,0x50524605):
             boot,epoch,pattern,excluded=struct.unpack('<4I',payload)
-            self.s,self.lanes,self.sof=split_fixture(pattern if opcode==loop.ARM else 0,
+            self.s,self.lanes,self.sof=self.make_fixture(pattern if opcode==loop.ARM else 0,
                                                   3840 if opcode==loop.ARM else 128)
             self.s['epoch']=epoch
             if self.fault:self.lanes[3][5]=self.lanes[3][4]
             self.now+=.2
             return b''
-        if opcode==loop.STATUS:return split_packed(self.s,self.lanes,self.sof)[0]
+        if opcode==loop.STATUS:return self.pack_fixture(self.s,self.lanes,self.sof)[0]
         if opcode==loop.DRAIN:
             boot,epoch,stream,offset,count=struct.unpack('<5I',payload)
             data=self.lanes+[sum(self.sof,[])]
@@ -448,3 +451,121 @@ def test_split_counter_wrap_is_checked_relative_to_observed_frame_start():
     for field in ('leading_begin','leading_end','trailing_begin','trailing_end'):
         s[field]=(s[field]+shift)&0xffffffff
     assert split_check(s,streams,sof)['raw_capture_consistent']
+
+
+def direct_fixture(pattern=2,pulses=3840):
+    s,streams,sof=split_fixture(pattern,pulses)
+    for old,new in zip(loop.SPLIT_FIELDS,loop.DIRECT_FIELDS):
+        if old!=new:s[new]=s.pop(old)
+    s.update(version=3,split_capability=2,gticasr=0x300,gticbsr=0xc00,
+             gpt12_gticasr=0x3000,gpt12_gticbsr=0xc000,p603_pfs=0x03010000,p714_pfs=0x03010000,
+             gpt7_gtpr=0xffffffff,gpt12_gtpr=0xffffffff,start_mask=0x1080,
+             elc_e=0x1c0,elc_f=0x1c1,elc_g=0x1ed,elc_h=0x1ee,
+             gpt2_gtupsr=0x300000,gpt3_gtupsr=0xc00000,b_initial_low=3,b_final_low=3)
+    for name,event,source in zip(loop.SPLIT_NAMES,(0x1c0,0x1c1,0x1ed,0x1ee),
+                                 (0x4032274c,0x40322750,0x40322c4c,0x40322c50)):
+        s['event_'+name]=event;s['source_'+name]=source;s['expected_source_'+name]=source
+    # Deliberately unrelated B origin: cross-lane timestamp comparisons are invalid.
+    shift=0xfedcba98
+    for field in ('capture_arm_tick','stimulus_tick','capture_end_tick','leading_begin','leading_end','trailing_begin','trailing_end'):
+        s['b_'+field]=(s[field]+shift)&0xffffffff
+    for stream in streams[2:]:stream[:]=[(x+shift)&0xffffffff for x in stream]
+    for i in range(137,144):s[f'reserved_{i}']=0
+    return s,streams,sof
+
+
+def direct_packed(s,streams,sof):
+    pack=lambda words:struct.pack('<'+'I'*len(words),*words)
+    return (pack([s[k] for k in loop.STATUS_FIELDS]+[0]+[s[k] for k in loop.DIRECT_FIELDS]),
+            [pack(x) for x in streams],pack(sum(sof,[])))
+
+
+def direct_check(s,streams,sof):
+    raw,lanes,clock=direct_packed(s,streams,sof)
+    return loop.verify_epoch(raw,lanes,clock,boot=7,epoch=1,pattern=s['pattern'])
+
+
+def test_direct_timers_decode_independently_with_wrap_and_exact_widths():
+    s,streams,sof=direct_fixture()
+    result=direct_check(s,streams,sof)
+    assert result['raw_capture_consistent'] and not result['physical_qualification']
+    assert result['payload_sha256']==[loop.digest(diagnostic_payload(2,lane)) for lane in (0,1)]
+    assert result['observed_high_ticks']==[{'minimum':78,'maximum':198,'first':198,'last':78},
+                                           {'minimum':78,'maximum':198,'first':78,'last':198}]
+
+
+@pytest.mark.parametrize('field,value',[
+    ('gpt7_gtpr',0xfffffffe),('gpt12_gtpr',0xfffffffe),('gpt12_gticasr',0x100000),
+    ('gticbsr',0xf000),('p714_pfs',0x03014000),('event_b_fall',0x1c1),
+    ('source_b_rise',0x4032244c),('expected_source_b_rise',0x4032244c),('start_mask',0x90),
+    ('gpt3_gtupsr',0xa00000),('elc_h',0x1c1),('gpt12_initial',1),('b_initial_low',0),
+    ('b_final_low',0),('b_trailing_begin',1),('reserved_143',1),('words_b_fall',3839),
+    ('remaining_a_rise',1),('dmsts_b_rise',1),('dmint_a_fall',1),('fault',5),('state',7)])
+def test_direct_rejects_config_lifecycle_and_partial_faults(field,value):
+    s,streams,sof=direct_fixture();s[field]=value
+    with pytest.raises(RuntimeError):direct_check(s,streams,sof)
+
+
+@pytest.mark.parametrize('fault',['high_one_tick','period_one_tick','duplicate','missing','extra','swap'])
+def test_direct_interval_contract_is_not_widened(fault):
+    s,streams,sof=direct_fixture()
+    if fault=='high_one_tick':streams[1][0]+=1
+    if fault=='period_one_tick':streams[0][1]+=1
+    if fault=='duplicate':streams[2][1]=streams[2][0]
+    if fault=='missing':streams[3].pop()
+    if fault=='extra':streams[1].append(streams[1][-1]+390)
+    if fault=='swap':streams[0],streams[1]=streams[1],streams[0]
+    with pytest.raises(RuntimeError):direct_check(s,streams,sof)
+
+
+def test_direct_prearm_requires_fsp_open_modulus_and_resources():
+    s,streams,sof=direct_fixture()
+    s['gpt7_gtpr']=s['gpt12_gtpr']=0xfffffffe
+    loop.verify_direct_configuration(s,readiness=True)
+    s['gpt12_gtpr']=0xffffffff
+    with pytest.raises(RuntimeError,match='modulus'):loop.verify_direct_configuration(s,readiness=True)
+
+
+class DirectDetector(SplitDetector):
+    make_fixture=staticmethod(direct_fixture)
+    pack_fixture=staticmethod(direct_packed)
+    def __init__(self,fault=False):
+        super().__init__(fault=fault)
+        self.info['capabilities']['isolated_raw_capture']=loop.DIRECT_BACKEND
+        self.s['gpt7_gtpr']=self.s['gpt12_gtpr']=0xfffffffe
+
+
+@pytest.mark.parametrize('spec',[{'constant_timer_diagnostic':2},{'pattern':2}])
+def test_direct_collector_retains_independent_streams_and_audio(tmp_path,spec):
+    detector=DirectDetector()
+    result=loop.acquire(detector.exchange,split_manifest(),spec,tmp_path,detector.info)
+    assert result['backend']==loop.DIRECT_BACKEND
+    assert result['epochs'][0]['result']['raw_capture_consistent']
+    assert len(result['epochs'][0]['streams'])==5
+    assert result['physical_qualification'] is False
+
+
+def test_direct_partial_native_failure_drains_all_raw_without_replay(tmp_path):
+    detector=DirectDetector()
+    base=detector.exchange
+    def exchange(opcode,payload=b''):
+        raw=base(opcode,payload)
+        if opcode==loop.ARM:
+            detector.s.update(state=7,fault=5)
+            for i,(name,count) in enumerate(zip(loop.SPLIT_NAMES,(4,3,2,1))):
+                detector.s['words_'+name]=count
+                detector.lanes[i]=detector.lanes[i][:count]
+        return raw
+    with pytest.raises(RuntimeError,match='fault/cancel'):
+        loop.acquire(exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
+    for i,count in enumerate((4,3,2,1)):
+        assert (tmp_path/f'loopback/001-stream{i}.u32').stat().st_size==4*count
+    assert (tmp_path/'loopback/001-terminal-info.json').exists()
+    assert detector.calls.count(loop.ARM)==1 and detector.calls.count(loop.CANCEL)==1
+
+
+def test_direct_readiness_failure_cannot_stimulate(tmp_path):
+    detector=DirectDetector();detector.s['source_b_fall']=0x40322750
+    with pytest.raises(RuntimeError,match='address mismatch'):
+        loop.acquire(detector.exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
+    assert loop.ARM not in detector.calls and 0x50524605 not in detector.calls
