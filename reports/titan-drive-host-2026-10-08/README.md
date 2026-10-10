@@ -782,3 +782,38 @@ exact A=AA×480/B=55×480 payloads with zero mismatches. Microphone callbacks
 273→808 on each lane; errors[0,0], clock rejections0, restart attempts/failures0.
 Output timeout/recovery counters remained1→1; transmitter failures0→0. These
 observations preserve the original Deadline FAIL and do not qualify timing.
+
+### Attempts23–24 — first valid pair, then measured scheduling failure
+
+Firmware `66a7f25`, AEL `dc95fac`, candidate HEX
+`60a867a53e523aad5b9017960bcc64d970902f07dd45c10a7ac7dcae43158ea8`.
+The immutable timing witness preserves pre-cleanup queue state and original
+DMA-freeze time. Focused firmware/host tests and independent review passed.
+
+Attempt23 `isolated-direct-timing-witness`: full frozen pattern2 pair PASS for
+raw digital consistency,3840 bits/lane, exact payload and healthy microphone
+progress. Completion14.753ms within unchanged20ms window. Maximum audio stage
+5.663076ms, polling gap5.668388ms, USB87.032us. Queue575/575, no drops.
+Electrical timing remains unqualified. Donor recovered and freshly identified.
+
+Attempt24 `isolated-direct-campaign`: frozen sequence began at pattern0 and
+passed epochs1–6; epoch7/pattern6 failed Deadline. Campaign FAIL, not6/100 PASS.
+Terminal witness:20.427ms window; initial freeze GPT7 tick43100158; terminal
+45033661; queue600 produced/577 consumed, no drops, latest producer45000126.
+Latest audio stage5.646064ms; maximum5.662640ms. This directly supports delayed
+foreground completion servicing while timing callbacks continued; it does not
+support missing reference callbacks or USB drain as the cause.
+
+Next bounded repair: cooperative fixture service checkpoints between existing
+audio stages, preserving workload/order, production inputs and frozen deadlines.
+No reduction of audio work or acceptance relaxation. Full100-pair campaign also
+has a distinct transaction-throughput constraint: observed about1.7s per epoch
+cannot fit100 epochs into the current collection budget. Resolve that runner
+constraint explicitly after scheduling proof; never select successful epochs
+from failed campaigns.
+
+Attempt24 donor programme/verify and fresh application identity succeeded,
+44.619s internal transaction. Broker restored with advancing telemetry saved.
+Orange product harness remains OFF; both loopbacks unchanged. Candidate-programming
+transactions24; seven individually accepted digital pairs across attempts23–24,
+zero completed100-pair campaigns. No electrical or optical qualification.
