@@ -841,3 +841,25 @@ OrangeOFF/loopbacksunchanged.25 candidate transactions;8 accepted individual
 digital pairs across attempts23–25; no completed100-pair campaign or electrical
 qualification. Known timing offsets may only be accounted for with justified
 error bounds; missing/duplicated events are not correctable by a tolerance.
+
+### Attempt26 — bounded USB driver progress improves transfer
+
+Firmware `2dbfa861fe16d1ae1ff71c799d7cf3f6ec32b141`; candidate HEX
+`f5ce8a01fa10fdbe30db68effca96eb98c2553d8a3e314b2eedb0795f33ef60f`.
+Run `isolated-direct-usb-progress`: fullpattern6 raw consistency PASS, capture
+12.243ms. Terminal-only driver progress performs at most4 task steps per audio
+checkpoint and defers all command/disconnect handling to the outer owner loop.
+333 pump calls; maximum123452cycles at1GHz (123.452us).
+
+Epoch arm-to-drain span0.741789s versus1.124423s previously, but this excludes
+final status/audio/verification overhead. Whole single acquisition0.967711s.
+17 DRAIN calls554.859ms; body reads15.7–41ms remain dominant. Therefore full100
+still does not fit the unchanged60s acquisition limit at observed throughput.
+This is a concrete transfer-budget blocker, not justification to widen timing
+tolerances or hide errors. Next: source/map-bound larger transport batching and
+fixed task-service capacity assessment; do not expand raw buffers to conceal loss.
+
+Donor program/verify and fresh application identity confirmed; internal34.129s.
+Broker restored and paired advancing telemetry saved.26 candidate transactions;
+9 accepted individual digital pairs; no complete100-pair campaign. Orange product
+harness OFF and loopbacks unchanged. Native-to-product HOLD remains.
