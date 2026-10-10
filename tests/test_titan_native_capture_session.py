@@ -44,6 +44,7 @@ def session(tmp,monkeypatch,*,fault=None,deadline_seconds=60):
             if fault=='short_header' and opcode==1:self.data=self.data[:9]
             if fault in ('short_body','mid_body_exception') and opcode==1:self.data=self.data[:37]
             if fault=='late_info' and opcode==1:self.data=b''
+            if fault=='late_witness' and opcode==loop.TIMING_WITNESS:self.data=b''
             if fault=='late_bind' and opcode==0x50520001:self.data=b''
             if fault=='late_chunk' and opcode==loop.DRAIN:
                 detector.now=1000+deadline_seconds-.05;self.data=b''
@@ -120,3 +121,21 @@ def test_isolated_session_without_transaction_deadline_cannot_open_serial(tmp_pa
     with pytest.raises(ValueError,match='absolute deadline'):
         wire.run_session(m,tmp_path,60,op)
     assert ports==[]
+
+
+def test_optional_witness_timeout_is_one_second_and_does_not_mask_result(tmp_path,monkeypatch):
+    detector,ports,m,op=session(tmp_path,monkeypatch,fault='late_witness')
+    detector.info['capabilities']['fixture_timing_witness_opcode']=loop.TIMING_WITNESS
+    base=detector.exchange
+    def exchange(opcode,payload=b''):
+        if opcode==loop.TIMING_WITNESS:return b''
+        return base(opcode,payload)
+    detector.exchange=exchange
+    op.write_text(json.dumps({'isolated_capture':{'frames':100,'pattern':2}}))
+    result=wire.run_session(m,tmp_path,60,op,deadline=1060)
+    assert result['isolated_capture']['epochs'][0]['result']['raw_capture_consistent']
+    records=[json.loads(x) for x in (tmp_path/'titan-native.jsonl').read_text().splitlines()]
+    witness=[r for r in records if r['opcode']==loop.TIMING_WITNESS]
+    assert len(witness)==1
+    assert 0.999 <= (witness[0]['after_uptime_ns']-witness[0]['before_uptime_ns'])/1e9 <= 1.001
+    assert witness[0]['error'] and ports[0].closed

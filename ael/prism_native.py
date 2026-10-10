@@ -145,7 +145,7 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None):
             header=packet=b''; written=None; error=None; complete=False
             header_reads=[]; body_reads=[]
             try:
-                deadline_s = .02 if opcode == 0x50524402 else 3
+                deadline_s = .02 if opcode == 0x50524402 else 1 if opcode == 0x50524606 else 3
                 if deadline is not None:
                     remaining = deadline - time.monotonic()
                     if remaining <= 0: raise TimeoutError('Isolated transaction deadline before native write')

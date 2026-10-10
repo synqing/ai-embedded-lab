@@ -579,3 +579,78 @@ def test_direct_otherwise_valid_frame_cannot_precede_its_own_stimulus(lane):
     s[prefix+'stimulus_tick']=(streams[2*lane][0]+1)&0xffffffff
     with pytest.raises(RuntimeError,match=f'Lane {lane} first edge precedes its stimulus'):
         direct_check(s,streams,sof)
+
+
+def timing_words(epoch=1):
+    # Independent protocol fixture, not a firmware-produced oracle.
+    w=[0]*64
+    w[:8]=[1,1,7,epoch,1_000_000_000,6,0,5]
+    w[8:12]=[0xffffffff,2,10,3]
+    w[12:20]=[400,1,800,1,100,200,3,4]
+    w[20:35]=list(range(15))
+    w[35:46]=[150,149,0,0,500,510,42,1,1,900,910]
+    return w
+
+
+@pytest.mark.parametrize('bad',['size','version','boot','epoch','extension'])
+def test_timing_witness_rejects_unknown_or_stale(bad):
+    w=timing_words()
+    if bad=='size':w.pop()
+    if bad=='version':w[0]=2
+    if bad=='boot':w[2]=8
+    if bad=='epoch':w[3]=2
+    if bad=='extension':w[63]=1
+    with pytest.raises(RuntimeError):loop.parse_timing_witness(struct.pack('<'+'I'*len(w),*w),7,1)
+
+
+def test_timing_witness_units_and_64bit_fields():
+    p=loop.parse_timing_witness(struct.pack('<64I',*timing_words()),7,1)
+    assert p['window_us']==3*2**32-1 and p['terminal_now_us']==3*2**32+10
+    assert p['stages']['usb']=={'max_cycles':3,'latest_begin_cycle':8,'latest_end_cycle':13}
+    assert p['initial_freeze_gpt7_tick']==400 and p['queue']['consumed']==149
+
+
+@pytest.mark.parametrize('fault',[False,True])
+@pytest.mark.parametrize('witness_error',[None,'transport','parse'])
+def test_timing_witness_retained_on_success_and_failure_without_changing_outcome(tmp_path,fault,witness_error):
+    detector=DirectDetector(fault=fault)
+    detector.info['capabilities']['fixture_timing_witness_opcode']=loop.TIMING_WITNESS
+    base=detector.exchange
+    def exchange(opcode,payload=b''):
+        if opcode==loop.TIMING_WITNESS:
+            detector.calls.append(opcode)
+            assert payload==struct.pack('<I',7)
+            if witness_error=='transport':raise TimeoutError('timing read timeout')
+            return b'bad' if witness_error=='parse' else struct.pack('<64I',*timing_words())
+        return base(opcode,payload)
+    if fault:
+        with pytest.raises(RuntimeError,match='duplicate'):
+            loop.acquire(exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
+    else:
+        result=loop.acquire(exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
+        assert result['epochs'][0]['result']['raw_capture_consistent']
+    assert detector.calls.count(loop.TIMING_WITNESS)==1
+    assert detector.calls.index(loop.TIMING_WITNESS)<detector.calls.index(loop.DRAIN)
+    assert detector.calls.count(loop.CANCEL)==1
+    prefix=tmp_path/'loopback/001-timing-witness'
+    assert prefix.with_suffix('.bin').exists() is (witness_error!='transport')
+    assert prefix.with_suffix('.json').exists() is (witness_error is None)
+    assert Path(str(prefix)+'-error.json').exists() is (witness_error is not None)
+
+
+def test_timing_witness_partial_status_failure_saved_before_cancel(tmp_path):
+    detector=DirectDetector()
+    detector.info['capabilities']['fixture_timing_witness_opcode']=loop.TIMING_WITNESS
+    base=detector.exchange
+    def exchange(opcode,payload=b''):
+        if opcode==loop.TIMING_WITNESS:
+            detector.calls.append(opcode)
+            return struct.pack('<64I',*timing_words())
+        if opcode==loop.STATUS and detector.s['epoch']:
+            raise RuntimeError('primary status failure')
+        return base(opcode,payload)
+    with pytest.raises(RuntimeError,match='primary status failure'):
+        loop.acquire(exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
+    assert (tmp_path/'loopback/001-timing-witness.bin').exists()
+    assert detector.calls[-1]==loop.CANCEL
+    assert json.loads((tmp_path/'loopback/failure.json').read_text())['timing_witnesses']['1']['raw']

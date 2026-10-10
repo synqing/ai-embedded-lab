@@ -460,6 +460,36 @@ def verify_audio_progress(before,after,transmitter_before,transmitter_after):
                 f"Microphone DMA{lane+1} callback progress missing")
 
 
+
+TIMING_WITNESS = 0x50524606
+TIMING_STAGES = ("output", "audio", "render", "usb", "fixture")
+
+
+def parse_timing_witness(raw, boot, epoch):
+    """Decode the optional v1 diagnostic; it never establishes acceptance."""
+    require(len(raw) == 64*4, "Timing witness size mismatch")
+    w = struct.unpack("<64I", raw)
+    require(w[0] == 1 and w[2:4] == (boot, epoch), "Stale/unknown timing witness")
+    require(all(x == 0 for x in w[48:]), "Unknown timing witness extension")
+    return {"schema":"prism.titan.fixture-timing-witness.v1", "words":list(w),
+            "version":w[0], "terminal_valid":w[1], "boot":w[2], "epoch":w[3],
+            "cycle_clock_hz":w[4], "terminal_state":w[5], "fault":w[6],
+            "precheck_state":w[7], "window_us":w[8] | w[9]<<32,
+            "terminal_now_us":w[10] | w[11]<<32,
+            "initial_freeze_gpt7_tick":w[12], "initial_freeze_valid":w[13],
+            "terminal_gpt7_tick":w[14], "finishing":w[15],
+            "last_poll_cycle":w[16], "max_poll_gap_cycles":w[17],
+            "max_gap_preceding_stage":w[18], "last_stage":w[19],
+            "stages":{name:{"max_cycles":w[20+i], "latest_begin_cycle":w[25+i],
+                            "latest_end_cycle":w[30+i]} for i,name in enumerate(TIMING_STAGES)},
+            "queue":dict(zip(("produced","consumed","dropped","overflow",
+                              "last_producer_gpt_before","last_producer_gpt_after",
+                              "frame","valid","snapshot_consistent",
+                              "snapshot_cycle_begin","snapshot_cycle_end"),w[35:46])),
+            "wire_completion_observed_cycle":w[46], "wire_completion_observed_valid":w[47],
+            "physical_qualification":False}
+
+
 def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
             clock=time.monotonic, sleep=time.sleep, absolute_deadline=None):
     """Run bounded commands using the caller's sole owner and durable wire log.
@@ -508,6 +538,28 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                 "Unexpected transmitter diagnostic schema")
         return transmitter
     has_transmitter_status=info.get("capabilities",{}).get("transmitter_status_opcode") == 0x50524c02
+    timing_observations = {}
+    timing_attempted = set()
+    has_timing_witness = info.get("capabilities",{}).get("fixture_timing_witness_opcode") == TIMING_WITNESS
+    def timing_snapshot():
+        # Explicit capability preserves old schema-v3 images. One read per epoch,
+        # no retry or stimulus, and no extension of the transaction deadline.
+        if not has_timing_witness or not current or current in timing_attempted:
+            return
+        timing_attempted.add(current)
+        name = f"{current:03d}-timing-witness"
+        try:
+            require(clock() < deadline, "Transaction expired before timing witness")
+            witness_raw = exchange(TIMING_WITNESS, struct.pack("<I",boot))
+            entry = {"raw":save(name+".bin",witness_raw)}
+            timing_observations[str(current)] = entry
+            parsed = parse_timing_witness(witness_raw,boot,current)
+            entry["parsed"] = save(name+".json",(json.dumps(parsed,indent=2)+"\n").encode())
+        except Exception as witness_error:
+            # Diagnostic failure must not replace acquisition failure or prevent
+            # cancellation and the caller's sealed-donor recovery.
+            timing_observations.setdefault(str(current),{})["error"] = str(witness_error)
+            save(name+"-error.json",json.dumps({"error":str(witness_error)}).encode())
     try:
         if split:
             audio_observations["initial-info.json"]=save("initial-info.json",json.dumps(info).encode())
@@ -550,6 +602,7 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                 if s["state"] in (6,7,8): break
                 require(s["fault"] == 0, "Native detector reports a nonterminal fault")
                 sleep(.002)
+            timing_snapshot()
             status_row = save(f"{current:03d}-status.bin", raw)
             streams = []
             for stream, total in enumerate(stream_counts(s)):
@@ -562,6 +615,8 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                     words.extend(parse_chunk(chunk,boot,current,stream,offset,n))
                 streams.append(save(f"{current:03d}-stream{stream}.u32", struct.pack("<"+"I"*total,*words)))
             row={"status":status_row,"streams":streams,"host_unix":[epoch_started,time.time()]}
+            if str(current) in timing_observations:
+                row["timing_witness"] = timing_observations[str(current)]
             epochs.append(row)
             save(f"{current:03d}-raw-index.json",(json.dumps(row,indent=2)+"\n").encode())
             final_raw = exchange(STATUS, struct.pack("<2I",boot,current))
@@ -620,7 +675,8 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
         require(all(last.get(k) == info.get(k) for k in ("uid","boot_id","schema_sha256","build_source_sha256")),
                 "Runtime changed during capture")
     except BaseException as exc:
-        save("failure.json",(json.dumps({"error":str(exc),"epochs":epochs,"physical_qualification":False},indent=2)+"\n").encode())
+        timing_snapshot()
+        save("failure.json",(json.dumps({"error":str(exc),"epochs":epochs,"timing_witnesses":timing_observations,"physical_qualification":False},indent=2)+"\n").encode())
         raise
     finally:
         if current:
