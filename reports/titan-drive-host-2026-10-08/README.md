@@ -661,3 +661,32 @@ transition-rich frame. A trustworthy repeated payload/service failure triggers
 the documented output-engine decision, with SPI_B evaluated against refill/tail,
 pin-routing and ownership requirements; no audio reduction or threshold widening
 is an acceptable repair. Electrical and product HOLD remains unchanged.
+
+### Direct receiver attempt18 — actual hardware failure, donor recovered
+
+Run: `_scratch/titan-completion-20261008/isolated-direct-fast`. Candidate HEX
+`0c8b72cd76c8052f25cc2dd5698a544af9828b64337fc0020f1ff609c00e2489`,
+source profile `5dee68c81d903140183a5172543062ba7dcde88d8c9004a37dc14ada6dfdac95`,
+source HEAD `e155c88f0d2b1c0ec867225aa314a8cc64e9fb24`. Exact native identity
+and initial resource readiness passed (boot18, schema3). Captain confirmed the
+receiver repositioning; board revision remains unknown, not fabricated.
+
+First epoch failed state7/fault7 (High) before stimulus. All four raw streams
+are empty, both edge counts zero, stimulus ticks zero;128 SOF rows retained.
+P603 PFS0x03010000 reads LOW; P714 PFS0x03010002 reads HIGH, matching initial
+LOW mask1. Final LOW fields are unobserved, not evidence that both pins were HIGH.
+No short pulse or streamed payload was emitted by this diagnostic. This failure
+does not establish a transmitter service-deadline failure. The existing strict
+HIGH guard correctly stopped stimulus. Capture configuration matches the intended
+input/no-pullup/no-output-drive configuration. Actual P604 source level was not
+sampled at that instant, so a source-idle fault and receiver connection/bias
+mismatch remain distinguishable alternatives. Next bounded instrument change:
+freeze both source and receiver pin levels and output timer state at the failure.
+No threshold relaxation, receiver output drive or new wiring is justified yet.
+
+Sealed donor programming/verification completed; internal transaction33.218s.
+Fresh application INFO identified full becb0186 donor; broker restored with
+updating telemetry (`recovered-donor-confirmed/handoff-info.json`,
+`recovered-broker-live.json`). Orange harness remains OFF. No optical restoration
+claim. Short acquisition FAIL; complete paired frame and100-pair campaign
+NOT TESTED; zero accepted complete pairs overall. All failed raw records retained.
