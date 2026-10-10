@@ -12,3 +12,13 @@ read /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan
 and the shared spectrasynq-workflow progress/blocker rule. Preserve the connected-strip
 HOLD. Isolated diagnostic readiness is checked after boot and before stimulus;
 physical exclusion and actual scoped authority still precede programming.
+
+## Titan absent-USB incident prevention — 10 October 2026
+Before asking Captain to reconnect cables or debug a serial monitor, read the
+mandatory absent-USB recovery order in
+`/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/docs/migration/NATIVE-FIRST-BOOT-2026-10-08.md`.
+Inventory USB and serial separately; consume prior recovery evidence. Where
+already authorised and applicable, root performs one bounded E2 Lite signature/
+read-and-run with probe power OFF, then verifies application identity and restores
+ownership. Do not bypass a denial or substitute unverified flashing. Ask for one
+physical action only after the remaining physical dependency is identified.
