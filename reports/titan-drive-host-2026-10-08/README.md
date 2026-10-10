@@ -14,14 +14,19 @@ Earlier sections below retain the chronological evidence and describe the code a
 those earlier checkpoints. Their statements that acquisition was absent or
 unimplemented are historical, not the current implementation status.
 
-Actual isolated execution subsequently occurred on9–10October. Ten transactions
-programmed/verified their candidates and recovered the sealed donor. Two acquired
-paired partial raw data; zero complete accepted pairs. The latest run retained
-7647/3858 timestamps against7680/7680 independent edge counts, with394/2
-consecutive duplicates. Original physical confirmation and standing interruption
-authority exist; they are not current blockers. The product harness staysOFF.
-Latest source/device evidence lives under
-`_scratch/titan-completion-20261008/isolated-arbitration-repair/`.
+Actual isolated execution occurred on 9–10 October. Across 29 candidate transactions,
+the latest exact image completed the frozen 100-pair digital campaign: 100 patterns
+in order, exact expected payloads and four complete, ordered, unique streams per
+pair. Collection took 53.581 seconds; no new microphone faults or restarts occurred.
+One recovered output-supervision timeout preceded the campaign and did not recur
+during it. Donor programming and subsequent application identity were verified;
+broker telemetry resumed. Original physical confirmation and standing interruption
+authority remain valid. The product harness stays OFF.
+Latest source/device evidence is retained locally under
+`_scratch/titan-completion-20261008/isolated-direct-full100/`;
+see [attempts 28–29](#attempts2829--complete-frozen100-digital-campaign-pass).
+Ignored raw evidence is not part of a normal source clone. Earlier partial and
+failed acquisitions below remain historical evidence.
 
 Fitted-LED applicability, representativeDIN electrical path and capture error
 bounds still block electrical release. They do not block isolated diagnostic or
@@ -879,3 +884,50 @@ identify driver servicing frequency or remaining batching/host overhead.
 Donor programming/application identity verified; internal33.767s; broker restored
 with advancing paired telemetry saved.27transactions,10 accepted individual
 digitalpairs, no completed100-pair campaign. ProductharnessOFF unchanged.
+
+### Attempts28–29 — complete frozen100 digital campaign PASS
+
+Firmware `6af1e7d6a8603c3f1fe2fd51e769471a883c2f10`, candidate HEX
+`640906014b0f2192ff349b03a017ef83ebaf6d607e6c379b8336982ebf39d593`;
+host collector implementation `af4c2e8` and exact file hashes in manifests.
+Native-owned source and tempo calculations now permit bounded USB-only progress
+after completed groups of8bins/kernels during terminal drain. Arithmetic/input/
+workload/order unchanged, noCore/vendor edits. Sanitised actual nonzero state,
+array and output equivalence plus callback-cadence tests and review passed.
+
+Attempt28 `isolated-direct-usb-inner`: pattern6 full raw pair PASS;12.487ms
+capture;0.474654s arm-to-drain; measured steady estimate0.559964s including
+terminal observations and host verification. Donor freshly identified/restored.
+
+Attempt29 `isolated-direct-full100`: COMPLETE FROZEN DIGITAL CAMPAIGN PASS.
+Exactly100epochs/patterns0..99 in original order,100 consistent outcomes.
+Each pair requires3840bits on each lane, exact independent expected payload,
+strict polarity/order/count and terminal/rearm checks. No selected-success merge;
+one exact image and boot29. Arm-first to last-drain53.581154s, within unchanged
+60s collection and80s candidate cutoff. Internal transaction including donor
+program/verify86.736690s, within120s. Fresh donor application identity separately
+verified; broker restored and advancing observations saved.
+
+Microphone capture errors[0,0], clock rejections0, restart attempts/failures0.
+Callbacks274→17644 on each lane. Transmitter failures0→0; no first-fault snapshot.
+INFO output_timeouts1→1 and recovery_attempts1→1 record one real, recovered
+pre-campaign supervision timeout. Source ordering supports delayed foreground
+completion recognition; the exact startup blocking stage was not recorded.
+There was no additional timeout or output recovery during the campaign.
+MaxUSBpump257292cycles. Absolute timing remains unqualified: all epochs retain
+the calibration error `Unbounded USB observation bracket` and physical
+qualification false. Fresh donor readback identifies UID/build; its wrapper
+does not claim an accepted checkpoint, and a skipped lsof check is not evidence
+of a freshly observed free port.
+
+This establishes raw digital consistency for this exact measured campaign, not
+nanosecond accuracy, representative DIN voltage/level-shifter performance or
+product electrical release.29candidate transactions;111accepted individual
+digitalpairs including this complete100. Historicalfailedruns retained unchanged.
+Orange product harness remains OFF; both corrected loopbacks unchanged.
+
+Next original-assignment operations: existing target golden/proxy computation
+and dedicated estimator cost under their actual isolated prerequisites; separately
+resolve fittedLED/outputpath electrical evidence before native product connection,
+then physicalI/A/C/D, liveD, controls/fault/disconnect, endurance and ownerreview.
+No A-minus-D estimatorcost inference and no newSAM/research campaign.
