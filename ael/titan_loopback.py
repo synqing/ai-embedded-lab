@@ -310,11 +310,15 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
         # not another stimulus, and stays inside the same absolute deadline.
         if has_transmitter_status:
             transmitter_snapshot("initial-transmitter-status.json")
-        for pattern in range(count):
+        diagnostic=spec.get("constant_timer_diagnostic")
+        require(diagnostic is None or type(diagnostic) is int and diagnostic in (1,2), "Unknown constant timer diagnostic")
+        if diagnostic is not None:
+            save("constant-diagnostic.json",json.dumps({"profile":diagnostic,"pulses_each":128,"expected_edges_each":256,"purpose":"acquisition isolation only; not the frozen pattern campaign","physical_qualification":False}).encode())
+        for pattern in range(1 if diagnostic is not None else count):
             current = pattern + 1
             require(clock() < deadline, "Bounded acquisition deadline")
             epoch_started=time.time()
-            exchange(ARM, struct.pack("<4I", boot, current, pattern, 1))
+            exchange(0x50524605 if diagnostic is not None else ARM, struct.pack("<4I", boot, current, diagnostic if diagnostic is not None else pattern, 1))
             polls = 0
             while True:
                 require(clock() < deadline and polls < 1000, "Bounded epoch deadline")
@@ -356,6 +360,7 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                     save(f"{current:03d}-failed-diagnostic-error.json",
                          (json.dumps({"error":str(diagnostic_error)})+"\n").encode())
             try:
+                require(diagnostic is None,"Constant timer diagnostic retained; not a pattern qualification run")
                 require(s["state"] == 6 and s["fault"] == 0,"Native detector fault/cancel; raw retained")
                 result = verify_one(raw, [Path(r["path"]).read_bytes() for r in streams[:2]],
                                     Path(streams[2]["path"]).read_bytes(), boot=boot,epoch=current,

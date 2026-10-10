@@ -267,3 +267,18 @@ def test_actual_native_session_encoder_to_independent_host_parser(tmp_path):
                              (tmp_path/'sof.u32le.bin').read_bytes(),boot=9,epoch=1,pattern=119)
     assert verdict['raw_capture_consistent'] and not verdict['physical_qualification']
     assert [oracle(raw) for raw in lanes]==[diagnostic_payload(119,lane) for lane in (0,1)]
+
+
+def test_constant_diagnostic_uses_distinct_opcode_and_cannot_pass_campaign(tmp_path):
+    detector=Detector(fault=True)
+    def exchange(opcode,payload=b''):
+        if opcode==0x50524605:
+            assert struct.unpack('<4I',payload)==(7,1,1,1)
+            return detector.exchange(loop.ARM,struct.pack('<4I',7,1,0,1))
+        return detector.exchange(opcode,payload)
+    with pytest.raises(RuntimeError,match='not a pattern qualification'):
+        loop.acquire(exchange,{'source_binding_hash':'b'*64},
+                     {'frames':100,'constant_timer_diagnostic':1},tmp_path,detector.info)
+    assert detector.calls.count(loop.ARM)==1
+    assert (tmp_path/'loopback/001-stream0.u32').stat().st_size==16
+    assert json.loads((tmp_path/'loopback/constant-diagnostic.json').read_text())['expected_edges_each']==256

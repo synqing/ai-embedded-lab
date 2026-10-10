@@ -45,7 +45,8 @@ def _scope(m):
             "recovery_sha256":TITAN_RECOVERY_HEX_SHA256,
             "jumpers":JUMPERS, "electrically_excluded":EXCLUSION,
             "operation":OPERATION, "frames":m["isolated_qualification"]["frames"],
-            "maximum_interruption_seconds":120}
+            "maximum_interruption_seconds":120,
+            **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}
 
 
 def operator_record(row, schema, scope, *, physical_freshness=False):
@@ -97,6 +98,8 @@ def preflight(m, *, consume=False, used_dir=None):
     require(m.get("identity") == UID and m.get("target") == "titan-native", "Wrong isolated target")
     require(type(q.get("frames")) is int and 100 <= q["frames"] <= 120, "Need100..120 bounded frames")
     require(q.get("maximum_interruption_seconds") == 120, "Unbounded isolated interruption")
+    diagnostic=q.get("constant_timer_diagnostic")
+    require(diagnostic is None or type(diagnostic) is int and diagnostic in (1,2), "Unknown constant timer diagnostic")
     scope = _scope(m)
     fixture = operator_record(q["physical_confirmation"], "prism.titan.physical-exclusion.v1", scope,
                               physical_freshness=True)
@@ -289,7 +292,8 @@ def execute(m, source, image, ctx, facts):
         remaining=capture_deadline-time.monotonic()
         require(remaining >= 1,"Candidate programming exhausted bounded interruption")
         operation=write_json("isolated-operation.json",{"isolated_capture":{
-            "frames":m["isolated_qualification"]["frames"],"budget_seconds":min(60,remaining)}})
+            "frames":m["isolated_qualification"]["frames"],"budget_seconds":min(60,remaining),
+            **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}})
         runtime=dict(m,port=resolved["device"],isolated_programming_event=event,
                      isolated_fixture_id=pre["fixture_id"])
         facts["isolated_capture"]=run_session(runtime,logs,80,operation["path"],deadline=capture_deadline)

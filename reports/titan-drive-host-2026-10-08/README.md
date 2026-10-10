@@ -13,12 +13,18 @@ Earlier sections below retain the chronological evidence and describe the code a
 those earlier checkpoints. Their statements that acquisition was absent or
 unimplemented are historical, not the current implementation status.
 
-Physical acquisition has not run. Exact operator isolation/fixture records and the
-scoped first-bootstrap readiness exception remain absent. Positive waveform
-qualification remains on HOLD because a primary or independently measured bound
-for pin-to-capture timing error is unavailable, and applicability of the pinned
-WS2816C-1313 timing document to the actually fitted LEDs is unresolved. No host
-model, compiled test or saved declaration closes either physical requirement.
+Actual isolated execution subsequently occurred on9–10October. Ten transactions
+programmed/verified their candidates and recovered the sealed donor. Two acquired
+paired partial raw data; zero complete accepted pairs. The latest run retained
+7647/3858 timestamps against7680/7680 independent edge counts, with394/2
+consecutive duplicates. Original physical confirmation and standing interruption
+authority exist; they are not current blockers. The product harness staysOFF.
+Latest source/device evidence lives under
+`_scratch/titan-completion-20261008/isolated-arbitration-repair/`.
+
+Fitted-LED applicability, representativeDIN electrical path and capture error
+bounds still block electrical release. They do not block isolated diagnostic or
+computation work. Historical sections below describe their dated checkpoints.
 
 ## Historical initial implementation
 

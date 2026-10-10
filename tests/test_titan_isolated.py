@@ -330,3 +330,11 @@ def test_preinvocation_failure_never_programs_or_recovers(tmp_path,monkeypatch,f
     assert facts['hardware_access'] is False and facts['programmed'] is False
     assert facts['candidate_program_attempted'] is False and facts['candidate_readback_verified'] is False
     assert 'donor_recovery_event' not in facts
+
+
+def test_constant_diagnostic_changes_bound_operation_scope(tmp_path,monkeypatch):
+    m=admission(tmp_path,monkeypatch)
+    m['isolated_qualification']['constant_timer_diagnostic']=1
+    assert isolated._scope(m)['constant_timer_diagnostic']==1
+    with pytest.raises(RuntimeError,match='exact isolated scope'):
+        isolated.preflight(m)
