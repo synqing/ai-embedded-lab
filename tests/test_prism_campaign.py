@@ -1,6 +1,7 @@
 import copy
 import json
 from pathlib import Path
+import threading
 
 import pytest
 
@@ -13,13 +14,16 @@ def frozen(tmp_path):
         for seconds in (30,60):
             media=tmp_path/(song+'-'+str(seconds)+'.wav');media.write_bytes((song+str(seconds)).encode())
             passages.append(dict(id=f'{song}-{seconds}s',song=name,seconds=seconds,source_sha256=song*32,
-                mixture=dict(path=str(media),sha256=c.sha(media),playback_path=str(media),playback_file_sha256=c.sha(media))))
+                mixture=dict(path=str(media),sha256=c.sha(media),playback_path=str(media),playback_file_sha256=c.sha(media),
+                             playback_transform_gain=.5,playback_gain=1,playback_engine_gain=1)))
     for identity in c.PILOTS:
         media=tmp_path/(identity+'.wav');media.write_bytes(identity.encode())
         passages.append(dict(id=identity,song=identity+'.wav',seconds=24,mixture=dict(path=str(media),sha256=c.sha(media),
-                        playback_path=str(media),playback_file_sha256=c.sha(media))))
+                        playback_path=str(media),playback_file_sha256=c.sha(media),
+                        playback_transform_gain=.5,playback_gain=1,playback_engine_gain=1)))
     words=[0]*18;words[14]=100
-    value=dict(schema='titan.music_value.experiment/2',passages=passages,g=1,display_mapping=dict(settings_words=words))
+    value=dict(schema='titan.music_value.experiment/2',passages=passages,g=1,
+               display_mapping=dict(settings_words=words,input_audio_gain=.5,shared_gain_g=1))
     value['freeze_sha256']=c.digest(value)
     path=tmp_path/'freeze.json';c.write_new(path,value);return path
 
@@ -300,3 +304,160 @@ def test_host_boot_identity_refuses_invalid_kernel_value(monkeypatch):
     monkeypatch.setattr(drive.subprocess,'run',lambda *a,**k:SimpleNamespace(stdout='not-a-uuid'))
     with pytest.raises(ValueError):drive.host_boot_session()
     drive.host_boot_session.cache_clear()
+
+
+@pytest.fixture
+def incumbent(campaign,tmp_path,monkeypatch):
+    from ael import prism_drive as drive
+    value,key,ledger=campaign
+    monkeypatch.setattr(c,'PLAYBACK_LEDGER',ledger)
+    binary=tmp_path/'existing-player';binary.write_bytes(b'owned existing engine fixture')
+    monkeypatch.setattr(drive,'PLAYER',binary)
+    task=next(t for t in value['tasks'] if t['arm']=='I')
+    spec=dict(schema='titan.music.incumbent-prepared.v1',campaign=key,freeze=value['freeze'],
+              trial_id=task['id'],media=task['media'],seconds=task['seconds'],input_gain=1)
+    observation={k:str(tmp_path/k) for k in ('owner_dir','donor_source','build_receipt')}
+    return spec,ledger,observation
+
+
+def test_existing_eight_donor_requests_validate_without_playback_or_ledger(campaign,incumbent):
+    value,key,_=campaign;spec,ledger,_=incumbent
+    tasks=[t for t in value['tasks'] if t['arm']=='I']
+    assert len(tasks)==8
+    for task in tasks:
+        request=dict(spec,trial_id=task['id'],media=task['media'],seconds=task['seconds'])
+        prepared=c.prepare_incumbent_request(request)
+        assert prepared['task']==task and prepared['media']==Path(task['media']['path'])
+        assert prepared['playback_started'] is prepared['optical_verified'] is False
+    assert not ledger.exists()
+
+
+@pytest.mark.parametrize('fault',['schema','gain','media','duration','native-arm','freeze','spent','file'])
+def test_incumbent_readiness_rejects_changed_inputs_and_spent_trials(campaign,incumbent,fault):
+    value,key,_=campaign;spec,ledger,_=incumbent;spec=copy.deepcopy(spec)
+    if fault=='schema':spec['schema']='unknown'
+    if fault=='gain':spec['input_gain']=.5
+    if fault=='media':spec['media']=value['tasks'][6]['media']
+    if fault=='duration':spec['seconds']-=1
+    if fault=='native-arm':spec['trial_id']=next(t['id'] for t in value['tasks'] if t['arm']=='A')
+    if fault=='freeze':spec['freeze']['sha256']='f'*64
+    if fault=='spent':c.PlaybackLedger(ledger,key).reserve(spec['trial_id'],spec['media']['path'])
+    if fault=='file':Path(spec['media']['path']).write_bytes(b'changed source')
+    with pytest.raises(ValueError):c.prepare_incumbent_request(spec)
+    assert ledger.exists() is (fault=='spent')
+
+
+@pytest.mark.parametrize('fault',[None,'preflight','brightness-before','constructor','clock','gain','duration',
+                                 'player','close','observer','owner','brightness-during','media-during',
+                                 'truncated','timeout','cancel','observer-blocked'])
+def test_incumbent_actual_consumer_full_charge_and_owned_cleanup(incumbent,tmp_path,fault):
+    spec,path,observation=incumbent;prepared=c.prepare_incumbent_request(spec)
+    clock=[0.];players=[];calls=[];cancel=threading.Event()
+    def pause(dt):
+        clock[0]+=1
+        threading.Event().wait(.0001)  # Yield to our injected observation worker.
+    def observe(cfg,ctx,facts,*,cancel_event):
+        before=ctx.logs_dir.name=='donor-before';calls.append(cfg['seconds'])
+        assert cfg['seconds']==(3 if before else spec['seconds'])
+        assert cancel_event is not cancel and not cancel_event.is_set()
+        if before:
+            assert not path.exists()  # Preflight never charges or starts media.
+            if fault=='preflight':raise ValueError('injected source/owner preflight failure')
+        else:
+            if fault=='observer':raise ValueError('injected donor observation failure')
+            if fault=='observer-blocked':
+                assert cancel_event.wait(3), 'Owned observer was not stopped after the outer timeout'
+                return
+            if fault=='cancel':cancel.set()
+            if fault=='media-during':Path(spec['media']['path']).write_bytes(b'drift during playback')
+        facts.update(owner_identity=dict(pid=8 if fault=='owner' and not before else 7,
+                          serial_opens=1,epoch=5,identity=dict(uid='Titan fixture')),
+                     measurements=dict(brightness_observed=[24 if fault==('brightness-before' if before else 'brightness-during') else 100]))
+        raw=ctx.logs_dir/'titan-owner.jsonl';raw.write_text(json.dumps(facts)+'\n')
+        facts.update(raw_log=str(raw),raw_sha256=c.sha(raw))
+    class Player:
+        def __init__(self,media,log,**kwargs):
+            records=c.PlaybackLedger(path,spec['campaign']).records()
+            assert records[-1]['event']=='reserve' and records[-1]['reserved_ms']==spec['seconds']*1000
+            assert media==prepared['media'] and kwargs['input_gain']==1 and kwargs['cancel_event'] is cancel
+            if fault=='constructor':raise ValueError('injected bounded player startup failure')
+            self.done=fault!='timeout';self.error='bad owned player' if fault=='player' else None
+            self.aborted=False;self.closed=False;players.append(self)
+            self.start=dict(event='start',wav=str(media),clock='other' if fault=='clock' else 'CLOCK_UPTIME_RAW',
+                            input_gain=.5 if fault=='gain' else 1,file_rate=48000,
+                            frames=int(spec['seconds']*48000)+(1 if fault=='duration' else 0))
+            rows=[self.start,dict(event='end',frames=self.start['frames']-(1 if fault=='truncated' else 0))]
+            log.write_text('\n'.join(json.dumps(r) for r in rows)+'\n')
+        def close(self):
+            if fault=='close':raise ValueError('injected owned close failure')
+            self.closed=True
+        def abort(self):self.aborted=True
+    out=tmp_path/'executed'
+    args=dict(player_factory=Player,observer=observe,cancel_event=cancel,now=lambda:clock[0],pause=pause)
+    if fault:
+        with pytest.raises(ValueError):c.execute_incumbent(prepared,out,observation,**args)
+        failure=json.loads((out/'failure.json').read_text())
+        assert failure['reserved'] is (fault not in ('preflight','brightness-before'))
+        assert not (out/'result.json').exists()
+    else:
+        result=c.execute_incumbent(prepared,out,observation,**args)
+        assert result['scope']=='DONOR_BROKER_TELEMETRY_AND_PLAYER_ONLY'
+        assert result['optical_verified'] is False and result['seconds']==spec['seconds']
+        assert 'NOT_AVAILABLE' in result['controls']
+        assert calls==[3,spec['seconds']] and players[0].closed and not players[0].aborted
+    if fault in ('preflight','brightness-before'):
+        assert not path.exists() and not players
+    else:
+        records=c.PlaybackLedger(path,spec['campaign']).records()
+        assert [r['event'] for r in records]==['reserve','complete']
+        assert records[0]['reserved_ms']==spec['seconds']*1000
+        assert records[-1]['success'] is (fault is None)
+        if players:assert players[0].closed or players[0].aborted
+        with pytest.raises(ValueError,match='Trial media/arm changed' if fault=='media-during' else 'Duplicate/spent'):
+            c.PlaybackLedger(path,spec['campaign']).reserve(spec['trial_id'],spec['media']['path'])
+
+
+def test_incumbent_cli_validation_is_read_only_and_execution_is_explicit(incumbent,tmp_path,monkeypatch,capsys):
+    import sys
+    spec,ledger,_=incumbent;request=tmp_path/'request.json';c.write_new(request,spec)
+    output=tmp_path/'validated'
+    monkeypatch.setattr(c,'execute_incumbent',lambda *a,**k:pytest.fail('unexpected playback'))
+    monkeypatch.setattr(sys,'argv',['prism_campaign','--incumbent-request',str(request),'--out',str(output)])
+    c.main();row=json.loads(capsys.readouterr().out)
+    assert row['scope']=='VALIDATED_ONLY' and row['playback_started'] is False
+    assert json.loads((output/'consumer-ready.json').read_text())==row and not ledger.exists()
+    monkeypatch.setattr(sys,'argv',['prism_campaign','--incumbent-request',str(request),'--out',str(tmp_path/'refused'),'--execute-incumbent'])
+    with pytest.raises(SystemExit):c.main()
+    assert not ledger.exists() and not (tmp_path/'refused').exists()
+
+
+def test_existing_donor_observer_cancellation_prevents_owner_reads(tmp_path,monkeypatch):
+    from types import SimpleNamespace
+    from serial.tools import list_ports
+    from ael.adapters import prism_lane as lane
+    cancel=threading.Event();cancel.set()
+    monkeypatch.setattr(list_ports,'comports',lambda:[SimpleNamespace(vid=0x045b,pid=0x5310,
+                        serial_number='0000000000001',device='fixture-no-open')])
+    monkeypatch.setattr(lane,'titan_build_binding',lambda cfg:dict(build_id='fixture',sources={}))
+    monkeypatch.setattr(lane,'git',lambda *args:'fixture-commit')
+    receipt=tmp_path/'receipt.json';receipt.write_text('{}')
+    cfg=dict(owner_dir=str(tmp_path/'absent-owner'),donor_source=str(tmp_path/'absent-donor'),
+             build_receipt=str(receipt),seconds=24)
+    with pytest.raises(RuntimeError,match='Titan observation cancelled'):
+        lane.observe_titan(cfg,SimpleNamespace(logs_dir=tmp_path),{},cancel_event=cancel)
+    assert (tmp_path/'titan-owner.jsonl').read_text()==''
+
+
+@pytest.mark.parametrize('fault',['request','player','ledger','observation'])
+def test_incumbent_changed_prepared_binding_refused_before_side_effects(incumbent,tmp_path,fault):
+    spec,ledger,observation=incumbent;prepared=c.prepare_incumbent_request(spec)
+    if fault=='request':prepared['spec']['input_gain']=.5
+    if fault=='player':Path(prepared['player']['path']).write_bytes(b'changed engine')
+    if fault=='ledger':prepared['ledger']=str(tmp_path/'alternate-ledger')
+    if fault=='observation':observation['owner_dir']='relative-owner'
+    output=tmp_path/'refused'
+    with pytest.raises(ValueError):
+        c.execute_incumbent(prepared,output,observation,
+                            player_factory=lambda *a,**k:pytest.fail('unexpected playback'),
+                            observer=lambda *a,**k:pytest.fail('unexpected observation'))
+    assert not ledger.exists() and not output.exists()

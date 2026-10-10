@@ -242,6 +242,40 @@ reconnects hardware automatically, changes playback, or takes another owner.
 
 ## Source-bound Titan evaluation-drive replay (host implementation)
 
+Prepared donor `I` requests use the existing campaign, Player, durable playback
+ledger and `observe_titan` consumer. Validate a prepared request without starting
+playback or writing the ledger:
+
+```sh
+/Users/spectrasynq/.platformio/penv/bin/python -m ael.prism_campaign \
+  --incumbent-request /absolute/comparison-requests/trial-I.json \
+  --out /fresh/donor-consumer-validation
+```
+
+Only the sole hardware execution owner runs the same command with
+`--execute-incumbent --donor-observation /absolute/donor-observation.json`.
+That observation file supplies the existing `owner_dir`, `donor_source` and
+`build_receipt` paths. The consumer reads the existing broker's evidence and
+checks its process, UID, source, build, schema, audio progress and transmitter
+progress; it opens no serial port and performs no programming or recovery.
+The native image admission path is not used for donor playback.
+
+The consumer retains a three-second source-bound donor preflight before making
+the full-duration reservation in the shared ledger. A reservation precedes
+Player construction and remains charged after failed startup, cancellation or
+timeout. The frozen media, passage, campaign, private order and common gains
+are checked; once-attenuated playback uses unity engine gain. Observation runs
+for the complete requested duration with a five-second execution reserve.
+Cancellation stops only this consumer's Player and its observation worker.
+The final Player log must report the complete original frame count; changed
+media, missing end reports, changed owners and brightness drift are refused.
+
+Results explicitly cover donor broker telemetry and Player completion. The
+frozen brightness is checked at 100, but the existing donor telemetry does not
+provide the full 18-word control readback. Full donor control parity, acoustic
+route timing, connected electrical qualification and optical comparison remain
+separate gates. A validation or telemetry result does not award owner ratings.
+
 The implemented replay stays inside `bench-trial-control` and its current
 manifest, native-control authority, exclusive owner, lock and zero-retry path.
 Prepare a request offline with `python -m ael.prism_drive`: required arguments

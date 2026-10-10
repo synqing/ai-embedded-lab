@@ -1,7 +1,8 @@
 """Offline comparison preparation, durable playback budget and evidence checks.
 
-This module never opens serial, starts playback or admits an image. The existing
-streamer consumes its reservation hook before creating the media-clock player.
+Preparation is read-only. Explicit incumbent execution and playlist start reuse
+the existing media-clock Player; neither opens serial nor admits an image.
+The existing streamer consumes its reservation hook before creating the player.
 """
 import argparse
 from collections import Counter
@@ -15,6 +16,7 @@ import random
 import secrets
 import threading
 import time
+from types import SimpleNamespace
 
 SONGS = {'03': 'Dash Berlin - Shelter (Yoel Lewis Remix)',
          '04': 'Alok & Ava Max - Car Keys (Tiesto Remix)',
@@ -224,6 +226,146 @@ def playback_budget(prepared):
     return Reservation()
 
 
+def prepare_incumbent_request(spec):
+    """Validate an existing donor I request without playback or ledger writes."""
+    from ael.prism_drive import PLAYER
+    require(isinstance(spec,dict) and spec.get('schema')=='titan.music.incumbent-prepared.v1',
+            'Expected existing incumbent request schema')
+    ledger=PlaybackLedger(PLAYBACK_LEDGER,spec['campaign'])
+    require(spec.get('freeze')==ledger.campaign['freeze'],'Incumbent freeze binding changed')
+    freeze=ledger.freeze
+    require(freeze.get('schema')=='titan.music_value.experiment/2' and
+            freeze.get('freeze_sha256')==digest({k:v for k,v in freeze.items() if k!='freeze_sha256'}),
+            'Invalid frozen incumbent experiment')
+    task=ledger.tasks.get(spec.get('trial_id'))
+    require(task and task['arm']=='I' and task['image']=='donor' and task['phase'] in ('pilot','comparison'),
+            'Expected scheduled donor I trial')
+    require(spec.get('media')==task['media'] and spec.get('seconds')==task['seconds'] and
+            type(spec['seconds']) in (int,float) and 0<spec['seconds']<=120,
+            'Incumbent media/duration changed')
+    media=bound(spec['media'])
+    passage=next((p for p in freeze['passages'] if p['id']==task['passage']),None)
+    require(passage and passage['seconds']==task['seconds'] and
+            binding(media)=={'path':passage['mixture']['playback_path'],
+                             'sha256':passage['mixture']['playback_file_sha256']} and
+            task['song_key']==passage.get('source_sha256',passage['mixture']['sha256']),
+            'Incumbent passage/song binding changed')
+    mapping=freeze['display_mapping'];mixture=passage['mixture']
+    require(spec.get('input_gain')==1 and freeze.get('g')==1 and
+            mapping.get('input_audio_gain')==.5 and mapping.get('shared_gain_g')==1 and
+            mapping['settings_words'][14]==100 and mixture.get('playback_transform_gain')==.5 and
+            mixture.get('playback_gain')==mixture.get('playback_engine_gain')==1,
+            'Incumbent requires frozen halfscale file and unity player/shared gain')
+    require(not any(r['event']=='reserve' and r['trial_id']==task['id'] for r in ledger.records()),
+            'Duplicate/spent playback trial')
+    return dict(spec=json.loads(json.dumps(spec)),request_sha256=digest(spec),task=task,
+                freeze=freeze,media=media,player=binding(PLAYER),ledger=str(PLAYBACK_LEDGER),
+                consumer_status='READY_EXISTING_PLAYER_LEDGER_DONOR_OBSERVATION',
+                playback_started=False,optical_verified=False)
+
+
+def execute_incumbent(prepared,out,observation,*,player_factory=None,observer=None,
+                      cancel_event=None,now=time.monotonic,pause=time.sleep):
+    """Explicit donor observation/playback; broker remains the sole serial owner.
+
+    Use the existing lane observer and Player only. Complete durations are charged
+    before player construction, including failed starts, cancellation and aborts.
+    """
+    from ael.prism_drive import Player
+    from ael.adapters.prism_lane import observe_titan
+    require(digest(prepared['spec'])==prepared['request_sha256'],'Prepared incumbent request changed')
+    fresh=prepare_incumbent_request(prepared['spec'])
+    require(prepared['player']==fresh['player'] and prepared['ledger']==fresh['ledger'],
+            'Prepared incumbent player/ledger binding changed')
+    prepared=fresh
+    require(isinstance(observation,dict) and all(isinstance(observation.get(k),str) and
+            Path(observation[k]).is_absolute() for k in ('owner_dir','donor_source','build_receipt')),
+            'Existing donor broker/source/build observation configuration required')
+    observation=json.loads(json.dumps(observation))
+    player_factory=Player if player_factory is None else player_factory
+    observer=observe_titan if observer is None else observer
+    out=Path(out);out.mkdir(parents=True,exist_ok=False)
+    stop=threading.Event();external=cancel_event or stop
+    ledger=PlaybackLedger(prepared['ledger'],prepared['spec']['campaign'])
+    nonce=secrets.token_hex(32);task=prepared['task'];log=out/'player.jsonl'
+    reserved=False;success=False;player=None;worker=None;observed={};errors=[]
+    def observe(name,seconds,facts):
+        directory=out/name;directory.mkdir()
+        observer(dict(observation,seconds=seconds),SimpleNamespace(logs_dir=directory),facts,cancel_event=stop)
+    try:
+        require(not external.is_set(),'Incumbent trial cancelled')
+        preflight={};observe('donor-before',3,preflight)
+        write_new(out/'donor-before.json',preflight)
+        require(preflight.get('measurements',{}).get('brightness_observed')==[100],
+                'Donor brightness differs from frozen comparison')
+        require(isinstance(preflight.get('owner_identity'),dict),'Donor owner continuity witness missing')
+        require(not external.is_set(),'Incumbent trial cancelled')
+        # Recheck media/player after preflight; observation never grants playback
+        # of changed inputs or an alternate engine.
+        bound(prepared['player']);bound(prepared['spec']['media'])
+        ledger.reserve(task['id'],prepared['media'],arm='I',seconds=task['seconds']);reserved=True
+        deadline=now()+task['seconds']+5
+        player=player_factory(prepared['media'],log,input_gain=1.0,cancel_event=external)
+        metadata=player.start;rate=metadata.get('file_rate');frames=metadata.get('frames')
+        require(metadata.get('clock')=='CLOCK_UPTIME_RAW' and metadata.get('input_gain')==1 and
+                type(rate) in (int,float) and math.isfinite(rate) and rate>0 and
+                type(frames) is int and frames>0 and frames/rate==task['seconds'],
+                'Incumbent player clock/gain/rate/duration changed')
+        def observe_playback():
+            try:observe('donor-during',task['seconds'],observed)
+            except Exception as exc:errors.append(exc)
+        worker=threading.Thread(target=observe_playback,name='titan-incumbent-observation',daemon=True);worker.start()
+        while not player.done or worker.is_alive():
+            require(not external.is_set(),'Incumbent trial cancelled')
+            require(now()<deadline,'Incumbent playback/observation deadline exhausted')
+            require(not errors,'Incumbent donor observation failed: '+str(errors[0] if errors else ''))
+            require(not player.error,'Incumbent player failed: '+str(player.error))
+            pause(.02)
+        require(not errors,'Incumbent donor observation failed: '+str(errors[0] if errors else ''))
+        require(not player.error,'Incumbent player failed: '+str(player.error))
+        require(not external.is_set(),'Incumbent trial cancelled')
+        require(now()<deadline,'Incumbent playback/observation deadline exhausted')
+        player.close();player=None
+        write_new(out/'donor-during.json',observed)
+        require(observed.get('owner_identity')==preflight['owner_identity'],
+                'Donor identity/owner changed across playback boundary')
+        require(observed.get('measurements',{}).get('brightness_observed')==[100],
+                'Donor brightness changed during comparison')
+        bound(prepared['player']);bound(prepared['spec']['media'])
+        bound(prepared['spec']['campaign']);bound(prepared['spec']['freeze'])
+        rows=[json.loads(line) for line in log.read_text().splitlines()]
+        starts=[r for r in rows if r.get('event')=='start'];ends=[r for r in rows if r.get('event')=='end']
+        require(len(starts)==len(ends)==1 and starts[0].get('frames')==ends[0].get('frames')==frames and
+                Path(starts[0].get('wav','')).resolve()==prepared['media'].resolve() and
+                starts[0].get('clock')=='CLOCK_UPTIME_RAW' and starts[0].get('input_gain')==1 and
+                starts[0].get('file_rate')==rate,'Incomplete or changed incumbent player evidence')
+        result=dict(schema='titan.music.incumbent-result.v1',trial_id=task['id'],arm='I',
+                    campaign=prepared['spec']['campaign'],freeze=prepared['spec']['freeze'],
+                    request_sha256=prepared['request_sha256'],media=prepared['spec']['media'],
+                    seconds=task['seconds'],input_gain=1,player_log=binding(log),
+                    acquisition_nonce=nonce,ledger=str(ledger.path),donor_observation=observed,
+                    scope='DONOR_BROKER_TELEMETRY_AND_PLAYER_ONLY',
+                    controls='FROZEN_REQUEST; FULL_DONOR_CONTROL_READBACK_NOT_AVAILABLE',
+                    physical_timing='UNMEASURED_RENDER_ONLY_ROUTE',optical_verified=False)
+        write_new(out/'result.json',result);success=True
+        return result
+    except BaseException as exc:
+        write_new(out/'failure.json',dict(error=str(exc),trial_id=task['id'],reserved=reserved,
+                                        acquisition_nonce=nonce,optical_verified=False))
+        raise
+    finally:
+        stop.set()
+        try:
+            if player is not None:player.abort()
+        finally:
+            try:
+                if worker is not None:
+                    worker.join(5)
+                    require(not worker.is_alive(),'Owned donor observer did not stop')
+            finally:
+                if reserved:ledger.complete(task['id'],success=success,player_log=log,acquisition_nonce=nonce)
+
+
 class CampaignPlaylist:
     """One owned, bounded playlist using AEL's existing media-clock Player.
 
@@ -419,10 +561,30 @@ def verify_endurance(window_logs, gap_files, *, playback_ledger=None, acquisitio
 
 
 def main():
-    parser=argparse.ArgumentParser(description='Offline Titan comparison preparation; no hardware/playback')
-    parser.add_argument('--freeze',required=True,type=Path);parser.add_argument('--out',required=True,type=Path)
-    args=parser.parse_args();result=prepare_campaign(args.freeze,args.out)
-    print(json.dumps(dict(scope='PREPARED_ONLY',trials=len(result['tasks']),planned_seconds_by_song=result['planned_seconds_by_song'])))
+    parser=argparse.ArgumentParser(description='Titan campaign preparation and explicit donor incumbent consumer')
+    inputs=parser.add_mutually_exclusive_group(required=True)
+    inputs.add_argument('--freeze',type=Path);inputs.add_argument('--incumbent-request',type=Path)
+    parser.add_argument('--out',required=True,type=Path)
+    parser.add_argument('--execute-incumbent',action='store_true')
+    parser.add_argument('--donor-observation',type=Path)
+    args=parser.parse_args()
+    if args.incumbent_request:
+        prepared=prepare_incumbent_request(json.loads(args.incumbent_request.read_text()))
+        if args.execute_incumbent:
+            if args.donor_observation is None:parser.error('--donor-observation is required')
+            result=execute_incumbent(prepared,args.out,json.loads(args.donor_observation.read_text()))
+        else:
+            if args.donor_observation:parser.error('--donor-observation requires explicit execution')
+            args.out.mkdir(parents=True,exist_ok=False)
+            result=dict(scope='VALIDATED_ONLY',trial_id=prepared['task']['id'],
+                        consumer_status=prepared['consumer_status'],request_sha256=prepared['request_sha256'],
+                        playback_started=False,optical_verified=False)
+            write_new(args.out/'consumer-ready.json',result)
+    else:
+        if args.execute_incumbent or args.donor_observation:parser.error('Incumbent request required for execution')
+        private=prepare_campaign(args.freeze,args.out)
+        result=dict(scope='PREPARED_ONLY',trials=len(private['tasks']),planned_seconds_by_song=private['planned_seconds_by_song'])
+    print(json.dumps(result))
 
 
 if __name__=='__main__':main()

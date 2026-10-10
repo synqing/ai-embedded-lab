@@ -647,7 +647,7 @@ def require_titan_binding(identity, build):
             identity.get('schema_sha256') == build['live_schema']['sha256'], 'Titan source/schema/identity mismatch')
 
 
-def observe_titan(cfg, ctx, facts):
+def observe_titan(cfg, ctx, facts, *, cancel_event=None):
     from serial.tools import list_ports
     ports = [p for p in list_ports.comports() if (p.vid, p.pid, p.serial_number) == (0x045b, 0x5310, '0000000000001')]
     require(len(ports) == 1, 'Exactly one Titan CDC device required; Emotiscope S3 cannot substitute')
@@ -663,6 +663,7 @@ def observe_titan(cfg, ctx, facts):
     end = time.monotonic() + cfg['seconds']
     with raw.open('w') as out:
         while time.monotonic() < end:
+            require(cancel_event is None or not cancel_event.is_set(), 'Titan observation cancelled')
             row = json.loads((owner / 'live-stats.json').read_text())
             out.write(json.dumps(row) + '\n'); out.flush()
             if not rows:
@@ -672,10 +673,14 @@ def observe_titan(cfg, ctx, facts):
             validate_titan(row, build['build_id'], time.monotonic())
             require_titan_binding(row['identity'], build)
             rows.append(row)
-            time.sleep(1)
+            if cancel_event is None:
+                time.sleep(1)
+            else:
+                require(not cancel_event.wait(1), 'Titan observation cancelled')
     facts['measurements'] = titan_progress(rows)
     require(titan_build_binding(cfg) == build, 'Titan build binding changed during observation')
-    facts.update(raw_log=str(raw), raw_sha256=sha(raw), samples=len(rows))
+    facts.update(raw_log=str(raw), raw_sha256=sha(raw), samples=len(rows),
+                 owner_identity={k: rows[0][k] for k in ('pid', 'serial_opens', 'epoch', 'identity')})
 
 
 def recover_titan_owner(cfg, ctx, facts):
