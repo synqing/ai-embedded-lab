@@ -1324,3 +1324,14 @@ Third-party components and vendor code remain under their respective original li
 ## Emotiscope bench integration
 
 The identity-guarded PRISM K1-S3 bench pack, reproduction commands and physical evidence are documented in [docs/emotiscope-bench.md](docs/emotiscope-bench.md).
+
+## SpectraSynq publication
+
+SpectraSynq's reviewed changes are published at
+[synqing/ai-embedded-lab](https://github.com/synqing/ai-embedded-lab), a fork of
+[EZ32Inc/ai-embedded-lab](https://github.com/EZ32Inc/ai-embedded-lab).
+In Captain's existing checkout, `origin` is the writable SpectraSynq fork and
+`upstream` preserves the original author repository. The established default
+branch is `master`. API/token scopes do not replace repository write permission;
+check the authenticated account and target repository before reporting a push
+blocker. Physical hardware and qualification authority remain unchanged.

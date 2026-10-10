@@ -7,6 +7,17 @@ Project-local notes:
 - After creating or formalizing a new test pack and completing meaningful live validation, do not stop at code/commit. Required closeout is: validation closeout + reusable skill capture. Treat this as mandatory, not optional.
 - Commit discipline: each completed independent small intent must be committed immediately as its own atomic commit. Do not batch unrelated intents into one commit.
 
+## SpectraSynq Git publication — 10 October 2026
+
+Captain's publication target is `https://github.com/synqing/ai-embedded-lab.git`
+on the existing `master` branch. The original author repository
+`https://github.com/EZ32Inc/ai-embedded-lab.git` is retained as `upstream`.
+Before returning an authentication/access blocker, inspect the actual remote,
+authenticated identity and target repository permissions. A broad token scope
+does not establish write access to another owner's repository. Preserve upstream
+history and use normal fast-forward publication; never force push or overwrite
+the separate SpectraSynq-EdgeAI-Lab project because its name appears similar.
+
 Titan continuations: before treating a measurement gap as a hardware-wide blocker,
 read /Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/docs/migration/TITAN-FIRST-ISOLATED-SESSION-2026-10-08.txt
 and the shared spectrasynq-workflow progress/blocker rule. Preserve the connected-strip
