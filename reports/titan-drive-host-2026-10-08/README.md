@@ -751,3 +751,34 @@ broker restored with fresh telemetry saved. Orange harness remains OFF. Total
 candidate programming transactions21; full campaign NOT TESTED; accepted full
 pairs0. Root/independent review decoded retained raw files without changing the
 failed status or manufacturing a PASS.
+
+### Attempt22 — redundant-barrier repair did not resolve completion
+
+Commit `2125df1` removed the intermediate SOF wait while retaining the final
+SOF bracket,350us quiet and unchanged20ms deadline. Candidate HEX
+`4ac596eb8543fdf5879d264538e829e720c1c219aa749b32415f0a1fa7a60cd7`.
+Run: `_scratch/titan-completion-20261008/isolated-direct-single-barrier`.
+Actual result remains state7/fault5 Deadline: four3840-entry streams and
+7680 counted edges per lane. The repair did not establish an accepted pair.
+
+The deadline check precedes queued SOF consumption. Failure cleanup overwrites
+the initial DMA-freeze timestamp; retained records therefore cannot distinguish
+a late owner-service interval from absent timing callbacks. USB raw drain begins
+after terminal failure and cannot explain this preceding timeout. No supported
+USB-blocking diagnosis exists. The next bounded experiment adds immutable
+pre-cleanup stage/queue timing evidence; it does not extend deadlines, reduce
+audio workload or weaken acceptance.
+
+Donor programming verification and fresh application identity succeeded; internal
+transaction34.444s. Broker restored, PID29770; saved paired observations show
+audio hops42026→42632 (`recovered-broker-live.json`). Orange product harness
+remains OFF; corrected12→36 and7→33 remain fitted. No optical restoration claim.
+Total candidate-programming transactions22; accepted full pairs0;100-pair campaign
+NOT TESTED.
+
+Independent run22 diagnostic decode: all four streams unique and strictly
+increasing; HIGH widths1920×78 and1920×198 per lane; rising periods390;
+exact A=AA×480/B=55×480 payloads with zero mismatches. Microphone callbacks
+273→808 on each lane; errors[0,0], clock rejections0, restart attempts/failures0.
+Output timeout/recovery counters remained1→1; transmitter failures0→0. These
+observations preserve the original Deadline FAIL and do not qualify timing.
