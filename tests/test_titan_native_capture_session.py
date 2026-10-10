@@ -139,3 +139,15 @@ def test_optional_witness_timeout_is_one_second_and_does_not_mask_result(tmp_pat
     assert len(witness)==1
     assert 0.999 <= (witness[0]['after_uptime_ns']-witness[0]['before_uptime_ns'])/1e9 <= 1.001
     assert witness[0]['error'] and ports[0].closed
+
+
+def test_negotiated_large_chunks_cross_actual_framed_transport(tmp_path,monkeypatch):
+    detector,ports,m,op=session(tmp_path,monkeypatch)
+    detector.info['capabilities']['fixture_drain_max_words']=1000
+    op.write_text(json.dumps({'isolated_capture':{'frames':100,'pattern':2}}))
+    result=wire.run_session(m,tmp_path,60,op,deadline=1060)
+    assert result['isolated_capture']['epochs'][0]['result']['raw_capture_consistent']
+    records=[json.loads(x) for x in (tmp_path/'titan-native.jsonl').read_text().splitlines()]
+    chunks=[r for r in records if r['opcode']==loop.DRAIN]
+    assert max(len(base64.b64decode(r['response'])) for r in chunks)==4052
+    assert all(r['response_complete'] for r in chunks) and ports[0].closed

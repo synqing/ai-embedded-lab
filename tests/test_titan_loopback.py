@@ -654,3 +654,53 @@ def test_timing_witness_partial_status_failure_saved_before_cancel(tmp_path):
     assert (tmp_path/'loopback/001-timing-witness.bin').exists()
     assert detector.calls[-1]==loop.CANCEL
     assert json.loads((tmp_path/'loopback/failure.json').read_text())['timing_witnesses']['1']['raw']
+
+
+@pytest.mark.parametrize('count',[1,256,1000])
+def test_negotiated_chunk_boundaries(count):
+    raw=struct.pack('<5I',7,1,0,0,count)+struct.pack('<'+'I'*count,*range(count))
+    assert loop.parse_chunk(raw,7,1,0,0,count,max_words=1000)==list(range(count))
+    if count>256:
+        with pytest.raises(RuntimeError):loop.parse_chunk(raw,7,1,0,0,count)
+    with pytest.raises(RuntimeError):loop.parse_chunk(raw[:-1],7,1,0,0,count,max_words=1000)
+    with pytest.raises(RuntimeError):loop.parse_chunk(raw,7,1,0,1,count,max_words=1000)
+
+
+@pytest.mark.parametrize('value',[0,257,999,1001,True])
+def test_unrecognised_drain_capability_cannot_stimulate(tmp_path,value):
+    detector=DirectDetector();detector.info['capabilities']['fixture_drain_max_words']=value
+    with pytest.raises(RuntimeError,match='capability'):
+        loop.acquire(detector.exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
+    assert loop.ARM not in detector.calls
+
+
+@pytest.mark.parametrize('capacity',[256,1000])
+def test_negotiated_drain_retains_exact_full_streams_and_tail(tmp_path,capacity):
+    detector=DirectDetector()
+    if capacity==1000:detector.info['capabilities']['fixture_drain_max_words']=capacity
+    base=detector.exchange;requests=[]
+    def exchange(opcode,payload=b''):
+        if opcode==loop.DRAIN:requests.append(struct.unpack('<5I',payload))
+        return base(opcode,payload)
+    result=loop.acquire(exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
+    assert result['epochs'][0]['result']['raw_capture_consistent']
+    lane0=[r for r in requests if r[2]==0]
+    assert [r[3] for r in lane0]==list(range(0,3840,capacity))
+    assert [r[4] for r in lane0]==([1000,1000,1000,840] if capacity==1000 else [256]*15)
+    for i in range(4):
+        raw=(tmp_path/f'loopback/001-stream{i}.u32').read_bytes()
+        assert raw==struct.pack('<3840I',*detector.lanes[i])
+
+
+def test_large_drain_partial_reply_preserved_with_original_failure(tmp_path):
+    detector=DirectDetector();detector.info['capabilities']['fixture_drain_max_words']=1000
+    base=detector.exchange
+    def exchange(opcode,payload=b''):
+        raw=base(opcode,payload)
+        if opcode==loop.DRAIN and struct.unpack('<5I',payload)[3]==1000:return raw[:-3]
+        return raw
+    with pytest.raises(RuntimeError,match='Truncated/oversized'):
+        loop.acquire(exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
+    assert (tmp_path/'loopback/001-stream0-00000.bin').stat().st_size==4020
+    assert (tmp_path/'loopback/001-stream0-01000.bin').stat().st_size==4017
+    assert detector.calls.count(loop.ARM)==1 and detector.calls.count(loop.CANCEL)==1

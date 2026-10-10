@@ -232,8 +232,9 @@ def parse_status(raw, boot, epoch):
     return status
 
 
-def parse_chunk(raw, boot, epoch, stream, offset, count):
-    require(type(count) is int and 1 <= count <= 256, "Invalid requested chunk length")
+def parse_chunk(raw, boot, epoch, stream, offset, count, *, max_words=256):
+    require(type(max_words) is int and max_words in (256,1000), "Unknown drain chunk capability")
+    require(type(count) is int and 1 <= count <= max_words, "Invalid requested chunk length")
     require(len(raw) == 20 + 4 * count, "Truncated/oversized raw chunk")
     header = struct.unpack_from("<5I", raw)
     require(header == (boot, epoch, stream, offset, count), "Wrong raw chunk identity/order")
@@ -504,6 +505,9 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
             "Resident image does not implement raw detector")
     backend=info["capabilities"]["isolated_raw_capture"]
     split=backend in (SPLIT_BACKEND,DIRECT_BACKEND)
+    drain_max_words=info.get("capabilities",{}).get("fixture_drain_max_words",256)
+    require(type(drain_max_words) is int and drain_max_words in (256,1000),
+            "Unknown drain chunk capability")
     single_pattern=spec.get("pattern")
     require(single_pattern is None or type(single_pattern) is int and 0 <= single_pattern < 120,
             "Invalid scoped pattern")
@@ -609,10 +613,10 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                 words = []
                 while len(words) < total:
                     require(clock() < deadline, "Bounded drain deadline")
-                    offset = len(words); n = min(256, total-offset)
+                    offset = len(words); n = min(drain_max_words, total-offset)
                     chunk = exchange(DRAIN, struct.pack("<5I", boot,current,stream,offset,n))
                     save(f"{current:03d}-stream{stream}-{offset:05d}.bin", chunk)
-                    words.extend(parse_chunk(chunk,boot,current,stream,offset,n))
+                    words.extend(parse_chunk(chunk,boot,current,stream,offset,n,max_words=drain_max_words))
                 streams.append(save(f"{current:03d}-stream{stream}.u32", struct.pack("<"+"I"*total,*words)))
             row={"status":status_row,"streams":streams,"host_unix":[epoch_started,time.time()]}
             if str(current) in timing_observations:
