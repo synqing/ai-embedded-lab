@@ -626,3 +626,38 @@ Next engineering action: establish that timing bound/configuration, retain the
 failed captures, then rerun the short acceptance before the full transition-rich
 frame and100-pair schedule. No third GPIO or owner wiring intervention is justified
 by these results. Electrical/product qualification remains separate.
+
+### Direct GPT7/GPT12 redesign prepared — 10 October 2026
+
+Supersedes the preceding next-action paragraph, preserving both failed captures.
+Firmware commits b2bb689 and 003565e implement direct GPT7/GPT12 split-edge
+capture; host commits fd6bb97 and daa03aa implement explicit version3 readiness,
+collection, lane-local boundaries, strict verification and partial-failure retention.
+LED and microphone resource ownership and the declared audio workload remain unchanged.
+
+Candidate HEX SHA256: `0c8b72cd76c8052f25cc2dd5698a544af9828b64337fc0020f1ff609c00e2489`.
+Source profile: `5dee68c81d903140183a5172543062ba7dcde88d8c9004a37dc14ada6dfdac95`.
+KX evidence: `_scratch/music_visual_value_20261008/direct-capture/`.
+Build PASS; native-check2 PASS (220 cases); final collector/isolation tests PASS
+(195 tests). These are host results. Short device capture, full paired frame and
+frozen 100-pair campaign on this candidate are NOT TESTED. No programming or
+broker interruption occurred in this preparation. Existing transaction count remains17.
+
+The new receiver endpoint is U18.36/P714 in the v1.0 reference schematic. Actual
+fitted board revision is not established from the supplied enclosed-board photos.
+Captain has been asked for that one physical fact. The prepared HTML connection
+card is marked NOT RELEASED. Existing interruption authority remains valid; the
+new physical wiring confirmation, preflight and bootstrap records remain null in
+the draft manifest. Old wiring confirmation cannot admit the new endpoint.
+Orange harness remains excluded under the standing owner statement; no optical
+restoration is claimed. Last verified recovery remains the sealed donor identified
+after transaction17, with broker restored.
+
+The parallel transmitter review is `direct-capture/tx-service-review.md` in KX.
+The 640 ns refill deadline has no demonstrated worst-case bound under the actual
+combined workload. Counts and constant pulses do not establish payload correctness.
+After direct short capture passes, the decisive test is a complete simultaneous
+transition-rich frame. A trustworthy repeated payload/service failure triggers
+the documented output-engine decision, with SPI_B evaluated against refill/tail,
+pin-routing and ownership requirements; no audio reduction or threshold widening
+is an acceptable repair. Electrical and product HOLD remains unchanged.
