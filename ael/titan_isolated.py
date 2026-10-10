@@ -59,6 +59,10 @@ def _scope(m):
 def completion_request(m):
     """Validate one immutable computation request without acquiring hardware."""
     q = m.get("isolated_qualification", {})
+    require(set(q) <= {"operation", "backend", "frames", "maximum_interruption_seconds",
+                      "physical_confirmation", "bootstrap_authority", "prior_readiness",
+                      "completion_request", "pattern", "constant_timer_diagnostic"},
+            "Unknown isolated qualification request; no control, replay, SAVE or endurance")
     if "completion_request" not in q:
         return None
     require(not any(k in q for k in ("pattern", "constant_timer_diagnostic")),
@@ -218,10 +222,14 @@ def usb_inventory():
     return list(comports())
 
 
-def usb_anchor(port, *, inventory=usb_inventory):
+def usb_anchor(port, *, deadline=None, inventory=usb_inventory):
     """Bind the freshly identified donor's physical USB location before flashing."""
+    if deadline is not None:
+        require(time.monotonic() < deadline, "Candidate deadline before USB anchor")
     rows = [p for p in inventory() if p.device == port and
             p.vid == 0x045b and p.pid == 0x5310]
+    if deadline is not None:
+        require(time.monotonic() < deadline, "Candidate deadline after USB anchor")
     require(len(rows) == 1, "Missing/ambiguous admitted donor USB interface")
     p = rows[0]
     require(isinstance(p.location, str) and p.location, "Missing donor USB location")
@@ -245,6 +253,8 @@ def wait_for_native_interface(anchor, deadline, *, clock=time.monotonic,
                 isinstance(p.serial_number, str) and p.serial_number.lower() == serial and
                 p.device.startswith('/dev/cu.') and '*' not in p.device]
         require(len(rows) <= 1, "Ambiguous native USB identity at admitted socket")
+        if clock() >= deadline:
+            break
         if rows:
             p = rows[0]
             return {"device":p.device, "location":p.location, "serial":p.serial_number,
@@ -277,12 +287,17 @@ def execute(m, source, image, ctx, facts):
                  candidate_readback_verified=False)
     started = time.monotonic()
     capture_deadline=started+80
+    recovery_deadline=started+120
+    facts.update(candidate_deadline_monotonic=capture_deadline,
+                 recovery_deadline_monotonic=recovery_deadline)
     def write_json(name,obj):
         p=logs/name
         with p.open("x") as f: json.dump(obj,f,indent=2)
         return {"path":str(p.resolve()),"sha256":digest(p.read_bytes())}
     def program(candidate, name):
         nonlocal attempted
+        cutoff=capture_deadline if name=='candidate' else recovery_deadline
+        require(time.monotonic() < cutoff, name+" deadline before image validation")
         expected=m['image'] if name=='candidate' else m['recovery']['image']
         require(bench.bound_file(expected) == candidate.resolve(),"Programming image changed after admission")
         argv = bench.programmer_argv(m,candidate,"titan",recover=name=="donor-recovery")
@@ -290,11 +305,13 @@ def execute(m, source, image, ctx, facts):
                     "identity":UID,"fixture_id":pre["fixture_id"],"invoked_unix":time.time()})
         log = logs/(name+".log")
         with log.open("xb") as out:
+            remaining=cutoff-time.monotonic()
+            require(remaining > 0, name+" deadline before programmer invocation")
             if name == "candidate":
                 attempted=True
                 facts.update(hardware_access=True, candidate_program_attempted=True)
             result = subprocess.run(argv,stdout=out,stderr=subprocess.STDOUT,check=False,
-                                    timeout=30 if name=="candidate" else 35)
+                                    timeout=min(30 if name=="candidate" else 35, remaining))
         evidence = verify_program_log(log.read_bytes(),returncode=result.returncode,argv=argv,
                                      image=candidate,spans=bench.hex_spans(candidate))
         bench.bound_file(expected)
@@ -306,10 +323,14 @@ def execute(m, source, image, ctx, facts):
                         bench.TITAN_RECOVERY_BUILD,completed_unix=time.time(),
                         programmer_log={"path":str(log.resolve()),"sha256":digest(log.read_bytes())},
                         argv=argv,returncode=result.returncode,image_file=expected)
-        return write_json(name+"-programming-event.json",evidence)
+        event=write_json(name+"-programming-event.json",evidence)
+        if name=='donor-recovery':
+            facts.update(donor_recovery_event=event,known_donor_program_and_verify_completed=True)
+        require(time.monotonic() <= cutoff, name+" deadline after programming/readback evidence")
+        return event
     attempted=False
     try:
-        anchor=usb_anchor(m["port"])
+        anchor=usb_anchor(m["port"],deadline=capture_deadline)
         facts["donor_usb_anchor"]=anchor
         write_json("donor-usb-anchor.json",anchor)
         event=program(image,"candidate")
@@ -326,7 +347,8 @@ def execute(m, source, image, ctx, facts):
             **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}})
         runtime=dict(m,port=resolved["device"],isolated_programming_event=event,
                      isolated_fixture_id=pre["fixture_id"])
-        result=run_session(runtime,logs,80,operation["path"],deadline=capture_deadline)
+        result=run_session(runtime,logs,80,operation["path"],deadline=capture_deadline,
+                           operation_sha256=operation["sha256"])
         facts["isolated_completion" if completion is not None else "isolated_capture"]=result
         require(time.monotonic() <= capture_deadline,"Capture exceeded recovery reserve")
         facts["candidate_programming_event"]=event
@@ -340,12 +362,18 @@ def execute(m, source, image, ctx, facts):
                 facts["donor_recovery_event"]=program(recovery,"donor-recovery")
                 facts["known_donor_program_and_verify_completed"]=True
             except BaseException as exc:
-                facts["known_donor_program_and_verify_completed"]=False
+                facts.setdefault("known_donor_program_and_verify_completed",False)
                 facts["recovery_error"]=str(exc)
                 write_json("recovery-failed.json",facts)
+                if primary_error is not None:
+                    primary_error.add_note("Donor recovery also failed its contract: "+str(exc))
+                    raise primary_error from exc
                 raise
             finally:
                 facts["interruption_elapsed_seconds"]=time.monotonic()-started
+                facts["interruption_boundary_exceeded"]=facts["interruption_elapsed_seconds"] > 120
                 facts["optical_leave_state_verified"]=False
                 write_json("isolated-transaction.json",facts)
+                if facts["interruption_boundary_exceeded"] and primary_error is None and not facts.get("recovery_error"):
+                    raise TimeoutError("Interruption exceeded120s authority; recovery evidence retained")
     require(facts["interruption_elapsed_seconds"] <= 120,"Interruption exceeded120s authority")

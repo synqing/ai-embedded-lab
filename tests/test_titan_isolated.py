@@ -202,7 +202,7 @@ def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,mo
     monkeypatch.setenv('K1_RFP_SWD_EXECUTE_OK','1')
     monkeypatch.setattr(bench,'programmer_argv',lambda m,p,b,recover=False:['rfp','-run','-pv',str(p)])
     monkeypatch.setattr(bench,'hex_spans',lambda p:[(0x2000000,0x2000010)])
-    monkeypatch.setattr(isolated,'usb_anchor',lambda port:{'location':'TEST'})
+    monkeypatch.setattr(isolated,'usb_anchor',lambda port,**kw:{'location':'TEST'})
     def resolve(anchor,deadline):
         if failure=='usb_missing':raise TimeoutError('native identity absent')
         return {'device':'/dev/cu.NEW'}
@@ -222,6 +222,7 @@ def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,mo
         events.append('capture')
         assert args[0]['port']=='/dev/cu.NEW'
         assert 'deadline' in kwargs
+        assert kwargs['operation_sha256'] == digest(Path(args[3]).read_bytes())
         operation = json.loads(Path(args[3]).read_text())
         assert set(operation) == ({'completion'} if kind else {'isolated_capture'})
         if kind: assert operation['completion'] == spec
@@ -283,6 +284,62 @@ def test_completion_standing_fixture_preserves_time_and_request_identity(tmp_pat
     assert isolated.preflight(m)['scope']['completion'] == {
         'kind':'measure', 'request_sha256':m['isolated_qualification']['completion_request']['sha256']}
     assert json.loads(Path(m['isolated_qualification']['physical_confirmation']['path']).read_text())['observed_unix'] == 1.
+
+
+@pytest.mark.parametrize('key', ['save', 'endurance', 'evaluation_drive', 'disconnect_check', 'other_request'])
+def test_isolated_sibling_request_cannot_be_ignored(tmp_path, monkeypatch, key):
+    m=admission(tmp_path,monkeypatch)
+    m['isolated_qualification'][key]={}
+    with pytest.raises(RuntimeError,match='Unknown isolated'):
+        isolated.preflight(m)
+
+
+@pytest.mark.parametrize('fault', ['late_candidate', 'late_recovery', 'primary_and_overrun',
+                                 'primary_and_recovery_fail', 'anchor_expired'])
+def test_absolute_programmer_bounds_and_failure_receipts(tmp_path, monkeypatch, fault):
+    from ael import prism_native
+    m=admission(tmp_path,monkeypatch); now=[0.]; events=[]; timeouts=[]
+    real_preflight=isolated.preflight
+    monkeypatch.setattr(isolated,'preflight',lambda m,consume=False:
+        real_preflight(m,consume=consume,used_dir=tmp_path/'used'))
+    monkeypatch.setattr(isolated.time,'monotonic',lambda:now[0])
+    monkeypatch.setenv('K1_RFP_SWD_EXECUTE_OK','1')
+    monkeypatch.setattr(bench,'programmer_argv',lambda m,p,b,recover=False:['rfp','-run','-pv',str(p)])
+    monkeypatch.setattr(bench,'hex_spans',lambda p:[(0x2000000,0x2000010)])
+    donor=usb_port(m['port'],'0000000000001')
+    def inventory():
+        now[0]=81. if fault=='anchor_expired' else 79.
+        return [donor]
+    anchor=isolated.usb_anchor
+    monkeypatch.setattr(isolated,'usb_anchor',lambda port,**kw:anchor(port,inventory=inventory,**kw))
+    monkeypatch.setattr(isolated,'wait_for_native_interface',lambda *a:{'device':'/dev/cu.NEW'})
+    monkeypatch.setattr(isolated,'require_interface_unowned',lambda *a:None)
+    def run(argv,stdout,timeout,**kw):
+        recovery=argv[-1].endswith('donor.hex');events.append('recovery' if recovery else 'candidate');timeouts.append(timeout)
+        stdout.write(rfp_log(Path(argv[-1])))
+        if not recovery:now[0]=81. if fault=='late_candidate' else 79.
+        else:now[0]=121. if fault in ('late_recovery','primary_and_overrun') else 90.
+        return SimpleNamespace(returncode=int(recovery and fault=='primary_and_recovery_fail'))
+    def session(*a,**kw):
+        events.append('capture')
+        if fault.startswith('primary'):raise KeyboardInterrupt('original cancellation retained')
+        return {'TEST_ONLY':True}
+    monkeypatch.setattr(isolated.subprocess,'run',run)
+    monkeypatch.setattr(prism_native,'run_session',session)
+    facts={}
+    with pytest.raises((RuntimeError,TimeoutError,KeyboardInterrupt)) as caught:
+        isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
+    if fault=='anchor_expired':
+        assert events==[] and not facts['candidate_program_attempted']
+        return
+    assert timeouts[0]==1. and timeouts[1] <= 35.
+    assert events==(['candidate','recovery'] if fault=='late_candidate' else ['candidate','capture','recovery'])
+    retained=json.loads((tmp_path/'isolated-transaction.json').read_text())
+    assert retained['candidate_deadline_monotonic']==80. and retained['recovery_deadline_monotonic']==120.
+    assert retained['interruption_boundary_exceeded'] is (fault in ('late_recovery','primary_and_overrun'))
+    if fault.startswith('primary'):assert retained['primary_error']=='original cancellation retained'
+    if fault=='primary_and_overrun':assert isinstance(caught.value,KeyboardInterrupt)
+    if fault=='primary_and_recovery_fail':assert retained['recovery_error'] and not retained['known_donor_program_and_verify_completed']
 
 
 def test_preflight_refusal_precedes_programmer_and_serial(tmp_path,monkeypatch):
@@ -379,7 +436,7 @@ def test_preinvocation_failure_never_programs_or_recovers(tmp_path,monkeypatch,f
         else:(tmp_path/'candidate.log').write_bytes(b'retained')
         return result
     monkeypatch.setattr(isolated,'preflight',preflight)
-    monkeypatch.setattr(isolated,'usb_anchor',lambda port:{'location':'TEST'})
+    monkeypatch.setattr(isolated,'usb_anchor',lambda port,**kw:{'location':'TEST'})
     monkeypatch.setenv('K1_RFP_SWD_EXECUTE_OK','1')
     monkeypatch.setattr(bench,'programmer_argv',lambda m,p,b,recover=False:['rfp','-run','-pv',str(p)])
     run=Mock(side_effect=AssertionError('Pre-invocation refusal must not program even donor'))

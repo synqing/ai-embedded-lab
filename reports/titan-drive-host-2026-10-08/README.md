@@ -958,3 +958,12 @@ and dedicated estimator cost under their actual isolated prerequisites; separate
 resolve fittedLED/outputpath electrical evidence before native product connection,
 then physicalI/A/C/D, liveD, controls/fault/disconnect, endurance and ownerreview.
 No A-minus-D estimatorcost inference and no newSAM/research campaign.
+
+
+Revision 2 specialist review repair, 10 October 2026
+
+The Grok 4.7 xhigh review of commit 8e4b60f identified absolute-boundary and operation-file integrity gaps. Candidate and donor programmer timeouts now use the remaining 80/120-second absolute budgets; image/readback evidence is checked against the same cutoff. USB inventory is checked before and after enumeration, but these checks do not claim to pre-empt a blocked OS inventory call. An overrun is recorded even when the candidate raised or the owner cancelled. Primary and recovery errors are retained together, and a verified late donor is distinguished from a failed donor programming operation.
+
+The isolated session now checks the operation file sha256 and exact admitted completion or raw-capture shape before any disconnect/control branch or CDC owner. Sibling control, SAVE, endurance and unknown qualification requests are refused. The general endurance consumer refuses an isolated deadline rather than silently dropping it. Existing raw acquisition callers were updated to supply their actual operation hash and explicit budget; this changes host admission only.
+
+Actual verification: 451 passed, 12 existing skips, including the real framed raw-capture consumer, late programming/verification, cancellation plus failed recovery, operation replacement and partial-wire evidence. Receipt: /Users/spectrasynq/.local/state/spectrasynq-agents/verification/e8e109fe94c15d2f78a5831f54f05715a30c970471062025ac560736cf49701b.json, sha256 c9eacd3c86a8b38ab872b97a87e21b11c8b63c7eae9f910044181e650420e140. No device operation was used to validate this repair. Earlier failed checks remain in their original receipts.

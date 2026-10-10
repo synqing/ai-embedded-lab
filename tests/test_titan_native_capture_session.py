@@ -64,14 +64,14 @@ def session(tmp,monkeypatch,*,fault=None,deadline_seconds=60):
     manifest={'port':'/dev/cu.TEST-NO-HARDWARE','source_binding_hash':'b'*64,'source_commit':'d'*40,
         'image':{'sha256':'a'*64},'build_receipt':{'sha256':'e'*64},'isolated_fixture_id':'TEST-ONLY',
         'isolated_programming_event':{'path':str(event),'sha256':loop.digest(event.read_bytes())},
-        'isolated_qualification':{'physical_confirmation':{},'bootstrap_authority':{}}}
-    op=tmp/'operation.json';op.write_text(json.dumps({'isolated_capture':{'frames':100}}))
+        'isolated_qualification':{'frames':100,'physical_confirmation':{},'bootstrap_authority':{}}}
+    op=tmp/'operation.json';op.write_text(json.dumps({'isolated_capture':{'frames':100,'budget_seconds':60}}))
     return detector,ports,manifest,op
 
 
 def test_real_single_owner_raw_capture_path(tmp_path,monkeypatch):
     detector,ports,m,op=session(tmp_path,monkeypatch)
-    result=wire.run_session(m,tmp_path,60,op,deadline=1060)
+    result=wire.run_session(m,tmp_path,60,op,deadline=1060,operation_sha256=loop.digest(op.read_bytes()))
     assert result['runtime_boot_verified'] and result['isolated_capture']['frames_each']==100
     assert not result['isolated_capture']['physical_qualification']
     assert len(ports)==1 and ports[0].closed
@@ -86,7 +86,7 @@ def test_real_single_owner_raw_capture_path(tmp_path,monkeypatch):
 def test_failed_wire_reply_retains_actual_partial_bytes(tmp_path,monkeypatch,fault,minimum):
     detector,ports,m,op=session(tmp_path,monkeypatch,fault=fault)
     with pytest.raises((TimeoutError,OSError,ValueError)):
-        wire.run_session(m,tmp_path,60,op,deadline=1060)
+        wire.run_session(m,tmp_path,60,op,deadline=1060,operation_sha256=loop.digest(op.read_bytes()))
     record=json.loads((tmp_path/'titan-native.jsonl').read_text().splitlines()[0])
     assert len(base64.b64decode(record['response']))>=minimum
     assert record['error'] and not record['response_complete']
@@ -103,7 +103,7 @@ def test_one_absolute_deadline_bounds_info_bind_chunk_and_cancel(tmp_path,monkey
     budget=.1 if fault in ('late_info','late_bind') else 30
     detector,ports,m,op=session(tmp_path,monkeypatch,fault=fault,deadline_seconds=budget)
     with pytest.raises((TimeoutError,RuntimeError)):
-        wire.run_session(m,tmp_path,budget,op,deadline=1000+budget)
+        wire.run_session(m,tmp_path,budget,op,deadline=1000+budget,operation_sha256=loop.digest(op.read_bytes()))
     assert detector.now<=1000+budget+1e-9
     assert ports[0].closed
     records=[json.loads(x) for x in (tmp_path/'titan-native.jsonl').read_text().splitlines()]
@@ -131,8 +131,9 @@ def test_optional_witness_timeout_is_one_second_and_does_not_mask_result(tmp_pat
         if opcode==loop.TIMING_WITNESS:return b''
         return base(opcode,payload)
     detector.exchange=exchange
-    op.write_text(json.dumps({'isolated_capture':{'frames':100,'pattern':2}}))
-    result=wire.run_session(m,tmp_path,60,op,deadline=1060)
+    m['isolated_qualification']['pattern']=2
+    op.write_text(json.dumps({'isolated_capture':{'frames':100,'budget_seconds':60,'pattern':2}}))
+    result=wire.run_session(m,tmp_path,60,op,deadline=1060,operation_sha256=loop.digest(op.read_bytes()))
     assert result['isolated_capture']['epochs'][0]['result']['raw_capture_consistent']
     records=[json.loads(x) for x in (tmp_path/'titan-native.jsonl').read_text().splitlines()]
     witness=[r for r in records if r['opcode']==loop.TIMING_WITNESS]
@@ -144,8 +145,9 @@ def test_optional_witness_timeout_is_one_second_and_does_not_mask_result(tmp_pat
 def test_negotiated_large_chunks_cross_actual_framed_transport(tmp_path,monkeypatch):
     detector,ports,m,op=session(tmp_path,monkeypatch)
     detector.info['capabilities']['fixture_drain_max_words']=1000
-    op.write_text(json.dumps({'isolated_capture':{'frames':100,'pattern':2}}))
-    result=wire.run_session(m,tmp_path,60,op,deadline=1060)
+    m['isolated_qualification']['pattern']=2
+    op.write_text(json.dumps({'isolated_capture':{'frames':100,'budget_seconds':60,'pattern':2}}))
+    result=wire.run_session(m,tmp_path,60,op,deadline=1060,operation_sha256=loop.digest(op.read_bytes()))
     assert result['isolated_capture']['epochs'][0]['result']['raw_capture_consistent']
     records=[json.loads(x) for x in (tmp_path/'titan-native.jsonl').read_text().splitlines()]
     chunks=[r for r in records if r['opcode']==loop.DRAIN]

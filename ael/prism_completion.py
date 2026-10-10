@@ -142,6 +142,8 @@ def require_healthy(info, before=None):
 def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic, pause=time.sleep, deadline=None):
     """Caller holds the one AEL lock and has bound UID/schema/source/boot."""
     if isinstance(spec, dict) and spec.get('kind') == 'endurance':
+        if deadline is not None:
+            raise Refusal('Endurance cannot use the bounded isolated completion deadline')
         from ael.prism_endurance import execute as execute_endurance
         return execute_endurance(exchange, manifest, spec, out, initial, monotonic=monotonic, pause=pause)
     prepared = prepare(spec)

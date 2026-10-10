@@ -109,8 +109,33 @@ def read_exact(port, n, timeout=3, *, progress=None):
     return bytes(output)
 
 
-def run_session(manifest, out, seconds, operation=None, *, deadline=None):
-    op = json.loads(Path(operation).read_text()) if operation else None
+def run_session(manifest, out, seconds, operation=None, *, deadline=None, operation_sha256=None):
+    isolated = bool(manifest.get('isolated_qualification'))
+    if isolated:
+        from ael.titan_isolated import preflight, completion_request
+        from ael.titan_waveform import bound
+        if type(deadline) not in (int, float) or not math.isfinite(deadline) or deadline <= time.monotonic():
+            raise ValueError('Isolated session requires the transaction absolute deadline')
+        if not operation or not operation_sha256:
+            raise ValueError('Isolated operation requires its immutable sha256')
+        op = json.loads(bound({'path':str(operation), 'sha256':operation_sha256}))
+        if not isinstance(op, dict) or set(op) not in ({'completion'}, {'isolated_capture'}):
+            raise ValueError('Isolated operation must be exactly completion or isolated_capture')
+        preflight(manifest, consume=False)
+        admitted = completion_request(manifest)
+        if admitted is not None:
+            if op != {'completion':admitted}:
+                raise ValueError('Completion differs from the admitted immutable request')
+        else:
+            q = manifest['isolated_qualification']
+            raw = op.get('isolated_capture', {})
+            expected = {'frames':q['frames'], 'budget_seconds':raw.get('budget_seconds'),
+                        **{k:q[k] for k in ('pattern','constant_timer_diagnostic') if k in q}}
+            budget = raw.get('budget_seconds')
+            if raw != expected or type(budget) not in (int,float) or not math.isfinite(budget) or not 0 < budget <= 60:
+                raise ValueError('Raw capture differs from the admitted isolated scope')
+    else:
+        op = json.loads(Path(operation).read_text()) if operation else None
     if op and 'disconnect_check' in op:
         from ael.prism_disconnect import prepare
         if set(op) != {'disconnect_check'}:
@@ -121,18 +146,11 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None):
         if set(op) != {'completion'}:
             raise ValueError('Completion is session-only, mutually exclusive with drive and control PATCH')
         prepare(op['completion'])  # Before importing/opening a serial owner.
-        if manifest.get('isolated_qualification'):
-            from ael.titan_isolated import preflight, completion_request
-            preflight(manifest, consume=False)
-            if op['completion'] != completion_request(manifest):
-                raise ValueError('Completion differs from the admitted immutable request')
-            if type(deadline) not in (int, float) or not math.isfinite(deadline) or deadline <= time.monotonic():
-                raise ValueError('Isolated completion requires the transaction absolute deadline')
     if op and 'isolated_capture' in op:
         from ael.titan_isolated import preflight
         if set(op) != {'isolated_capture'}:
             raise ValueError('Isolated capture cannot combine with control, replay, completion or SAVE')
-        preflight(manifest, consume=False)
+        if not isolated: preflight(manifest, consume=False)
         if type(deadline) not in (int, float) or not math.isfinite(deadline) or deadline <= time.monotonic():
             raise ValueError('Isolated session requires the transaction absolute deadline')
     import serial

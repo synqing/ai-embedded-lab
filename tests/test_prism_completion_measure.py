@@ -217,9 +217,9 @@ def test_isolated_completion_existing_wire_owner_closes_and_retains_failure(tmp_
     op=tmp_path/'operation.json'; op.write_text(json.dumps({'completion':spec}))
     if fault:
         with pytest.raises((completion.Refusal, TimeoutError, KeyboardInterrupt)):
-            native.run_session(manifest,tmp_path,80,op,deadline=80.)
+            native.run_session(manifest,tmp_path,80,op,deadline=80.,operation_sha256=hashlib.sha256(op.read_bytes()).hexdigest())
     else:
-        result=native.run_session(manifest,tmp_path,80,op,deadline=80.)
+        result=native.run_session(manifest,tmp_path,80,op,deadline=80.,operation_sha256=hashlib.sha256(op.read_bytes()).hexdigest())
         assert result['completion']['proxy_budget_met'] is True
     assert len(ports)==1 and ports[0].closed
     assert admissions==[(manifest,False)]
@@ -246,3 +246,40 @@ def test_isolated_completion_invalid_outer_deadline_precedes_wire_owner(tmp_path
     with pytest.raises(ValueError,match='absolute deadline'):
         native.run_session({'isolated_qualification':True},tmp_path,80,op,deadline=deadline)
     forbidden.assert_not_called()
+
+
+@pytest.mark.parametrize('replacement', [
+    {'disconnect_check':{}}, {'fields':{},'save':True},
+    {'completion':{},'save':True}, {'isolated_capture':{'frames':101,'budget_seconds':60}},
+])
+def test_isolated_operation_replacement_cannot_open_control_route(tmp_path, monkeypatch, replacement):
+    import serial
+    from ael import titan_isolated
+    from ael.titan_waveform import digest
+    op=tmp_path/'operation.json';op.write_text(json.dumps(replacement))
+    monkeypatch.setattr(titan_isolated,'preflight',lambda *a,**kw:None)
+    monkeypatch.setattr(titan_isolated,'completion_request',lambda m:None)
+    forbidden=Mock(side_effect=AssertionError('serial touched'));monkeypatch.setattr(serial,'Serial',forbidden)
+    with pytest.raises(ValueError):
+        native.run_session({'isolated_qualification':{'frames':100}},tmp_path,80,op,
+                           deadline=native.time.monotonic()+80,operation_sha256=digest(op.read_bytes()))
+    forbidden.assert_not_called()
+
+
+def test_isolated_operation_digest_is_checked_before_owner(tmp_path, monkeypatch):
+    import serial
+    from ael.titan_waveform import digest
+    op=tmp_path/'operation.json';op.write_text(json.dumps({'isolated_capture':{'frames':100,'budget_seconds':60}}))
+    original=digest(op.read_bytes());op.write_text(json.dumps({'fields':{},'save':True}))
+    forbidden=Mock(side_effect=AssertionError('serial touched'));monkeypatch.setattr(serial,'Serial',forbidden)
+    with pytest.raises(RuntimeError,match='Changed bound artefact'):
+        native.run_session({'isolated_qualification':{'frames':100}},tmp_path,80,op,
+                           deadline=native.time.monotonic()+80,operation_sha256=original)
+    forbidden.assert_not_called()
+
+
+def test_endurance_cannot_drop_isolated_deadline(tmp_path):
+    exchange=Mock(side_effect=AssertionError('endurance reached wire'))
+    with pytest.raises(completion.Refusal,match='Endurance'):
+        completion.execute(exchange,{}, {'kind':'endurance'},tmp_path,{},deadline=80.)
+    exchange.assert_not_called()
