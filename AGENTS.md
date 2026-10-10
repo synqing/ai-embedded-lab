@@ -9,7 +9,7 @@ Project-local notes:
 
 ## SpectraSynq Git publication — 10 October 2026
 
-Captain's publication target is `https://github.com/synqing/ai-embedded-lab.git`
+The configured publication target is `https://github.com/synqing/ai-embedded-lab.git`
 on the existing `master` branch. The original author repository
 `https://github.com/EZ32Inc/ai-embedded-lab.git` is retained as `upstream`.
 Before returning an authentication/access blocker, inspect the actual remote,
