@@ -177,10 +177,26 @@ def test_program_verify_failures(tmp_path,fault):
         isolated.verify_program_log(raw,returncode=code,argv=['rfp','-run','-pv',str(image)],image=image,spans=spans)
 
 
-@pytest.mark.parametrize('failure',[None,'program','capture','recovery','launch_ambiguous','usb_missing','usb_owned'])
-def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,monkeypatch,failure):
+def add_completion(m, tmp, kind='measure'):
+    if kind == 'golden':
+        from test_prism_completion import golden
+        spec = golden(tmp)
+    else:
+        spec = dict(kind=kind, seconds=20, live_source='D', observer_enabled=False)
+    m['isolated_qualification']['completion_request'] = bind(tmp, 'completion.json', spec)
+    scope = isolated._scope(m)
+    reviewed = bind(tmp, 'completion-reviewed.json', {'scope': scope})
+    for key in ('physical_confirmation', 'bootstrap_authority'):
+        replace_record(m, key, tmp, lambda r:r.update(scope=scope, reviewed_request=reviewed))
+    return spec
+
+
+@pytest.mark.parametrize('kind',[None,'golden','measure'])
+@pytest.mark.parametrize('failure',[None,'program','capture','recovery','launch_ambiguous','usb_missing','usb_owned','cancel'])
+def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,monkeypatch,failure,kind):
     from ael import prism_native
     m=admission(tmp_path,monkeypatch)
+    spec = add_completion(m, tmp_path, kind) if kind else None
     real_preflight=isolated.preflight
     monkeypatch.setattr(isolated,'preflight',lambda m,consume=False:real_preflight(m,consume=consume,used_dir=tmp_path/'used'))
     monkeypatch.setenv('K1_RFP_SWD_EXECUTE_OK','1')
@@ -206,13 +222,17 @@ def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,mo
         events.append('capture')
         assert args[0]['port']=='/dev/cu.NEW'
         assert 'deadline' in kwargs
+        operation = json.loads(Path(args[3]).read_text())
+        assert set(operation) == ({'completion'} if kind else {'isolated_capture'})
+        if kind: assert operation['completion'] == spec
         if failure=='capture':raise RuntimeError('injected capture failure')
+        if failure=='cancel':raise KeyboardInterrupt('injected cancellation')
         return {'raw':'TEST ONLY','physical_qualification':False}
     monkeypatch.setattr(isolated.subprocess,'run',run)
     monkeypatch.setattr(prism_native,'run_session',session)
     facts={}
     if failure:
-        with pytest.raises((RuntimeError,TimeoutError)):isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
+        with pytest.raises((RuntimeError,TimeoutError,KeyboardInterrupt)):isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
     else:
         isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
     assert events==(['program','recovery'] if failure in ('program','launch_ambiguous','usb_missing','usb_owned') else ['program','capture','recovery'])
@@ -222,6 +242,47 @@ def test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path,mo
     assert facts['candidate_readback_verified'] == facts['programmed']
     if facts['programmed']:assert facts['candidate_readback_method']=='RFP1.17 -pv target-memory comparison'
     assert (tmp_path/'isolated-transaction.json').is_file()
+    if not failure:
+        assert ('isolated_completion' in facts) is bool(kind)
+
+
+@pytest.mark.parametrize('fault',['hash','altered_scope','mixed','save','endurance','unknown','expired','replay'])
+def test_completion_admission_refuses_before_hardware(tmp_path, monkeypatch, fault):
+    m = admission(tmp_path, monkeypatch)
+    add_completion(m, tmp_path)
+    q = m['isolated_qualification']
+    if fault == 'hash': Path(q['completion_request']['path']).write_text('{}')
+    if fault == 'altered_scope':
+        q['completion_request'] = bind(tmp_path, 'changed-request.json', dict(kind='measure',seconds=1,live_source='A',observer_enabled=True))
+    if fault == 'mixed': q['pattern'] = 2
+    if fault in ('save','endurance','unknown'):
+        spec = json.loads(Path(q['completion_request']['path']).read_text())
+        if fault == 'save': spec['save'] = True
+        else: spec['kind'] = fault
+        q['completion_request'] = bind(tmp_path, 'invalid-request.json', spec)
+    if fault == 'expired':
+        replace_record(m, 'physical_confirmation', tmp_path, lambda r:r.update(observed_unix=700))
+    if fault == 'replay':
+        isolated.preflight(m, consume=True, used_dir=tmp_path/'used')
+        with pytest.raises(RuntimeError, match='already consumed'):
+            isolated.preflight(m, consume=True, used_dir=tmp_path/'used')
+        return
+    monkeypatch.setattr(bench,'validate_manifest',lambda cfg,facts:(m,tmp_path,Path(m['image']['path']),'titan'))
+    forbidden = Mock(side_effect=AssertionError('hardware reached'))
+    monkeypatch.setattr(bench, 'authorise', forbidden)
+    monkeypatch.setattr(bench.subprocess, 'run', forbidden)
+    with pytest.raises((RuntimeError,ValueError)):
+        bench.execute({'action':'bench-trial-qualify-isolated'},SimpleNamespace(logs_dir=tmp_path),{})
+    forbidden.assert_not_called()
+
+
+def test_completion_standing_fixture_preserves_time_and_request_identity(tmp_path, monkeypatch):
+    m = admission(tmp_path, monkeypatch)
+    add_completion(m, tmp_path)
+    standing_fixture(m, tmp_path)
+    assert isolated.preflight(m)['scope']['completion'] == {
+        'kind':'measure', 'request_sha256':m['isolated_qualification']['completion_request']['sha256']}
+    assert json.loads(Path(m['isolated_qualification']['physical_confirmation']['path']).read_text())['observed_unix'] == 1.
 
 
 def test_preflight_refusal_precedes_programmer_and_serial(tmp_path,monkeypatch):

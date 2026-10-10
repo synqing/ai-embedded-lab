@@ -133,7 +133,7 @@ def test_existing_serial_owner_runs_completion_and_refuses_budget_failure(tmp_pa
         def read(self,n):result,self.buffer=self.buffer[:n],self.buffer[n:];return result
     monkeypatch.setattr(serial,'Serial',Port)
     actual_execute=completion.execute
-    monkeypatch.setattr(completion,'execute',lambda ex,m,s,o,i:actual_execute(ex,m,s,o,i,monotonic=bench.clock,pause=bench.pause))
+    monkeypatch.setattr(completion,'execute',lambda ex,m,s,o,i,**kw:actual_execute(ex,m,s,o,i,monotonic=bench.clock,pause=bench.pause,**kw))
     op=tmp_path/'operation.json';op.write_text(json.dumps({'completion':dict(kind='measure',seconds=1,live_source='D',observer_enabled=True)}))
     manifest={'port':'EMULATED-NO-HARDWARE','source_binding_hash':'b'*64}
     if fault:
@@ -144,3 +144,105 @@ def test_existing_serial_owner_runs_completion_and_refuses_budget_failure(tmp_pa
     assert len(ports)==1 and ports[0].closed
     assert not any(opcode in (25,0x50520002) for opcode,_ in bench.calls)
     assert sum(opcode==0x50520001 for opcode,_ in bench.calls)==1
+
+
+@pytest.mark.parametrize('cutoff',[0.,.5,1.])
+def test_measure_respects_outer_deadline_without_shortening_window(tmp_path, cutoff):
+    b = MeasureBench()
+    with pytest.raises(completion.Refusal, match='absolute deadline'):
+        completion.execute(b.exchange, {'source_binding_hash':'b'*64},
+            dict(kind='measure',seconds=1,live_source='D',observer_enabled=False),
+            tmp_path, healthy(), monotonic=b.clock, pause=b.pause, deadline=cutoff)
+    assert b.seconds == 0
+    assert json.loads((tmp_path/'titan-completion.jsonl').read_text().splitlines()[-1])['event'] == 'failure'
+
+
+def test_exchange_expiry_and_cancellation_preserve_first_failure(tmp_path):
+    for fault in ('expiry', 'cancel'):
+        out = tmp_path/fault; out.mkdir()
+        b = MeasureBench()
+        def exchange(op, payload=b''):
+            if op == completion.COST:
+                if fault == 'cancel': raise KeyboardInterrupt('cancelled cost response')
+                b.seconds = 80.
+            return b.exchange(op, payload)
+        with pytest.raises((completion.Refusal, KeyboardInterrupt)):
+            completion.execute(exchange, {'source_binding_hash':'b'*64},
+                dict(kind='measure',seconds=1,live_source='D',observer_enabled=False),
+                out, healthy(), monotonic=b.clock, pause=b.pause, deadline=80.)
+        rows = [json.loads(x) for x in (out/'titan-completion.jsonl').read_text().splitlines()]
+        assert rows[-1]['event'] == 'failure'
+        assert not any(row['event'] == 'result' for row in rows)
+
+
+@pytest.mark.parametrize('fault', ['startup', 'partial', 'cancel', 'expiry', None])
+def test_isolated_completion_existing_wire_owner_closes_and_retains_failure(tmp_path, monkeypatch, fault):
+    import base64
+    import hashlib
+    import serial
+    from ael import titan_isolated
+    bench = MeasureBench(); ports = []; admissions = []
+    spec = dict(kind='measure', seconds=1, live_source='D', observer_enabled=False)
+    request = tmp_path/'request.json'; request.write_text(json.dumps(spec))
+    manifest = dict(port='EMULATED-NO-HARDWARE', source_binding_hash='b'*64,
+        isolated_qualification={'completion_request': {'path':str(request),
+            'sha256':hashlib.sha256(request.read_bytes()).hexdigest()}})
+    monkeypatch.setattr(titan_isolated, 'preflight',
+        lambda m, consume=False: admissions.append((m, consume)))
+    monkeypatch.setattr(native.time, 'monotonic', bench.clock)
+    actual_execute = completion.execute
+    monkeypatch.setattr(completion, 'execute', lambda ex,m,s,o,i,**kw:
+        actual_execute(ex,m,s,o,i,monotonic=bench.clock,pause=bench.pause,**kw))
+    class Port:
+        def __init__(self, **kwargs): self.buffer=b''; self.closed=False; ports.append(self)
+        def open(self): pass
+        def close(self): self.closed=True
+        def write(self, packet):
+            self.opcode, seq, cookie, size, crc, version, hcrc = struct.unpack_from('<7I', packet, 4)
+            assert zlib.crc32(packet[:28]) == hcrc and zlib.crc32(packet[32:]) == crc
+            body = bench.exchange(self.opcode, packet[32:])
+            if self.opcode == 1 and fault == 'startup':
+                info=json.loads(body); info['output_timeouts']=1; body=json.dumps(info).encode()
+            header=b'K1R1'+struct.pack('<6I',0,seq,cookie,len(body),0,zlib.crc32(body))
+            self.buffer=header+struct.pack('<I',zlib.crc32(header))+body
+            return len(packet)
+        def read(self, n):
+            if self.opcode == completion.PREAMBLE and n != 32 and fault in ('partial','cancel','expiry'):
+                if fault == 'cancel': raise KeyboardInterrupt('cancelled body')
+                result,self.buffer=self.buffer[:1],self.buffer[1:]
+                bench.seconds += 4 if fault == 'partial' else 80
+                return result
+            result,self.buffer=self.buffer[:n],self.buffer[n:]; return result
+    monkeypatch.setattr(serial, 'Serial', Port)
+    op=tmp_path/'operation.json'; op.write_text(json.dumps({'completion':spec}))
+    if fault:
+        with pytest.raises((completion.Refusal, TimeoutError, KeyboardInterrupt)):
+            native.run_session(manifest,tmp_path,80,op,deadline=80.)
+    else:
+        result=native.run_session(manifest,tmp_path,80,op,deadline=80.)
+        assert result['completion']['proxy_budget_met'] is True
+    assert len(ports)==1 and ports[0].closed
+    assert admissions==[(manifest,False)]
+    rows=[json.loads(s) for s in (tmp_path/'titan-native.jsonl').read_text().splitlines()]
+    assert rows[0]['opcode']==1 and rows[0]['response_complete']
+    assert not any(opcode in (25,0x50520002) for opcode,_ in bench.calls)
+    if fault in ('partial','cancel','expiry'):
+        assert rows[-1]['opcode']==completion.PREAMBLE and not rows[-1]['response_complete']
+        assert rows[-1]['error']
+        assert len(base64.b64decode(rows[-1]['response'])) == (32 if fault=='cancel' else 33)
+    if fault=='startup': assert len(bench.calls)==2  # INFO and bind only, no computation stimulus.
+
+
+@pytest.mark.parametrize('deadline', [None, 0, True, float('nan'), float('inf')])
+def test_isolated_completion_invalid_outer_deadline_precedes_wire_owner(tmp_path, monkeypatch, deadline):
+    import serial
+    from ael import titan_isolated
+    spec=dict(kind='measure',seconds=1,live_source='D',observer_enabled=False)
+    op=tmp_path/'op.json'; op.write_text(json.dumps({'completion':spec}))
+    monkeypatch.setattr(titan_isolated,'preflight',lambda *a,**kw:None)
+    monkeypatch.setattr(titan_isolated,'completion_request',lambda m:spec)
+    forbidden=Mock(side_effect=AssertionError('serial touched'))
+    monkeypatch.setattr(serial,'Serial',forbidden)
+    with pytest.raises(ValueError,match='absolute deadline'):
+        native.run_session({'isolated_qualification':True},tmp_path,80,op,deadline=deadline)
+    forbidden.assert_not_called()

@@ -34,6 +34,33 @@ computation work. Historical sections below describe their dated checkpoints.
 
 ## Historical initial implementation
 
+### Revision2 isolated target computation — 10 October continuation
+
+The existing isolated gateway now binds exactly one golden or measure request by
+file hash and includes its kind/hash in the immutable operation scope. Raw capture
+manifests retain their prior scope. The same owner, programming lock, 80-second
+candidate cutoff and conditional donor recovery execute the request; no separate
+serial or programmer route was introduced. Mixed requests, unknown fields, SAVE,
+endurance, tampering and consumed authority are refused.
+
+The absolute deadline reaches the existing completion consumer and its framed
+exchanges. A full measurement window must fit; it is never silently shortened.
+Expired or non-finite deadlines fail before opening CDC. Partial wire responses,
+cancellation and first failure logs are retained while the sole owner closes.
+Startup faults remain refusals; no output counter or acceptance limit was changed.
+Candidate firmware and the successful 100-pair raw baseline are unchanged.
+
+Actual affected host suite: **381 passed, 12 existing skips**. The native
+workflow verification receipt is
+`/Users/spectrasynq/.local/state/spectrasynq-agents/verification/917fc5e04aa1a3dd3192529fce23fc2272bca5d308462dddcbdb18d96518c474.json`
+(SHA256 `5309f2ccc51b6393859957129e84d05176aa99034b751b7956fd964458c77753`).
+Tests include the real framed serial consumer against an explicit emulator,
+startup refusal, partial response, deadline during exchange, cancellation,
+request/scope corruption, replay and conditional recovery. The diff and consumer
+logs were inspected. Images are N/A for this host transport change.
+This is host execution evidence; target golden/cost results and electrical release
+remain separate device requirements under the full 94-task Revision2 plan.
+
 The prior AEL code provided a media player and due-hop arithmetic but did not send
 drive records. Commit `cbe3c14` adds the actual CRC-framed native transport within
 the existing single-owner `bench-trial-control` session. UID/schema/source/boot,

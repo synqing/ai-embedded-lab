@@ -139,7 +139,7 @@ def require_healthy(info, before=None):
                 raise Refusal('Native counter fault: '+key)
 
 
-def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic, pause=time.sleep):
+def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic, pause=time.sleep, deadline=None):
     """Caller holds the one AEL lock and has bound UID/schema/source/boot."""
     if isinstance(spec, dict) and spec.get('kind') == 'endurance':
         from ael.prism_endurance import execute as execute_endurance
@@ -148,6 +148,20 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
     require_healthy(initial)
     boot = initial['boot_id']
     start = monotonic()
+    cutoff = start + 120
+    if deadline is not None:
+        if type(deadline) not in (int, float) or not math.isfinite(deadline):
+            raise Refusal('Invalid completion absolute deadline')
+        cutoff = min(cutoff, deadline)
+    def check_deadline():
+        if monotonic() >= cutoff:
+            raise Refusal('Completion absolute deadline exhausted; preserve donor recovery reserve')
+    original_exchange = exchange
+    def exchange(opcode, payload=b''):
+        check_deadline()
+        response = original_exchange(opcode, payload)
+        check_deadline()
+        return response
     host_boot = host_boot_session()
     path = Path(out)/'titan-completion.jsonl'
     def current():
@@ -176,8 +190,7 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
                 command(0,0)
                 errors={'d_raw':0.,'d_level':0.}
                 for i,expected in enumerate(prepared['expected']):
-                    if monotonic()-start>120:
-                        raise Refusal('Golden acquisition exceeded120s')
+                    check_deadline()
                     actual=command(1,i,prepared['pcm_bytes'][i*128:(i+1)*128])
                     record({'event':'golden','hop':i,'actual':actual,'expected':expected})
                     for field in errors:
@@ -208,7 +221,10 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
                 before=[decode_cost(exchange(COST,struct.pack('<II',boot,i)),i) for i in range(len(STAGES))]
                 record({'event':'cost_before','data':before})
                 end=monotonic()+prepared['seconds'];samples=0
+                if end >= cutoff:
+                    raise Refusal('Full measurement window cannot fit completion absolute deadline')
                 while monotonic()<end:
+                    check_deadline()
                     info=current();status=json.loads(exchange(0x50524403,struct.pack('<I',boot)))
                     if status.get('active') or status.get('live_source') != (0 if prepared['live_source']=='A' else 1):
                         raise Refusal('Replay revived or live source changed')
@@ -216,7 +232,8 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
                     if snap['epoch']!=first_snapshot['epoch'] or snap['rejected_hops']!=first_snapshot['rejected_hops'] or tx['wire_reset_completions']<first_tx['wire_reset_completions']:
                         raise Refusal('Capture gap, rejected hop or transmitter counter reset')
                     record({'event':'health','identity':info,'drive':status,'snapshot':snap,'transmitter':tx});samples+=1
-                    pause(min(.25,max(0,end-monotonic())))
+                    pause(min(.25,max(0,end-monotonic()),max(0,cutoff-monotonic())))
+                    check_deadline()
                 after=[decode_cost(exchange(COST,struct.pack('<II',boot,i)),i) for i in range(len(STAGES))]
                 record({'event':'cost_after','data':after})
                 final_snapshot,final_tx=progress()
@@ -241,7 +258,7 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
             result['memory_after']=final_preamble
             result['final_identity']=current();record({'event':'result','data':result})
             return result
-        except Exception as exc:
+        except BaseException as exc:
             record({'event':'failure','message':str(exc)})
             raise
 

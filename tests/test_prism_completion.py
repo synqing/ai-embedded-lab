@@ -111,3 +111,24 @@ def test_ratings_never_fabricate_missing_votes():
     rows[2]['severe_artifact_regression']=True;assert advancement(rows)['decision']=='RETAIN_DONOR'
     rows[2]['severe_artifact_regression']=False;rows[1]['musical_relationship']='tie';assert advancement(rows)['decision']=='RETAIN_DONOR'
     rows[0]['compared_against']='A';assert advancement(rows)['decision']=='AWAITING_OWNER_REVIEW'
+
+
+def test_golden_outer_deadline_retains_rows_and_stops_next_exchange(tmp_path):
+    spec = golden(tmp_path)
+    build = tmp_path/'build.json'; build.write_text(json.dumps({'inputs':{'lane':{'platform/titan/percussion_proxy.h':'a'*64}}}))
+    clock = [0.]; hops = []
+    def exchange(op,p=b''):
+        if op == PREAMBLE: return b'{}'
+        if op == PROBE:
+            boot,action,trial,seq,rate,n = struct.unpack_from('<6I',p)
+            if action == 1:
+                hops.append(seq); clock[0] += .6
+            return struct.pack('<4I8f',trial,seq+(action==1),action!=2,12800,*([0.]*8))
+        raise AssertionError('Unexpected exchange')
+    with pytest.raises(Refusal, match='absolute deadline'):
+        execute(exchange, {'build_receipt':binding(build)}, spec, tmp_path, info(),
+                monotonic=lambda:clock[0], deadline=1.)
+    rows = [json.loads(x) for x in (tmp_path/'titan-completion.jsonl').read_text().splitlines()]
+    assert hops == [0,1]
+    assert [row['hop'] for row in rows if row['event']=='golden'] == [0]
+    assert rows[-1]['event'] == 'failure'

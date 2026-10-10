@@ -40,6 +40,7 @@ def _fresh(value, age=120):
 
 def _scope(m):
     from ael.adapters.prism_bench_trial import TITAN_RECOVERY_HEX_SHA256
+    completion = completion_request(m)
     return {"identity": UID, "image_sha256":m["image"]["sha256"],
             "source_binding_hash":m["source_binding_hash"], "source_commit":m["source_commit"],
             "build_receipt_sha256":m["build_receipt"]["sha256"],
@@ -48,8 +49,29 @@ def _scope(m):
             "operation":OPERATION, "frames":m["isolated_qualification"]["frames"],
             **({"backend":DIRECT_BACKEND,"capture_schema":3} if m["isolated_qualification"].get("backend") == DIRECT_BACKEND else {}),
             "maximum_interruption_seconds":120,
+            **({"completion": {"kind": completion["kind"],
+                                "request_sha256": m["isolated_qualification"]["completion_request"]["sha256"]}}
+               if completion is not None else {}),
             **({"pattern":m["isolated_qualification"]["pattern"]} if "pattern" in m["isolated_qualification"] else {}),
             **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}
+
+
+def completion_request(m):
+    """Validate one immutable computation request without acquiring hardware."""
+    q = m.get("isolated_qualification", {})
+    if "completion_request" not in q:
+        return None
+    require(not any(k in q for k in ("pattern", "constant_timer_diagnostic")),
+            "Completion cannot combine with raw diagnostic stimulus")
+    spec = json.loads(bound(q["completion_request"]))
+    require(isinstance(spec, dict), "Completion request must be an object")
+    keys = {"golden": {"kind", "trial", "pcm", "reference", "reference_pcm_sha256", "proxy_source_sha256"},
+            "measure": {"kind", "seconds", "live_source", "observer_enabled"}}
+    require(spec.get("kind") in keys and set(spec) == keys[spec["kind"]],
+            "Isolated completion requires exactly one golden or measure request")
+    from ael.prism_completion import prepare
+    prepare(spec)
+    return spec
 
 
 def operator_record(row, schema, scope, *, physical_freshness=False):
@@ -297,13 +319,15 @@ def execute(m, source, image, ctx, facts):
         require_interface_unowned(resolved["device"],capture_deadline)
         remaining=capture_deadline-time.monotonic()
         require(remaining >= 1,"Candidate programming exhausted bounded interruption")
-        operation=write_json("isolated-operation.json",{"isolated_capture":{
+        completion = completion_request(m)
+        operation=write_json("isolated-operation.json", {"completion": completion} if completion is not None else {"isolated_capture":{
             "frames":m["isolated_qualification"]["frames"],"budget_seconds":min(60,remaining),
             **({"pattern":m["isolated_qualification"]["pattern"]} if "pattern" in m["isolated_qualification"] else {}),
             **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}})
         runtime=dict(m,port=resolved["device"],isolated_programming_event=event,
                      isolated_fixture_id=pre["fixture_id"])
-        facts["isolated_capture"]=run_session(runtime,logs,80,operation["path"],deadline=capture_deadline)
+        result=run_session(runtime,logs,80,operation["path"],deadline=capture_deadline)
+        facts["isolated_completion" if completion is not None else "isolated_capture"]=result
         require(time.monotonic() <= capture_deadline,"Capture exceeded recovery reserve")
         facts["candidate_programming_event"]=event
         facts["physical_qualification"]=False

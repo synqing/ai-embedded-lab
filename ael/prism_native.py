@@ -4,6 +4,7 @@ No donor telemetry, scanning, reset, retry or implicit serial-owner takeover.
 """
 import base64
 import json
+import math
 from pathlib import Path
 import struct
 import subprocess
@@ -117,15 +118,22 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None):
         prepare(op['disconnect_check'])
     if op and 'completion' in op:
         from ael.prism_completion import prepare
-        if op.get('save') or 'evaluation_drive' in op or 'fields' in op:
+        if set(op) != {'completion'}:
             raise ValueError('Completion is session-only, mutually exclusive with drive and control PATCH')
         prepare(op['completion'])  # Before importing/opening a serial owner.
+        if manifest.get('isolated_qualification'):
+            from ael.titan_isolated import preflight, completion_request
+            preflight(manifest, consume=False)
+            if op['completion'] != completion_request(manifest):
+                raise ValueError('Completion differs from the admitted immutable request')
+            if type(deadline) not in (int, float) or not math.isfinite(deadline) or deadline <= time.monotonic():
+                raise ValueError('Isolated completion requires the transaction absolute deadline')
     if op and 'isolated_capture' in op:
         from ael.titan_isolated import preflight
         if set(op) != {'isolated_capture'}:
             raise ValueError('Isolated capture cannot combine with control, replay, completion or SAVE')
         preflight(manifest, consume=False)
-        if deadline is None or deadline <= time.monotonic():
+        if type(deadline) not in (int, float) or not math.isfinite(deadline) or deadline <= time.monotonic():
             raise ValueError('Isolated session requires the transaction absolute deadline')
     import serial
     # Caller holds AEL's hardware transaction lock and validates sole ownership.
@@ -219,7 +227,8 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None):
                     return result
                 if 'completion' in op:
                     from ael.prism_completion import execute
-                    result['completion'] = execute(exchange, manifest, op['completion'], out, info)
+                    result['completion'] = execute(exchange, manifest, op['completion'], out, info,
+                                                   **({'deadline': deadline} if deadline is not None else {}))
                     measured = result['completion']
                     if measured.get('kind') == 'measure' and not all(measured.get(k) is True for k in
                             ('proxy_budget_met', 'hop_deadline_met', 'render_deadline_met')):
