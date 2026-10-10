@@ -690,3 +690,31 @@ updating telemetry (`recovered-donor-confirmed/handoff-info.json`,
 `recovered-broker-live.json`). Orange harness remains OFF. No optical restoration
 claim. Short acquisition FAIL; complete paired frame and100-pair campaign
 NOT TESTED; zero accepted complete pairs overall. All failed raw records retained.
+
+### Attempt19 — source/receiver discrepancy isolated
+
+Firmware commit `e2a2e99` adds an immutable first-HIGH-fault witness before cleanup,
+cleared only at next ARM. No pin-driving or acceptance changes. Build and JSON
+writer checks passed. Candidate HEX
+`01087fa563e342ee1059a75239fe605987c7efb0b57924459b46375f07029a95`;
+source profile `8736b2c6340a4b8f1d76cfd01814a805b17eeb37078a660dd48ca062196909c8`.
+Run: `_scratch/titan-completion-20261008/isolated-direct-idle-witness`.
+
+Exact native boot19 and readiness succeeded; epoch1 again failed HIGH before
+stimulus. Frozen witness: P601=LOW, P604=LOW, P603=LOW, P714=HIGH; all PinRead
+return codes0. Both output GPT6/8 GTCR0, owner pending=false/ready=true. Reads
+span2260 CPU cycles at1GHz (sequential, not an atomic electrical measurement).
+This contradicts the expected connected P604-to-P714 idle path. It supports a
+receiver connection/mapping/contact/bias problem, not a proven DMA service failure
+or proof of which physical mistake exists. No new waveform was emitted.
+The next required physical evidence is a clear view of actual header endpoints;
+no repeated programming, tolerance widening or receiver output drive is justified.
+
+Donor program/verify completed in33.140s internal transaction time. Fresh INFO
+identified full becb0186 donor; broker restored. Saved paired broker observations
+show audio hops4420→5024. Orange harness remains OFF; no optical restoration.
+Short capture FAIL; full frame/campaign NOT TESTED, accepted full pairs remain0.
+Total candidate-programming transactions19. This physical receiver discrepancy
+blocks the current capture experiment, not all later independent computation.
+The transmitter640ns budget and engine-exit decision remain open; this pre-stimulus
+failure does not supply payload/service evidence for an engine verdict.
