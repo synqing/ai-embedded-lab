@@ -17,7 +17,7 @@ import sys
 import time
 
 from ael.titan_waveform import UID, bound, digest, require
-from ael.titan_loopback import BACKEND
+from ael.titan_loopback import BACKEND, SPLIT_BACKEND
 
 JUMPERS = [["U18.7/P601", "U18.33/P603"], ["U18.12/P604", "U18.35/P602"]]
 EXCLUSION = ["P601-product-DIN", "P604-product-DIN"]
@@ -46,6 +46,7 @@ def _scope(m):
             "jumpers":JUMPERS, "electrically_excluded":EXCLUSION,
             "operation":OPERATION, "frames":m["isolated_qualification"]["frames"],
             "maximum_interruption_seconds":120,
+            **({"pattern":m["isolated_qualification"]["pattern"]} if "pattern" in m["isolated_qualification"] else {}),
             **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}
 
 
@@ -93,13 +94,16 @@ def operator_record(row, schema, scope, *, physical_freshness=False):
 
 def preflight(m, *, consume=False, used_dir=None):
     q = m.get("isolated_qualification",{})
-    require(q.get("operation") == OPERATION and q.get("backend") == BACKEND,
+    require(q.get("operation") == OPERATION and q.get("backend") in (BACKEND,SPLIT_BACKEND),
             "BLOCKED_CAPTURE_CAPABILITY: unsupported isolated backend")
     require(m.get("identity") == UID and m.get("target") == "titan-native", "Wrong isolated target")
     require(type(q.get("frames")) is int and 100 <= q["frames"] <= 120, "Need100..120 bounded frames")
     require(q.get("maximum_interruption_seconds") == 120, "Unbounded isolated interruption")
     diagnostic=q.get("constant_timer_diagnostic")
     require(diagnostic is None or type(diagnostic) is int and diagnostic in (1,2), "Unknown constant timer diagnostic")
+    pattern=q.get("pattern")
+    require(pattern is None or type(pattern) is int and 0 <= pattern < 120,"Invalid scoped pattern")
+    require(pattern is None or diagnostic is None,"Cannot combine pattern and constant diagnostic")
     scope = _scope(m)
     fixture = operator_record(q["physical_confirmation"], "prism.titan.physical-exclusion.v1", scope,
                               physical_freshness=True)
@@ -293,6 +297,7 @@ def execute(m, source, image, ctx, facts):
         require(remaining >= 1,"Candidate programming exhausted bounded interruption")
         operation=write_json("isolated-operation.json",{"isolated_capture":{
             "frames":m["isolated_qualification"]["frames"],"budget_seconds":min(60,remaining),
+            **({"pattern":m["isolated_qualification"]["pattern"]} if "pattern" in m["isolated_qualification"] else {}),
             **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}})
         runtime=dict(m,port=resolved["device"],isolated_programming_event=event,
                      isolated_fixture_id=pre["fixture_id"])

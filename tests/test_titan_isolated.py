@@ -338,3 +338,19 @@ def test_constant_diagnostic_changes_bound_operation_scope(tmp_path,monkeypatch)
     assert isolated._scope(m)['constant_timer_diagnostic']==1
     with pytest.raises(RuntimeError,match='exact isolated scope'):
         isolated.preflight(m)
+
+
+def test_split_pattern_preflight_binds_exact_scoped_pattern(tmp_path,monkeypatch):
+    m=admission(tmp_path,monkeypatch)
+    m['isolated_qualification'].update(backend=isolated.SPLIT_BACKEND,pattern=2)
+    assert isolated._scope(m)['pattern']==2
+    with pytest.raises(RuntimeError,match='exact isolated scope'):
+        isolated.preflight(m)
+
+
+@pytest.mark.parametrize('pattern',[-1,120,True,'2'])
+def test_invalid_split_pattern_refused_before_authority(tmp_path,monkeypatch,pattern):
+    m=admission(tmp_path,monkeypatch)
+    m['isolated_qualification'].update(backend=isolated.SPLIT_BACKEND,pattern=pattern)
+    with pytest.raises(RuntimeError,match='Invalid scoped pattern'):
+        isolated.preflight(m)

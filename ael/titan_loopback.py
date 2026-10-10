@@ -17,6 +17,7 @@ import time
 from ael.titan_waveform import REQUIREMENTS, UID, bound, diagnostic_payload, digest, require
 
 BACKEND = "titan-gpt7-external-loopback-v1"
+SPLIT_BACKEND = "titan-split-edge-loopback-v2"
 ARM, STATUS, DRAIN, CANCEL = range(0x50524601, 0x50524605)
 CAPACITY, EDGE_COUNT, MIN_SOF_ROWS = 7744, 7680, 128
 USB_SOURCE = {
@@ -42,17 +43,141 @@ STATUS_FIELDS = (
 )
 
 
+SPLIT_CAPACITY = 3872
+SPLIT_NAMES = ("a_rise", "a_fall", "b_rise", "b_fall")
+SPLIT_FIELDS = tuple(f"{field}_{name}" for field in
+    ("words", "remaining", "dmsts", "dmtmd", "event", "dmint") for name in SPLIT_NAMES) + (
+    "cursor_a_rise", "cursor_a_fall", "cursor_b_rise", "cursor_b_fall", "cursor_split_sof",
+    "gpt4_gtcr", "gpt4_gticasr", "gpt4_gticbsr", "gpt4_gtior", "gpt4_gtber", "gpt4_gtst",
+    "elc_g", "elc_h", "irq27_cr", "irq28_cr", "p603_pfs", "p602_pfs", "ccr", "mpu", "split_capability",
+) + tuple(f"{field}_{name}" for field in ("source", "destination", "buffer", "expected_source")
+          for name in SPLIT_NAMES) + ("gpt4_initial", "gpt7_initial", "start_mask", "reserved")
+
+
+def stream_counts(s):
+    return ([s["words_"+n] for n in SPLIT_NAMES] if s["version"] == 2 else
+            [s["words_a"], s["words_b"]]) + [s["sof_rows"]*4]
+
+
+def verify_split_configuration(s, *, complete=False, readiness=False):
+    require(s["split_capability"] == 1 and s["reserved"] == 0, "Unknown split capture capability")
+    require(s["ccr"] & (1 << 16) == 0 and s["mpu"] == 0,"Split cache/MPU configuration mismatch")
+    if not readiness:
+        require(s["gticasr"] == 0xc00 and s["gticbsr"] == 0xc000 and
+                s["gpt4_gticasr"] == 1 << 20 and s["gpt4_gticbsr"] == 1 << 21,
+                "Split polarity capture selector mismatch")
+        require((s["elc_e"],s["elc_f"],s["elc_g"],s["elc_h"]) == (0x1c,0x1d,0x1c0,0x1c1) and
+                s["gpt2_gtupsr"] == (1 << 20 | 1 << 22) and
+                s["gpt3_gtupsr"] == (1 << 21 | 1 << 23), "Split counter/event mapping mismatch")
+        require(s["gpt4_gtcr"] == s["gpt7_gtcr"] == s["gpt2_gtcr"] == s["gpt3_gtcr"] == 1 and
+                s["gpt4_gtior"] == s["gpt4_gtber"] == s["gtior"] == s["gtber"] == 0,
+                "Split timer configuration mismatch")
+        require(s["p603_pfs"] & ~2 == s["p602_pfs"] & ~2 == 0x03014000,
+                "Split physical pin configuration mismatch")
+        require(s["irq27_cr"] == s["irq28_cr"] == 1, "Split IRQ configuration mismatch")
+        require(s["gpt4_initial"] == s["gpt7_initial"] == 0 and s["start_mask"] == 0x90,
+                "Split timers were not synchronised")
+    sources=(0x4032244c,0x4032274c,0x40322450,0x40322750)
+    buffers=[s["buffer_"+n] for n in SPLIT_NAMES]
+    require(all(abs(a-b) >= 4*SPLIT_CAPACITY for i,a in enumerate(buffers) for b in buffers[i+1:]),
+            "Overlapping split DMA buffers")
+    for name,event,source in zip(SPLIT_NAMES,(0x1a5,0x1c0,0x1a6,0x1c1),sources):
+        require(s["dmtmd_"+name] == 0x2201 and s["dmint_"+name] == 0 and
+                s["event_"+name] == event, "Split DMA ownership mismatch: "+name)
+        require(s["source_"+name] == s["expected_source_"+name] == source and
+                s["source_"+name] != 0 and s["buffer_"+name] != 0,
+                "Split DMA address mismatch: "+name)
+        require(s["destination_"+name] == s["buffer_"+name] + 4*s["words_"+name],
+                "Split DMA destination/count mismatch: "+name)
+        require(s["remaining_"+name] + s["words_"+name] == SPLIT_CAPACITY,
+                "Split DMA remaining/count mismatch: "+name)
+        if complete:
+            require(s["dmsts_"+name] == 0, "Split DMA not quiescent: "+name)
+
+
+def verify_split_epoch(s, lane_raw, sof_raw, *, pattern, pulses=3840, diagnostic_profile=2):
+    """Ordered digital consistency only; IRQ-to-ELC offset is not physical metrology."""
+    require(s["state"] == 6 and s["fault"] == s["first_fsp_error"] == 0,
+            "Split loopback did not complete cleanly")
+    require(s["pattern"] == pattern, "Wrong diagnostic frame index")
+    verify_split_configuration(s, complete=True)
+    require(s["gtclkcr"] == 0 and s["nominal_gpt_hz"] == 300000000 and
+            s["nominal_pclkd_hz"] == 250000000 and s["gptckcr"] == 6 and s["gptckdivcr"] == 1,
+            "Unreviewed split capture clock configuration")
+    require(len(lane_raw) == 4, "Missing split polarity stream")
+    require(s["configuration_low"] == s["initial_low"] == s["final_low"] == 3 and
+            s["recording"] == 1, "Split capture LOW/recording evidence missing")
+    require(s["gpt4_gtst"] == s["gpt7_gtst"] == 0x8003 and
+            s["gpt2_gtst"] == s["gpt3_gtst"] == 0x8000, "Split capture overflow/flags")
+    require(s["edges_a"] == s["edges_b"] == s["words_a"] == s["words_b"] == 2*pulses,
+            "Missing/extra independent edge count")
+    streams=[]
+    for name,raw in zip(SPLIT_NAMES,lane_raw):
+        require(s["words_"+name] == pulses, "Missing/extra polarity edges: "+name)
+        ticks=[(tick-s["leading_begin"]) & 0xffffffff for tick in parse_words(raw,pulses)]
+        for index,(a,b) in enumerate(zip(ticks,ticks[1:])):
+            require(b>a, f"{name} first nonmonotonic/duplicate/wrap at pulse {index+1}: {a}, {b}")
+        streams.append(ticks)
+    period=3000 if pulses==128 and diagnostic_profile==1 else 390
+    hashes=[]; widths=[]
+    for lane in (0,1):
+        rises,falls=streams[2*lane:2*lane+2]
+        require(((s["leading_end"]-s["leading_begin"]) & 0xffffffff) <= rises[0] and
+                falls[-1] <= ((s["trailing_begin"]-s["leading_begin"]) & 0xffffffff) < 0x80000000,
+                f"Lane {lane} first/last edge outside frame")
+        expected=diagnostic_payload(pattern,lane) if pulses==3840 else bytes(pulses//8)
+        payload=bytearray(pulses//8); lane_widths=[]
+        for bit,(rise,fall) in enumerate(zip(rises,falls)):
+            require(rise < fall and (bit==pulses-1 or fall < rises[bit+1]),
+                    f"Lane {lane} first rise/fall/next-rise mismatch at bit {bit}: {rise}, {fall}")
+            high=fall-rise; lane_widths.append(high)
+            if pulses==128 and diagnostic_profile==1:
+                require(high==1500,f"Lane {lane} first slow pulse width mismatch at bit {bit}: {high}")
+                value=0
+            else:
+                value=int(high>138) # Frozen midpoint of 78/198; no fitted offset/tolerance.
+            if expected is not None:
+                wanted=(expected[bit//8] >> (7-bit%8)) & 1
+                require(value==wanted, f"Lane {lane} first payload mismatch at bit {bit}: high_ticks={high}, expected={wanted}")
+            payload[bit//8] |= value << (7-bit%8)
+            if bit+1<pulses:
+                require(rises[bit+1]-rise == period, f"Lane {lane} first rising period mismatch at bit {bit}")
+                if expected is not None:
+                    next_value=(expected[(bit+1)//8] >> (7-(bit+1)%8)) & 1
+                    expected_delta=period+120*(next_value-value)
+                    require(falls[bit+1]-fall == expected_delta,
+                            f"Lane {lane} first falling period mismatch at bit {bit}: observed={falls[bit+1]-fall}, expected={expected_delta}")
+        hashes.append(digest(payload)); widths.append({"minimum":min(lane_widths),"maximum":max(lane_widths),
+            "first":lane_widths[0],"last":lane_widths[-1]})
+    timing={"status":"UNQUALIFIED_PIN_TO_CAPTURE_ERROR"}
+    try:
+        words=parse_words(sof_raw,s["sof_rows"]*4)
+        timing["calibration"]=calibrate([words[i:i+4] for i in range(0,len(words),4)])
+    except RuntimeError as exc:
+        timing["calibration_error"]=str(exc)
+    return {"epoch":s["epoch"],"pattern":pattern,"bits_each":pulses,"payload_sha256":hashes,
+            "raw_capture_consistent":True,"physical_qualification":False,"measured_waveform_pass":False,
+            "timing_qualification":"UNQUALIFIED_PIN_TO_CAPTURE_ERROR","timing":timing,
+            "observed_high_ticks":widths,"rise_to_fall_offset":"UNBOUNDED_IRQ_ELC_VS_DIRECT_CAPTURE",
+            "digital_decision_threshold_ticks":138}
+
+
 def parse_status(raw, boot, epoch):
-    require(len(raw) == 256, "Loopback status must contain exactly64 words")
-    words = struct.unpack("<64I", raw)
-    require(words[0] == 1 and words[1:3] == (boot, epoch), "Stale loopback version/boot/epoch")
+    require(len(raw) in (256,512), "Loopback status must contain exactly 64 or 128 words")
+    words = struct.unpack("<"+"I"*(len(raw)//4), raw)
+    require(words[0] in (1,2) and words[1:3] == (boot,epoch), "Stale loopback version/boot/epoch")
+    require(len(words) == (64 if words[0] == 1 else 128), "Status version/length mismatch")
     require(words[63] == 0, "Unknown loopback status extension")
-    status = dict(zip(STATUS_FIELDS, words))
+    status = dict(zip(STATUS_FIELDS,words[:63]))
+    if words[0] == 2:
+        status.update(zip(SPLIT_FIELDS,words[64:]))
     require(status["state"] <= 8, "Unknown loopback state")
-    require(status["capacity"] == CAPACITY, "Unexpected capture capacity")
+    capacity=CAPACITY if words[0] == 1 else SPLIT_CAPACITY
+    require(status["capacity"] == capacity, "Unexpected capture capacity")
     require(status["sof_rows"] <= 256, "Oversized SOF capture")
-    require(all(status[k] <= CAPACITY for k in ("words_a", "words_b", "remaining_a", "remaining_b")),
-            "Oversized edge capture")
+    keys=("words_a","words_b","remaining_a","remaining_b") if words[0]==1 else tuple(
+        field+"_"+name for field in ("words","remaining") for name in SPLIT_NAMES)
+    require(all(status[k] <= capacity for k in keys), "Oversized edge capture")
     return status
 
 
@@ -126,6 +251,8 @@ def verify_epoch(status_raw, lane_raw, sof_raw, *, boot, epoch, pattern,
     them or reading a purported bound from an acquisition manifest.
     """
     s = parse_status(status_raw, boot, epoch)
+    if s["version"] == 2:
+        return verify_split_epoch(s,lane_raw,sof_raw,pattern=pattern)
     require(s["state"] == 6 and s["fault"] == s["first_fsp_error"] == 0,
             "Loopback did not complete cleanly")
     require(s["pattern"] == pattern and 0 <= pattern < 120, "Wrong diagnostic frame index")
@@ -208,7 +335,7 @@ def verify_epoch(status_raw, lane_raw, sof_raw, *, boot, epoch, pattern,
 def verify_acquisition(acquisition, candidate):
     """Re-read original segmented raw files; never trust saved verdict fields."""
     a=acquisition
-    require(a.get("schema") == "prism.titan.loopback-acquisition.v1" and a.get("backend") == BACKEND,
+    require(a.get("schema") == "prism.titan.loopback-acquisition.v1" and a.get("backend") in (BACKEND,SPLIT_BACKEND),
             "Unknown segmented acquisition schema/backend")
     for field,value in (("image_sha256",candidate["image"]["sha256"]),
                         ("source_commit",candidate["source_commit"]),
@@ -238,21 +365,46 @@ def verify_acquisition(acquisition, candidate):
     image=bound_file(candidate["image"])
     verify_program_log(bound(event["programmer_log"]),returncode=event["returncode"],argv=event["argv"],
                        image=image,spans=hex_spans(image))
+    if a["backend"] == SPLIT_BACKEND:
+        require(a.get("scope") == "frozen-campaign","Diagnostic is not the frozen campaign")
+        audio=a["audio_observations"]
+        observations=[json.loads(bound(audio[name])) for name in
+            ("initial-info.json","final-info.json","initial-transmitter-status.json","final-transmitter-status.json")]
+        require(all(observations[i].get(k) == info.get(k) for i in (0,1) for k in
+                    ("uid","boot_id","schema_sha256","build_source_sha256")), "Audio observation identity changed")
+        verify_audio_progress(*observations)
     results=[]; prior_host=start
     for index,row in enumerate(epochs):
         begin,finish=row["host_unix"]
         require(prior_host <= begin < finish <= end,"Segmented acquisition epoch ordering")
         prior_host=finish
         streams=[bound(x) for x in row["streams"]]
-        require(len(streams)==3,"Missing segmented raw stream")
-        results.append(verify_epoch(bound(row["status"]),streams[:2],streams[2],boot=info["boot_id"],
+        require(len(streams) in (3,5),"Missing segmented raw stream")
+        results.append(verify_epoch(bound(row["status"]),streams[:-1],streams[-1],boot=info["boot_id"],
                                     epoch=index+1,pattern=index))
         status=parse_status(bound(row["status"]),info["boot_id"],index+1)
-        minimum_seconds=(status["capture_end_tick"]-status["epoch_begin"])/results[-1]["calibration"]["frequency_hz"][1]
-        require(finish-begin+0.01 >= minimum_seconds,"Host epoch time cannot cover raw acquisition")
+        calibration=results[-1].get("calibration",results[-1].get("timing",{}).get("calibration"))
+        if calibration is not None:
+            minimum_seconds=(status["capture_end_tick"]-status["epoch_begin"])/calibration["frequency_hz"][1]
+            require(finish-begin+0.01 >= minimum_seconds,"Host epoch time cannot cover raw acquisition")
     return {"raw_capture_consistent":True,"frames_each":len(results),"epochs":results,
             "measured_waveform_pass":False,"physical_qualification":False,
             "timing_qualification":"UNQUALIFIED_PIN_TO_CAPTURE_ERROR"}
+
+
+def verify_audio_progress(before,after,transmitter_before,transmitter_after):
+    for field in ("capture_errors","capture_restart_attempts","capture_restart_failures"):
+        require(field in before and field in after and before[field] == after[field],
+                "Microphone error/restart changed or missing: "+field)
+    require(after.get("capture_stale") is False, "Microphone stale after capture")
+    for lane in (0,1):
+        require(transmitter_before["microphone_dma"][lane].get("threshold_register") ==
+                transmitter_after["microphone_dma"][lane].get("threshold_register") == 1,
+                "Microphone threshold changed or missing")
+        a=transmitter_before["microphone_dma"][lane]["callbacks"]
+        b=transmitter_after["microphone_dma"][lane]["callbacks"]
+        require(type(a) is int and type(b) is int and b>a,
+                f"Microphone DMA{lane+1} callback progress missing")
 
 
 def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
@@ -265,8 +417,13 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
     """
     require(info.get("uid") == UID and info.get("build_source_sha256") == manifest["source_binding_hash"],
             "Loopback runtime identity mismatch")
-    require(info.get("capabilities",{}).get("isolated_raw_capture") == BACKEND,
+    require(info.get("capabilities",{}).get("isolated_raw_capture") in (BACKEND,SPLIT_BACKEND),
             "Resident image does not implement raw detector")
+    backend=info["capabilities"]["isolated_raw_capture"]
+    split=backend == SPLIT_BACKEND
+    single_pattern=spec.get("pattern")
+    require(single_pattern is None or type(single_pattern) is int and 0 <= single_pattern < 120,
+            "Invalid scoped pattern")
     count = spec.get("frames", 100)
     require(type(count) is int and 100 <= count <= 120, "Need100..120 physical frame pairs")
     boot = info["boot_id"]
@@ -288,15 +445,19 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
         path = output / name
         with path.open("xb") as f: f.write(data)
         return {"path": str(path.resolve()), "sha256": digest(data)}
+    audio_observations={}
     def transmitter_snapshot(name):
         require(clock() < deadline,"Transaction expired before transmitter observation")
         transmitter_raw=exchange(0x50524c02,struct.pack("<I",boot))
-        save(name,transmitter_raw)
+        audio_observations[name]=save(name,transmitter_raw)
         transmitter=json.loads(transmitter_raw)
         require(transmitter.get("schema") == "prism.titan.transmitter.v2",
                 "Unexpected transmitter diagnostic schema")
+        return transmitter
     has_transmitter_status=info.get("capabilities",{}).get("transmitter_status_opcode") == 0x50524c02
     try:
+        if split:
+            audio_observations["initial-info.json"]=save("initial-info.json",json.dumps(info).encode())
         ready_raw=exchange(STATUS,struct.pack("<2I",boot,0))
         save("initial-detector-status.bin",ready_raw)
         ready=parse_status(ready_raw,boot,0)
@@ -304,18 +465,25 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                 ready["nominal_gpt_hz"] == 300000000 and ready["nominal_pclkd_hz"] == 250000000 and
                 ready["gptckcr"] == 6 and ready["gptckdivcr"] == 1 and ready["gtclkcr"] == 0,
                 "Post-program detector resource readiness failed before stimulus")
+        require((ready["version"] == 2) == split,"Backend/status schema mismatch")
+        if split:
+            verify_split_configuration(ready,readiness=True)
+        initial_transmitter=None
         # Retain the existing transmitter's first-fault snapshot. Autonomous
         # startup can already have failed before the recorder is armed; a later
         # recorder deadline alone cannot identify that failure. This is a read,
         # not another stimulus, and stays inside the same absolute deadline.
+        require(not split or has_transmitter_status,"Missing microphone status capability before stimulus")
         if has_transmitter_status:
-            transmitter_snapshot("initial-transmitter-status.json")
+            initial_transmitter=transmitter_snapshot("initial-transmitter-status.json")
         diagnostic=spec.get("constant_timer_diagnostic")
         require(diagnostic is None or type(diagnostic) is int and diagnostic in (1,2), "Unknown constant timer diagnostic")
+        require(single_pattern is None or diagnostic is None,"Cannot combine scoped pattern and constant diagnostic")
         if diagnostic is not None:
             save("constant-diagnostic.json",json.dumps({"profile":diagnostic,"pulses_each":128,"expected_edges_each":256,"purpose":"acquisition isolation only; not the frozen pattern campaign","physical_qualification":False}).encode())
-        for pattern in range(1 if diagnostic is not None else count):
-            current = pattern + 1
+        patterns=[single_pattern] if single_pattern is not None else range(1 if diagnostic is not None else count)
+        for index,pattern in enumerate(patterns):
+            current = index + 1
             require(clock() < deadline, "Bounded acquisition deadline")
             epoch_started=time.time()
             exchange(0x50524605 if diagnostic is not None else ARM, struct.pack("<4I", boot, current, diagnostic if diagnostic is not None else pattern, 1))
@@ -330,7 +498,7 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                 sleep(.002)
             status_row = save(f"{current:03d}-status.bin", raw)
             streams = []
-            for stream, total in enumerate((s["words_a"], s["words_b"], s["sof_rows"]*4)):
+            for stream, total in enumerate(stream_counts(s)):
                 words = []
                 while len(words) < total:
                     require(clock() < deadline, "Bounded drain deadline")
@@ -347,8 +515,8 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
             final = parse_status(final_raw,boot,current)
             require(all(final[k] == s[k] for k in s if not k.startswith("cursor_")),
                     "Capture changed while draining")
-            require([final[k] for k in ("cursor_a","cursor_b","cursor_sof")] ==
-                    [s["words_a"],s["words_b"],s["sof_rows"]*4], "Incomplete raw drain")
+            cursor_keys=tuple("cursor_"+n for n in SPLIT_NAMES)+( "cursor_split_sof",) if split else ("cursor_a","cursor_b","cursor_sof")
+            require([final[k] for k in cursor_keys] == stream_counts(s), "Incomplete raw drain")
             if s["state"] != 6 and has_transmitter_status:
                 # Raw detector data is already durable. Observe the output
                 # owner at failure without replaying ARM or extending recovery.
@@ -359,12 +527,28 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                 except Exception as diagnostic_error:
                     save(f"{current:03d}-failed-diagnostic-error.json",
                          (json.dumps({"error":str(diagnostic_error)})+"\n").encode())
+            if split:
+                # Preserve terminal microphone evidence even if raw verification fails.
+                terminal_tx=transmitter_snapshot(f"{current:03d}-terminal-transmitter-status.json")
+                require(clock() < deadline,"Transaction expired before terminal audio observation")
+                terminal_raw=exchange(1)
+                terminal_info=json.loads(terminal_raw)
+                terminal_row=save(f"{current:03d}-terminal-info.json",terminal_raw)
+                row["audio_observations"]={"info":terminal_row,
+                    "transmitter":audio_observations[f"{current:03d}-terminal-transmitter-status.json"]}
+                save(f"{current:03d}-audio-index.json",json.dumps(row["audio_observations"]).encode())
             try:
-                require(diagnostic is None,"Constant timer diagnostic retained; not a pattern qualification run")
+                if split:
+                    verify_audio_progress(info,terminal_info,initial_transmitter,terminal_tx)
+                require(diagnostic is None or split,"Constant timer diagnostic retained; not a pattern qualification run")
                 require(s["state"] == 6 and s["fault"] == 0,"Native detector fault/cancel; raw retained")
-                result = verify_one(raw, [Path(r["path"]).read_bytes() for r in streams[:2]],
-                                    Path(streams[2]["path"]).read_bytes(), boot=boot,epoch=current,
-                                    pattern=pattern,endpoint_allowance_ns=INPUT_ENDPOINT_ALLOWANCE_NS)
+                lane_raw=[Path(r["path"]).read_bytes() for r in streams[:-1]]
+                sof_raw=Path(streams[-1]["path"]).read_bytes()
+                if diagnostic is not None and split:
+                    result=verify_split_epoch(s,lane_raw,sof_raw,pattern=s["pattern"],pulses=128,diagnostic_profile=diagnostic)
+                else:
+                    result = verify_one(raw,lane_raw,sof_raw,boot=boot,epoch=current,
+                                        pattern=pattern,endpoint_allowance_ns=INPUT_ENDPOINT_ALLOWANCE_NS)
                 require(clock() < deadline,"Transaction deadline during raw verification")
                 row["result"]=result
             except BaseException as exc:
@@ -372,7 +556,13 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
                 raise
             finally:
                 save(f"{current:03d}-outcome.json",(json.dumps(row,indent=2)+"\n").encode())
-        last = json.loads(exchange(1))
+        last_raw=exchange(1)
+        audio_observations["final-info.json"]=save("final-info.json",last_raw)
+        last = json.loads(last_raw)
+        if split:
+            require(initial_transmitter is not None,"Missing initial microphone DMA status")
+            final_transmitter=transmitter_snapshot("final-transmitter-status.json")
+            verify_audio_progress(info,last,initial_transmitter,final_transmitter)
         require(all(last.get(k) == info.get(k) for k in ("uid","boot_id","schema_sha256","build_source_sha256")),
                 "Runtime changed during capture")
     except BaseException as exc:
@@ -387,9 +577,10 @@ def acquire(exchange, manifest, spec, out, info, *, verify_one=verify_epoch,
             except BaseException as exc:
                 save("cancel-failure.json",json.dumps({"error":str(exc),"primary_error":str(primary_error)}).encode())
                 if primary_error is None: raise
-    result = {"schema":"prism.titan.loopback-acquisition.v1", "backend":BACKEND,
-              "identity":info, "acquisition_unix":[started,time.time()], "epochs":epochs,
-              "frames_each":count, "physical_qualification":False,
+    result = {"schema":"prism.titan.loopback-acquisition.v1", "backend":backend,
+              "identity":info, "audio_observations":audio_observations, "acquisition_unix":[started,time.time()], "epochs":epochs,
+              "frames_each":len(epochs), "physical_qualification":False,
+              "scope":"constant-diagnostic" if diagnostic is not None else "single-pattern" if single_pattern is not None else "frozen-campaign",
               "timing_qualification":"UNQUALIFIED_PIN_TO_CAPTURE_ERROR",
               "image_sha256":manifest["image"]["sha256"],"source_commit":manifest["source_commit"],
               "source_binding_hash":manifest["source_binding_hash"],
