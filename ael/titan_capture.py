@@ -59,7 +59,7 @@ def read_only_status(endpoint, *, timeout=3):
 
 def isolated_preflight(m):
     q=m.get("isolated_qualification",{})
-    if q.get("backend")=="titan-gpt7-external-loopback-v1":
+    if q.get("backend") in ("titan-gpt7-external-loopback-v1", "titan-split-edge-loopback-v2"):
         from ael.titan_isolated import preflight
         return preflight(m)
     require(q.get("operation")=="titan-isolated-waveform-v1", "Missing isolated qualification operation")

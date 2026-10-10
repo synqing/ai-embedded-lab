@@ -354,3 +354,14 @@ def test_invalid_split_pattern_refused_before_authority(tmp_path,monkeypatch,pat
     m['isolated_qualification'].update(backend=isolated.SPLIT_BACKEND,pattern=pattern)
     with pytest.raises(RuntimeError,match='Invalid scoped pattern'):
         isolated.preflight(m)
+
+
+@pytest.mark.parametrize('backend',[isolated.BACKEND,isolated.SPLIT_BACKEND])
+def test_capture_gateway_routes_both_loopback_backends_through_admission(tmp_path,monkeypatch,backend):
+    from ael.titan_capture import isolated_preflight
+    m=admission(tmp_path,monkeypatch)
+    m['isolated_qualification']['backend']=backend
+    assert isolated_preflight(m)['preprogram_readiness']=='first-isolated-bootstrap-readiness-exception'
+    replace_record(m,'physical_confirmation',tmp_path,lambda r:r.update(actor='agent'))
+    with pytest.raises(RuntimeError,match='Actual operator message required'):
+        isolated_preflight(m)
