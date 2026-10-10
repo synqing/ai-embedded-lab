@@ -817,3 +817,27 @@ Attempt24 donor programme/verify and fresh application identity succeeded,
 Orange product harness remains OFF; both loopbacks unchanged. Candidate-programming
 transactions24; seven individually accepted digital pairs across attempts23–24,
 zero completed100-pair campaigns. No electrical or optical qualification.
+
+### Attempt25 — cooperative service repair passes prior failing pattern
+
+Firmware `c1f75cbf16e79208841de814b04c082bed76533b`; host `af4c2e8`.
+Candidate HEX `c92c37ba54c678f267ab268c1a49359a5493a9391daa8181fe2877c2c0d3022e`.
+Run: `isolated-direct-cooperative`; frozen pattern6 full paired raw consistency
+PASS with healthy microphone progress. Completion13.175ms; longest uninterrupted
+audio segment3.271883ms and poll gap3.278420ms. Queue571/571, no drops.
+The preserved audio workload now has foreground recorder/output service points
+between stages. Sanitised nonzero audio/state/output equivalence tests passed.
+This single pass supports the repair but is not sustained qualification.
+
+Terminal drain uses negotiated1000-word chunks in the existing4096-byte response
+buffer, with no enlarged capture buffers. Actual epoch acquisition/drain1.1244s,
+still too slow for100pairs within60s collection. Transport throughput remains
+a concrete campaign blocker; no deadline or acceptance relaxation is authorised
+by this result. The next action is source-bound throughput repair and measurement.
+
+Donor programming verification, application identity and broker restoration
+confirmed; internal transaction34.295s. Saved fresh broker observations advance.
+OrangeOFF/loopbacksunchanged.25 candidate transactions;8 accepted individual
+digital pairs across attempts23–25; no completed100-pair campaign or electrical
+qualification. Known timing offsets may only be accounted for with justified
+error bounds; missing/duplicated events are not correctable by a tolerance.
