@@ -169,6 +169,8 @@ def verify_split_epoch(s, lane_raw, sof_raw, *, pattern, pulses=3840, diagnostic
                     f"Lane {lane} invalid independent frame boundaries")
             require(s[prefix+"initial_low"] == s[prefix+"final_low"] == 3,
                     f"Lane {lane} missing LOW boundaries")
+            require(rises[0] >= ((s[prefix+"stimulus_tick"]-s[prefix+"leading_begin"]) & 0xffffffff),
+                    f"Lane {lane} first edge precedes its stimulus")
         require(((s[prefix+"leading_end"]-s[prefix+"leading_begin"]) & 0xffffffff) <= rises[0] and
                 falls[-1] <= ((s[prefix+"trailing_begin"]-s[prefix+"leading_begin"]) & 0xffffffff) < 0x80000000,
                 f"Lane {lane} first/last edge outside frame")

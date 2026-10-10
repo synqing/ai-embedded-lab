@@ -569,3 +569,13 @@ def test_direct_readiness_failure_cannot_stimulate(tmp_path):
     with pytest.raises(RuntimeError,match='address mismatch'):
         loop.acquire(detector.exchange,split_manifest(),{'pattern':2},tmp_path,detector.info)
     assert loop.ARM not in detector.calls and 0x50524605 not in detector.calls
+
+
+
+@pytest.mark.parametrize('lane',[0,1])
+def test_direct_otherwise_valid_frame_cannot_precede_its_own_stimulus(lane):
+    s,streams,sof=direct_fixture()
+    prefix='b_' if lane else ''
+    s[prefix+'stimulus_tick']=(streams[2*lane][0]+1)&0xffffffff
+    with pytest.raises(RuntimeError,match=f'Lane {lane} first edge precedes its stimulus'):
+        direct_check(s,streams,sof)
