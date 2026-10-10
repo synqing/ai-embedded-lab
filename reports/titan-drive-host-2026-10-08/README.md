@@ -718,3 +718,36 @@ Total candidate-programming transactions19. This physical receiver discrepancy
 blocks the current capture experiment, not all later independent computation.
 The transmitter640ns budget and engine-exit decision remain open; this pre-stimulus
 failure does not supply payload/service evidence for an engine verdict.
+
+### Corrected fixture: short PASS, complete raw payload with deadline FAIL
+
+Captain supplied photos showing both orange terminations near the microphone end,
+then explicitly confirmed: “Done. 12 is connected to 36”. This supersedes the
+previous inferred endpoint confirmation. A source/receiver mismatch was physical
+fixture evidence, not grounds to weaken the HIGH gate.
+
+Attempt20 `isolated-direct-corrected-fast` used unchanged e2a2e99 image
+01087fa563e342ee1059a75239fe605987c7efb0b57924459b46375f07029a95.
+Short128-pulse acquisition PASS: four complete streams; exact78-tick HIGHs;
+raw consistency verified; no electrical timing qualification. Donor restored and
+application identity verified;33.227s internal transaction.
+
+Attempt21 `isolated-direct-pattern2` used the same image, frozen pattern2.
+Complete raw data: four streams of3840 strictly increasing unique timestamps;
+all rising periods390ticks; HIGH widths78/198ticks; falling intervals270/510.
+Independent diagnostic decoding matches480 bytes AA on laneA and480 bytes55 on
+laneB exactly, zero mismatches. However original state7/fault5 Deadline is FAIL
+and is retained unchanged. This is not an accepted full pair. Captured payload
+consistency does not establish a worst-case transmitter service bound.
+
+Timing review identified redundant SOF barriers: trailing waits for a timing
+row beyond its quiet boundary before freezing, then finishing waits for another
+row beyond actual freeze. Bounded repair removes the intermediate wait while
+retaining350us quiet, final timing coverage of actual freeze, and20ms deadline.
+New candidate proof is required. No acceptance tolerances change.
+
+Attempt21 donor recovery/application identity verified,34.555s internal time;
+broker restored with fresh telemetry saved. Orange harness remains OFF. Total
+candidate programming transactions21; full campaign NOT TESTED; accepted full
+pairs0. Root/independent review decoded retained raw files without changing the
+failed status or manufacturing a PASS.
