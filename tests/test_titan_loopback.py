@@ -368,13 +368,24 @@ def test_split_calibration_failure_does_not_become_timing_pass_or_destroy_raw_re
 
 def test_microphone_progress_requires_both_channels_and_no_new_errors():
     before={'capture_errors':[0,0],'capture_restart_attempts':0,'capture_restart_failures':0,'capture_stale':False}
-    tx={'microphone_dma':[{'callbacks':10,'threshold_register':1},{'callbacks':20,'threshold_register':1}]}
-    after={'microphone_dma':[{'callbacks':11,'threshold_register':1},{'callbacks':21,'threshold_register':1}]}
+    tx={'wire_reset_completions':10,'microphone_dma':[{'callbacks':10,'threshold_register':1},{'callbacks':20,'threshold_register':1}]}
+    after={'wire_reset_completions':11,'microphone_dma':[{'callbacks':11,'threshold_register':1},{'callbacks':21,'threshold_register':1}]}
     loop.verify_audio_progress(before,before,tx,after)
     for field in ('capture_errors','capture_restart_attempts','capture_restart_failures','capture_stale'):
         bad=copy.deepcopy(before);bad[field]=[0,1] if field=='capture_errors' else 1
         with pytest.raises(RuntimeError):loop.verify_audio_progress(before,bad,tx,after)
     with pytest.raises(RuntimeError):loop.verify_audio_progress(before,before,tx,tx)
+
+
+@pytest.mark.parametrize('completion',[10,9,-1,None,True])
+def test_audio_callbacks_do_not_cover_stalled_reset_or_missing_output_counter(completion):
+    info={'capture_errors':[0,0],'capture_restart_attempts':0,'capture_restart_failures':0,'capture_stale':False}
+    before={'wire_reset_completions':10,'microphone_dma':[
+        {'callbacks':10,'threshold_register':1},{'callbacks':20,'threshold_register':1}]}
+    after={'wire_reset_completions':completion,'microphone_dma':[
+        {'callbacks':11,'threshold_register':1},{'callbacks':21,'threshold_register':1}]}
+    with pytest.raises(RuntimeError,match='Transmitter reset completion'):
+        loop.verify_audio_progress(info,info,before,after)
 
 
 class SplitDetector(Detector):
@@ -395,7 +406,7 @@ class SplitDetector(Detector):
         if opcode==1:return json.dumps(self.info).encode()
         if opcode==0x50524c02:
             self.callbacks+=1
-            return json.dumps({'schema':'prism.titan.transmitter.v2','microphone_dma':[
+            return json.dumps({'schema':'prism.titan.transmitter.v2','wire_reset_completions':self.callbacks,'microphone_dma':[
                 {'callbacks':self.callbacks,'threshold_register':1} for _ in (0,1)]}).encode()
         if opcode in (loop.ARM,0x50524605):
             boot,epoch,pattern,excluded=struct.unpack('<4I',payload)

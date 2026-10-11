@@ -447,6 +447,13 @@ def verify_acquisition(acquisition, candidate):
 
 
 def verify_audio_progress(before,after,transmitter_before,transmitter_after):
+    # Growing microphone callbacks cannot cover a stopped transmitter. Direct
+    # fixture frames do not use pattern_completed; require the sampled hardware
+    # reset completion counter instead. A wrap/reset is not healthy progress.
+    a=transmitter_before.get('wire_reset_completions')
+    b=transmitter_after.get('wire_reset_completions')
+    require(type(a) is int and type(b) is int and 0 <= a < b,
+            'Transmitter reset completion progress missing or counter reset')
     for field in ("capture_errors","capture_restart_attempts","capture_restart_failures"):
         require(field in before and field in after and before[field] == after[field],
                 "Microphone error/restart changed or missing: "+field)
