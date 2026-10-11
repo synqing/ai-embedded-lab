@@ -201,7 +201,8 @@ def test_capture_queue_frozen_witness_and_stage_attribution():
     struct.pack_into('<Q6I',body,984,99990,55330000,55330000,1,18,1,1)
     decoded=native.capture_queue(bytes(body))
     assert decoded['overwrite_events']==2 and decoded['dropped_blocks']==17 and decoded['copy_races']==1
-    assert decoded['longest_consumption_gap_us']==55330 and decoded['longest_gap_start_backlog']==1
+    assert decoded['longest_consumption_gap_us']==55330 and decoded['longest_gap_end_visit_backlog']==1
+    assert decoded['longest_gap_observation'] is None
     assert decoded['first_fault_valid']==1 and decoded['first_producer']==18 and decoded['first_consumer']==1
     assert decoded['history'][0]['stage']=='coefficients' and decoded['history'][1]['stage']=='resample_excluding_hops'
     assert decoded['first_history']==decoded['history'][:1]
@@ -210,6 +211,42 @@ def test_capture_queue_frozen_witness_and_stage_attribution():
     for offset,value in ((0,0),(4,2),(8,1535),(24,3),(28,1),(84,11),(92,17),(100,2),(140,17),(484,55330001)):
         corrupt=bytearray(body);struct.pack_into('<I',corrupt,offset,value)
         with pytest.raises(ValueError):native.capture_queue(bytes(corrupt))
+
+
+def test_capture_queue_version2_endpoints_are_not_dma_phase():
+    body=bytearray(1536)
+    struct.pack_into('<10I',body,0,0x51544C54,2,1536,1000000000,3,3,0,3,41431,1)
+    struct.pack_into('<Q',body,72,8403)
+    struct.pack_into('<I',body,80,1)
+    struct.pack_into('<IQQ5I',body,1496,0x47415031,3000,11403,2,3,3,2,3)
+    decoded=native.capture_queue(bytes(body))
+    assert decoded['schema']=='prism.titan.capture-queue.v2'
+    assert decoded['longest_gap_end_visit_backlog']==1
+    assert 'longest_gap_start_backlog' not in decoded
+    assert decoded['longest_gap_observation']==dict(previous_consumed_us=3000,
+        ending_consumed_us=11403,previous_visit_backlog=2,ending_visit_backlog=1,
+        previous_producer=3,ending_producer=3,previous_consumer=2,ending_consumer=3)
+    assert 'DMA_PHASE_UNMEASURED' in decoded['gap_time_scope']
+    for offset,value,format in ((80,7,'<I'),(1496,0,'<I'),(1500,0,'<Q'),(1508,3000,'<Q'),(1508,11404,'<Q'),(1516,7,'<I')):
+        corrupt=bytearray(body);struct.pack_into(format,corrupt,offset,value)
+        with pytest.raises(ValueError):native.capture_queue(bytes(corrupt))
+    struct.pack_into('<Q',body,72,0)
+    with pytest.raises(ValueError):native.capture_queue(bytes(body))
+    body[1496:]=bytes(40)
+    assert native.capture_queue(bytes(body))['longest_gap_observation'] is None
+
+
+def test_capture_queue_version2_zero_timestamp_is_valid_endpoint():
+    body=bytearray(1536)
+    struct.pack_into('<10I',body,0,0x51544C54,2,1536,1000000000,2,2,0,2,41431,1)
+    struct.pack_into('<Q',body,72,8403)
+    struct.pack_into('<I',body,80,1)
+    struct.pack_into('<IQQ5I',body,1496,0x47415031,0,8403,1,2,2,1,2)
+    decoded=native.capture_queue(bytes(body))
+    assert decoded['longest_consumption_gap_us']==8403
+    assert decoded['longest_gap_observation']==dict(previous_consumed_us=0,
+        ending_consumed_us=8403,previous_visit_backlog=1,ending_visit_backlog=1,
+        previous_producer=2,ending_producer=2,previous_consumer=1,ending_consumer=2)
 
 
 def test_window_rejects_invalid_metadata_source_change_and_counter_wrap():

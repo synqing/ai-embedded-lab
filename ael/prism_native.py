@@ -94,15 +94,18 @@ CAPTURE_STAGES = ('none', 'coefficients', 'resample_excluding_hops', 'runtime',
 
 def capture_queue(body):
     """Decode the additive boot-bound capture witness; snapshot stays1184bytes."""
-    if len(body) != 1536 or struct.unpack_from('<3I', body) != (0x51544C54, 1, 1536):
+    if len(body) != 1536:
+        raise ValueError('Unsupported capture queue witness length/schema')
+    magic, version, size = struct.unpack_from('<3I', body)
+    if magic != 0x51544C54 or version not in (1, 2) or size != 1536:
         raise ValueError('Unsupported capture queue witness length/schema')
     u32 = lambda p: struct.unpack_from('<I', body, p)[0]
     u64 = lambda p: struct.unpack_from('<Q', body, p)[0]
-    result = dict(schema='prism.titan.capture-queue.v1', clock_hz=u32(12),
+    result = dict(schema=f'prism.titan.capture-queue.v{version}', clock_hz=u32(12),
         producer=u32(16), consumer=u32(20), unread=u32(24), max_unread=u32(28),
         source_rate=u32(32), coefficient_builds=u32(36), overwrite_events=u64(40),
         dropped_blocks=u64(48), copy_races=u64(56), consumed_blocks=u64(64),
-        longest_consumption_gap_us=u64(72), longest_gap_start_backlog=u32(80),
+        longest_consumption_gap_us=u64(72), longest_gap_end_visit_backlog=u32(80),
         current_stage=u32(84), last_stage=u32(88), history_count=u32(92),
         history_overwritten=u32(96), first_fault_valid=u32(100),
         first_time_us=u64(104), first_cycles=u32(112), first_producer=u32(116),
@@ -117,6 +120,8 @@ def capture_queue(body):
         raise ValueError('Invalid capture queue witness clock/first fault')
     if result['unread'] != ((result['producer']-result['consumer']) & 0xFFFFFFFF) or result['max_unread'] < result['unread']:
         raise ValueError('Inconsistent capture queue witness backlog')
+    if result['longest_gap_end_visit_backlog'] > result['max_unread']:
+        raise ValueError('Capture gap backlog exceeds recorded maximum')
     for key in ('current_stage','last_stage','first_stage','first_last_stage'):
         if result[key] >= len(CAPTURE_STAGES): raise ValueError('Unknown capture queue stage')
     if result['history_count'] > 16 or result['first_history_count'] > 16:
@@ -139,6 +144,23 @@ def capture_queue(body):
         return rows
     result['history'] = history(472, result['history_count'])
     result['first_history'] = history(984, result['first_history_count'])
+    result['longest_gap_observation'] = None
+    result['gap_time_scope'] = 'AFTER_PROCESSING_CONSUMED_CALLS; VISIT_BACKLOG_SAMPLED_BEFORE_COPY; DMA_PHASE_UNMEASURED'
+    if version == 2:
+        if result['longest_consumption_gap_us']:
+            if u32(1496) != 0x47415031:
+                raise ValueError('Missing version-2 capture gap endpoint witness')
+            previous, ending = u64(1500), u64(1508)
+            if ending <= previous or ending-previous != result['longest_consumption_gap_us']:
+                raise ValueError('Inconsistent capture gap endpoint times')
+            if u32(1516) > result['max_unread']:
+                raise ValueError('Capture gap backlog exceeds recorded maximum')
+            result['longest_gap_observation'] = dict(previous_consumed_us=previous,
+                ending_consumed_us=ending, previous_visit_backlog=u32(1516),
+                ending_visit_backlog=u32(80), previous_producer=u32(1520),
+                ending_producer=u32(1524), previous_consumer=u32(1528), ending_consumer=u32(1532))
+        elif any(body[1496:]):
+            raise ValueError('Unexpected endpoint witness without a consumption gap')
     return result
 
 
