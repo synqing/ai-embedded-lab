@@ -50,7 +50,7 @@ class MeasureBench:
         self.cost_baselines=[];self.snapshot_count=0
     def pause(self,dt):self.seconds+=dt
     def clock(self):return self.seconds
-    def exchange(self,opcode,payload=b''):
+    def exchange(self,opcode,payload=b'', **transport_limits):
         self.calls.append((opcode,payload))
         if opcode==1:
             info=healthy()
@@ -143,6 +143,7 @@ def test_measure_budget_failure_is_false_not_acceptance(tmp_path):
 def test_existing_serial_owner_runs_completion_and_refuses_budget_failure(tmp_path,monkeypatch,fault):
     import serial
     bench=MeasureBench(fault);ports=[]
+    monkeypatch.setattr(native.time,'monotonic',bench.clock)
     # Initial identity must be read before any experiment mutation.
     class Port:
         def __init__(self,**kwargs):self.buffer=b'';self.closed=False;ports.append(self)
@@ -186,7 +187,7 @@ def test_exchange_expiry_and_cancellation_preserve_first_failure(tmp_path):
     for fault in ('expiry', 'cancel'):
         out = tmp_path/fault; out.mkdir()
         b = MeasureBench()
-        def exchange(op, payload=b''):
+        def exchange(op, payload=b'', **transport_limits):
             if op == completion.COST:
                 if fault == 'cancel': raise KeyboardInterrupt('cancelled cost response')
                 b.seconds = 80.
@@ -343,7 +344,7 @@ def test_never_ready_stops_before_existing_cutoff_and_retains_full_window_reserv
 
 def test_readiness_exchange_overrun_cannot_consume_measurement_reserve(tmp_path):
     bench=MeasureBench()
-    def delayed(op,payload=b''):
+    def delayed(op,payload=b'',**transport_limits):
         reply=bench.exchange(op,payload)
         if op==native.CAPTURE_QUEUE:bench.seconds=5.01
         return reply
@@ -421,6 +422,7 @@ def test_healthy_advancing_capture_completes_full_twenty_seconds(tmp_path):
 def test_run_session_refuses_startup_failure_even_when_settled_cost_passes(tmp_path,monkeypatch):
     import serial
     bench=MeasureBench('startupoverwrite')
+    monkeypatch.setattr(native.time,'monotonic',bench.clock)
     class Port:
         def __init__(self,**kwargs):self.buffer=b''
         def open(self):pass

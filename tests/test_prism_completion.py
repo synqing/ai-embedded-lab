@@ -86,7 +86,7 @@ def test_health_preserves_boot_and_faults():
 def test_actual_golden_flow_and_corruption(tmp_path):
     s=golden(tmp_path);build=tmp_path/'build.json';build.write_text(json.dumps({'inputs':{'lane':{'platform/titan/percussion_proxy.h':'a'*64}}}))
     m={'build_receipt':binding(build)};calls=[]
-    def exchange(op,p=b''):
+    def exchange(op,p=b'', **transport_limits):
         calls.append(op)
         if op==1:return json.dumps(info()).encode()
         if op==PREAMBLE:return b'{}'
@@ -97,7 +97,7 @@ def test_actual_golden_flow_and_corruption(tmp_path):
     result=execute(exchange,m,s,tmp_path,info());assert result['hops']==2
     assert calls.count(PROBE)==4
     bad=tmp_path/'bad';bad.mkdir()
-    def corrupt(op,p=b''):
+    def corrupt(op,p=b'',**transport_limits):
         result=exchange(op,p)
         if op==PROBE and struct.unpack_from('<I',p,4)[0]==1:return result[:44]+struct.pack('<f',.2)
         return result
@@ -117,7 +117,7 @@ def test_golden_outer_deadline_retains_rows_and_stops_next_exchange(tmp_path):
     spec = golden(tmp_path)
     build = tmp_path/'build.json'; build.write_text(json.dumps({'inputs':{'lane':{'platform/titan/percussion_proxy.h':'a'*64}}}))
     clock = [0.]; hops = []
-    def exchange(op,p=b''):
+    def exchange(op,p=b'', **transport_limits):
         if op == PREAMBLE: return b'{}'
         if op == PROBE:
             boot,action,trial,seq,rate,n = struct.unpack_from('<6I',p)

@@ -372,7 +372,8 @@ class CampaignPlaylist:
     Constructing is read-only. Only explicit start() begins playback; the admitted
     endurance collector calls it after obtaining its existing sole target owner.
     """
-    def __init__(self,spec,out,*,player_factory=None,now=time.monotonic,pause=time.sleep):
+    def __init__(self,spec,out,*,player_factory=None,now=time.monotonic,pause=time.sleep,
+                 absolute_deadline=None,cancel_event=None):
         require(isinstance(spec,dict),'Explicit playlist binding required')
         require(Path(spec['ledger']).resolve()==PLAYBACK_LEDGER.resolve(),'Playlist requires shared durable ledger')
         self.ledger=PlaybackLedger(spec['ledger'],spec['campaign'])
@@ -386,9 +387,25 @@ class CampaignPlaylist:
         self.host_boot_session=host_boot_session();self.acquisition_nonce=secrets.token_hex(32)
         self.factory=player_factory;self.now=now;self.pause=pause;self.out=Path(out)
         self.cancel=threading.Event();self.thread=None;self.error=None;self.completed=[]
+        self.external_cancel=cancel_event
+        self.deadline = now()+1100
+        if absolute_deadline is not None:
+            require(type(absolute_deadline) in (int,float) and math.isfinite(absolute_deadline),
+                    'Invalid playlist absolute deadline')
+            self.deadline=min(self.deadline,absolute_deadline)
+
+    def is_set(self):
+        return self.cancel.is_set() or (self.external_cancel is not None and self.external_cancel.is_set())
+
+    def _remaining(self):
+        require(not self.is_set(),'Playlist cancelled')
+        remaining=self.deadline-self.now()
+        require(remaining>0,'Playlist absolute deadline exhausted')
+        return remaining
 
     def start(self):
         require(self.thread is None,'Playlist already started')
+        self._remaining()
         self.out.mkdir(parents=True,exist_ok=False)
         self.thread=threading.Thread(target=self._run,name='titan-approved-playlist',daemon=True)
         self.thread.start();return self
@@ -397,24 +414,28 @@ class CampaignPlaylist:
         started=self.now()
         try:
             for index,task in enumerate(self.tasks):
-                require(not self.cancel.is_set(),'Playlist cancelled')
-                require(self.now()-started<1100,'Playlist exceeded bounded campaign time')
+                self._remaining()
                 log=self.out/f'track-{index+1:02d}.jsonl'
                 self.ledger.reserve(task['id'],task['media']['path'],seconds=60)
                 player=None;success=False
                 try:
-                    player=self.factory(Path(task['media']['path']),log,input_gain=1.0,cancel_event=self.cancel)
+                    player=self.factory(Path(task['media']['path']),log,input_gain=1.0,cancel_event=self,
+                                        startup_timeout=min(3,self._remaining()))
                     metadata=player.start
                     require(metadata.get('clock')=='CLOCK_UPTIME_RAW' and metadata.get('input_gain')==1 and
                             metadata.get('file_rate',0)>0 and metadata.get('frames',0)/metadata['file_rate']==60,'Playlist player gain/rate/duration changed')
                     track_start=self.now()
                     while not player.done:
-                        require(not self.cancel.is_set(),'Playlist cancelled')
+                        remaining=self._remaining()
                         require(self.now()-track_start<=70,'Playlist track exceeded70s deadline')
                         if player.error:raise ValueError('Playlist player failed: '+str(player.error))
-                        self.pause(.02)
+                        delay=min(.02,remaining)
+                        if self.pause is time.sleep:
+                            self.cancel.wait(delay)
+                        else:self.pause(delay)
                     if player.error:raise ValueError('Playlist player failed: '+str(player.error))
-                    player.close();player=None;success=True
+                    require(self._remaining()>=3,'Playlist cannot complete player close before absolute deadline')
+                    player.close();self._remaining();player=None;success=True
                     self.completed.append(task['id'])
                 finally:
                     try:
@@ -431,13 +452,16 @@ class CampaignPlaylist:
 
     def finish(self,timeout=60):
         require(self.thread is not None,'Playlist was not started')
-        self.thread.join(timeout);self.check()
+        self.thread.join(min(timeout,self._remaining()));self._remaining();self.check()
         require(not self.thread.is_alive() and len(self.completed)==17,'Playlist remains incomplete')
         return self.check()
 
-    def stop(self):
+    def stop(self,timeout=8,*,absolute_deadline=None):
+        require(type(timeout) in (int,float) and 0<=timeout<=8,'Invalid owned playlist cleanup reserve')
         self.cancel.set()
-        if self.thread is not None:self.thread.join(8)
+        remaining=timeout
+        if absolute_deadline is not None:remaining=min(remaining,max(0,absolute_deadline-self.now()))
+        if self.thread is not None:self.thread.join(remaining)
         require(self.thread is None or not self.thread.is_alive(),'Owned playlist did not stop')
 
 

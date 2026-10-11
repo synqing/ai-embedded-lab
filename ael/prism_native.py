@@ -184,21 +184,34 @@ def window(first, last):
             'physical_output_rate_measured':False, 'host_arrival_cadence_used':False}
 
 
-def read_exact(port, n, timeout=3, *, progress=None):
-    deadline = time.monotonic() + timeout; output = bytearray()
+def read_exact(port, n, timeout=3, *, progress=None, absolute_deadline=None,
+               cancel_event=None, monotonic=None):
+    now = monotonic or time.monotonic
+    deadline = now() + timeout
+    if absolute_deadline is not None:
+        if type(absolute_deadline) not in (int, float) or not math.isfinite(absolute_deadline):
+            raise ValueError('Invalid native absolute deadline')
+        deadline = min(deadline, absolute_deadline)
+    output = bytearray()
     original_timeout = getattr(port, 'timeout', None)
     try:
-        while len(output) < n and time.monotonic() < deadline:
+        while len(output) < n and now() < deadline:
+            if cancel_event is not None and cancel_event.is_set():
+                raise InterruptedError('Native response cancelled; no automatic retry')
             if hasattr(port, 'timeout'):
-                remaining = max(0, deadline-time.monotonic())
-                port.timeout = min(original_timeout,remaining) if original_timeout is not None else remaining
-            started = time.monotonic()
+                remaining = max(0, deadline-now())
+                port.timeout = min(.2,original_timeout,remaining) if original_timeout is not None else min(.2,remaining)
+            started = now()
             b = port.read(n - len(output))
             if b: output.extend(b)
             if progress is not None:
                 progress.append({'started_monotonic':started,
-                                 'ended_monotonic':time.monotonic(),
+                                 'ended_monotonic':now(),
                                  'bytes':len(b), 'total_bytes':len(output)})
+            if cancel_event is not None and cancel_event.is_set():
+                raise InterruptedError('Native response cancelled; no automatic retry')
+            if now() > deadline:
+                raise TimeoutError('Native read returned after absolute deadline; no automatic retry')
     except BaseException as exc:
         exc.partial = bytes(output)
         raise
@@ -211,7 +224,7 @@ def read_exact(port, n, timeout=3, *, progress=None):
     return bytes(output)
 
 
-def run_session(manifest, out, seconds, operation=None, *, deadline=None, operation_sha256=None):
+def run_session(manifest, out, seconds, operation=None, *, deadline=None, operation_sha256=None, cancel_event=None):
     isolated = bool(manifest.get('isolated_qualification'))
     if isolated:
         from ael.titan_isolated import preflight, completion_request
@@ -248,6 +261,10 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
         if set(op) != {'completion'}:
             raise ValueError('Completion is session-only, mutually exclusive with drive and control PATCH')
         prepare(op['completion'])  # Before importing/opening a serial owner.
+        if op['completion']['kind'] == 'endurance':
+            # One collector cutoff includes initial identity/bind and all child windows.
+            collector_deadline = time.monotonic() + 1100
+            deadline = min(deadline, collector_deadline) if deadline is not None else collector_deadline
     if op and 'isolated_capture' in op:
         from ael.titan_isolated import preflight
         if set(op) != {'isolated_capture'}:
@@ -255,6 +272,10 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
         if not isolated: preflight(manifest, consume=False)
         if type(deadline) not in (int, float) or not math.isfinite(deadline) or deadline <= time.monotonic():
             raise ValueError('Isolated session requires the transaction absolute deadline')
+    if cancel_event is not None and cancel_event.is_set():
+        raise InterruptedError('Native session cancelled before opening owner')
+    if deadline is not None and (type(deadline) not in (int,float) or not math.isfinite(deadline) or deadline<=time.monotonic()):
+        raise ValueError('Native session requires a finite future absolute deadline')
     import serial
     # Caller holds AEL's hardware transaction lock and validates sole ownership.
     port = serial.Serial(port=None, baudrate=115200, timeout=.2, write_timeout=1)
@@ -264,7 +285,8 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
     sequence = 0; cookie = 0x50524953
     raw = Path(out) / 'titan-native.jsonl'
     with raw.open('x') as log:
-        def exchange(opcode, payload=b''):
+        session_cancel = cancel_event
+        def exchange(opcode, payload=b'', *, absolute_deadline=None, cancel_event=None):
             nonlocal sequence
             sequence += 1
             q = request(opcode, payload, sequence, cookie)
@@ -273,27 +295,38 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
             header=packet=b''; written=None; error=None; complete=False
             header_reads=[]; body_reads=[]
             try:
+                cancelled = cancel_event or session_cancel
+                cutoff = deadline
+                if absolute_deadline is not None:
+                    if type(absolute_deadline) not in (int,float) or not math.isfinite(absolute_deadline):
+                        raise ValueError('Invalid native exchange absolute deadline')
+                    cutoff = min(cutoff,absolute_deadline) if cutoff is not None else absolute_deadline
+                if cancelled is not None and cancelled.is_set():
+                    raise InterruptedError('Native request cancelled; no automatic retry')
                 deadline_s = .02 if opcode == 0x50524402 else 1 if opcode == 0x50524606 else 3
-                if deadline is not None:
-                    remaining = deadline - time.monotonic()
-                    if remaining <= 0: raise TimeoutError('Isolated transaction deadline before native write')
+                if cutoff is not None:
+                    remaining = cutoff - time.monotonic()
+                    if remaining <= 0: raise TimeoutError('Native transaction deadline before write')
                     port.write_timeout = min(1, remaining)
                     deadline_s = min(deadline_s, remaining)
+                port.write_timeout = min(1, deadline_s)
                 written=port.write(q)
+                if cancelled is not None and cancelled.is_set():
+                    raise InterruptedError('Native write cancelled; no automatic retry')
                 if written != len(q): raise IOError('Incomplete native request write')
                 read_budget = max(0, deadline_s - (uptime_ns() - before_ns) / 1e9)
-                if deadline is not None:
-                    read_budget = min(read_budget, max(0, deadline - time.monotonic()))
+                if cutoff is not None:
+                    read_budget = min(read_budget, max(0, cutoff - time.monotonic()))
                     port.timeout = min(.2, read_budget)
-                header = read_exact(port, 32, read_budget, progress=header_reads)
+                header = read_exact(port, 32, read_budget, progress=header_reads, absolute_deadline=cutoff, cancel_event=cancelled)
                 packet=header
                 length = struct.unpack_from('<I', header, 16)[0]
                 if length > 4096: raise ValueError('Oversized native response')
                 remaining_s = max(0, deadline_s - (uptime_ns() - before_ns) / 1e9)
-                if deadline is not None:
-                    remaining_s = min(remaining_s, max(0, deadline - time.monotonic()))
+                if cutoff is not None:
+                    remaining_s = min(remaining_s, max(0, cutoff - time.monotonic()))
                     port.timeout = min(.2, remaining_s)
-                packet = header + read_exact(port, length, remaining_s, progress=body_reads)
+                packet = header + read_exact(port, length, remaining_s, progress=body_reads, absolute_deadline=cutoff, cancel_event=cancelled)
                 complete=True
                 return response(packet, sequence, cookie)
             except BaseException as exc:
@@ -348,7 +381,7 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
                 if 'completion' in op:
                     from ael.prism_completion import execute
                     result['completion'] = execute(exchange, manifest, op['completion'], out, info,
-                                                   **({'deadline': deadline} if deadline is not None else {}))
+                                                   deadline=deadline, cancel_event=cancel_event)
                     measured = result['completion']
                     if measured.get('kind') == 'measure' and measured.get('startup', {}).get('status') != 'PASS':
                         raise ValueError('Native completion startup failed; boot-to-ready evidence preserved')

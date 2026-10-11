@@ -34,7 +34,7 @@ class Device:
         n=int(self.time*1000000)
         return {'epoch':1,'capture_time_us':n,'sample_end':n*12800//1000000,
                 'hops':n//5000,'rejected_hops':0,'logical_frame':n//10000}
-    def exchange(self,op,payload=b''):
+    def exchange(self,op,payload=b'', **transport_limits):
         self.calls.append(op)
         if op==1:
             value=info()
@@ -47,7 +47,8 @@ class Device:
         else:raise AssertionError(op)
         return json.dumps(value).encode()
     def measure(self,exchange,manifest,request,out,initial,**kwargs):
-        assert exchange==self.exchange and request['seconds']==60
+        assert exchange.__wrapped__==self.exchange and request['seconds']==60
+        assert kwargs['deadline']<=1100 and 'cancel_event' in kwargs
         self.time+=60
         (Path(out)/'titan-completion.jsonl').write_text('{"synthetic_test":true}\n')
         return dict(proxy_budget_met=True,hop_deadline_met=True,render_deadline_met=True)
@@ -85,7 +86,7 @@ def test_actual_measure_logs_are_consumed_by_real_endurance_verifier(tmp_path,mo
     from tests.test_prism_completion_measure import MeasureBench,healthy,wire_cost
     from ael import prism_completion as completion,prism_endurance as endurance
     class Bench(MeasureBench):
-        def exchange(self,opcode,payload=b''):
+        def exchange(self,opcode,payload=b'', **transport_limits):
             if opcode==completion.COST:
                 import struct
                 boot,stage=struct.unpack('<II',payload)
@@ -110,7 +111,7 @@ def test_owned_playlist_stops_on_measure_failure(tmp_path,monkeypatch):
         def __init__(self,*args,**kwargs):
             self.acquisition_nonce='f'*64;self.started=False;self.stopped=False;instances.append(self)
         def start(self):self.started=True
-        def stop(self):self.stopped=True
+        def stop(self,**kwargs):self.stopped=True
         def check(self):pass
     monkeypatch.setattr(campaign,'CampaignPlaylist',Playlist)
     b=MeasureBench();request=spec();request['playlist']={'test_only':True}

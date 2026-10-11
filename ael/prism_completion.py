@@ -141,13 +141,11 @@ def require_healthy(info, before=None):
                 raise Refusal('Native counter fault: '+key)
 
 
-def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic, pause=time.sleep, deadline=None):
+def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic, pause=time.sleep, deadline=None, cancel_event=None):
     """Caller holds the one AEL lock and has bound UID/schema/source/boot."""
     if isinstance(spec, dict) and spec.get('kind') == 'endurance':
-        if deadline is not None:
-            raise Refusal('Endurance cannot use the bounded isolated completion deadline')
         from ael.prism_endurance import execute as execute_endurance
-        return execute_endurance(exchange, manifest, spec, out, initial, monotonic=monotonic, pause=pause)
+        return execute_endurance(exchange, manifest, spec, out, initial, monotonic=monotonic, pause=pause, deadline=deadline, cancel_event=cancel_event)
     prepared = prepare(spec)
     boot = initial['boot_id']
     start = monotonic()
@@ -158,14 +156,31 @@ def execute(exchange, manifest, spec, out, initial, *, monotonic=time.monotonic,
         cutoff = min(cutoff, deadline)
     exchange_cutoff = cutoff
     def check_deadline():
+        if cancel_event is not None and cancel_event.is_set():
+            raise Refusal('Completion cancelled; preserve donor recovery reserve')
         if monotonic() >= min(cutoff,exchange_cutoff):
             raise Refusal('Completion absolute deadline exhausted; preserve donor recovery reserve')
     original_exchange = exchange
     def exchange(opcode, payload=b''):
         check_deadline()
-        response = original_exchange(opcode, payload)
+        response = original_exchange(opcode, payload, absolute_deadline=min(cutoff,exchange_cutoff), cancel_event=cancel_event)
         check_deadline()
         return response
+    original_pause = pause
+    def pause(seconds):
+        check_deadline()
+        remaining = min(cutoff,exchange_cutoff)-monotonic()
+        if seconds > remaining:
+            raise Refusal('Completion wait exceeds absolute deadline')
+        if cancel_event is not None and original_pause is time.sleep:
+            if cancel_event.wait(seconds):
+                raise Refusal('Completion cancelled during wait')
+        else:
+            original_pause(seconds)
+        if cancel_event is not None and cancel_event.is_set():
+            raise Refusal('Completion cancelled during wait')
+        # At the readiness boundary the loop emits its never-ready witness.
+        if monotonic() > min(cutoff,exchange_cutoff):check_deadline()
     host_boot = host_boot_session()
     path = Path(out)/'titan-completion.jsonl'
     def current():
