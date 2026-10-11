@@ -224,6 +224,85 @@ def read_exact(port, n, timeout=3, *, progress=None, absolute_deadline=None,
     return bytes(output)
 
 
+
+def prepare_retained_witness(spec):
+    """Read-only operation: no source selection, preamble, settings or SAVE."""
+    if type(spec) is not dict or spec:
+        raise ValueError('Retained witness requires an empty explicit specification')
+
+
+def retained_witness(exchange, manifest, out, initial):
+    """Consume the existing sole-owner exchange; its raw log precedes decoding.
+
+    BIND sets only ControlOwner's host binding in native.cpp/control.h. It does
+    not clear capture/output history, select source or change settings. Snapshot
+    is read before BIND; queue and transmitter require that actual boot binding.
+    This readout does not prove power loss, host absence or continuous light.
+    """
+    from ael.prism_completion import require_healthy
+    boot = initial['boot_id']
+    if type(boot) is not int or not 0 < boot <= 0xFFFFFFFF:
+        raise ValueError('Invalid retained witness boot identity')
+    row = {'schema': 'titan.retained-witness.v1', 'identity': initial,
+           'raw_replies': {}, 'complete': False, 'optical_verified': False,
+           'host_absence_verified': False, 'physical_latency': 'UNMEASURED'}
+    try:
+        raw = exchange(23)
+        row['raw_replies']['snapshot'] = raw.hex()
+        row['snapshot'] = snapshot(raw, manifest['source_binding_hash'])
+        exchange(0x50520001, bind_payload(boot))
+        raw = exchange(CAPTURE_QUEUE, struct.pack('<I', boot))
+        row['raw_replies']['capture_queue'] = raw.hex()
+        row['capture_queue'] = capture_queue(raw)
+        raw = exchange(0x50524C02, struct.pack('<I', boot))
+        row['raw_replies']['transmitter'] = raw.hex()
+        row['transmitter'] = json.loads(raw)
+        require_healthy(initial)
+        for key in ('capture_clock_rejections', 'capture_restart_attempts',
+                    'output_recovery_attempts', 'persistence_errors'):
+            if type(initial.get(key)) is not int or initial[key] != 0:
+                raise ValueError('Retained witness startup counter fault: ' + key)
+        snap, queue, tx = row['snapshot'], row['capture_queue'], row['transmitter']
+        if (snap['capture_valid'] is not True or snap['warming'] is not False or
+                snap['stale'] is not False or snap['last_invalidate_reason'] != 0 or
+                snap['rejected_hops'] != 0 or not all(snap[k] > 0 for k in
+                ('epoch', 'capture_time_us', 'sample_end', 'hops', 'logical_frame'))):
+            raise ValueError('Retained witness capture is not healthy and ready')
+        if (queue['clock_hz'] != initial['clock_hz'] or
+                queue['source_rate'] != snap['source_rate'] or
+                not 14000 <= snap['source_rate'] <= 64000 or
+                not queue['consumed_blocks'] or not queue['valid_stream_boundary_us'] or
+                any(queue[k] != 0 for k in ('overwrite_events', 'dropped_blocks',
+                    'copy_races', 'first_fault_valid', 'interval_overflow')) or
+                any(s['overflow'] for s in queue['stages'])):
+            raise ValueError('Retained witness capture queue fault')
+        if (tx.get('schema') != 'prism.titan.transmitter.v2' or
+                any(type(tx.get(k)) is not int or tx[k] != 0 for k in
+                    ('first_fault', 'failures', 'last_fsp_error', 'pattern_requested')) or
+                type(tx.get('wire_reset_completions')) is not int or
+                tx['wire_reset_completions'] <= 0):
+            raise ValueError('Retained witness transmitter fault')
+        row['complete'] = True
+        return row
+    except BaseException as exc:
+        row['error'] = str(exc)
+        raise
+    finally:
+        # Even malformed/failed/partial replies survive in titan-native.jsonl;
+        # this decoded summary is additional evidence, never a physical PASS.
+        try:
+            summary = json.dumps(row, indent=2, allow_nan=False)
+        except ValueError:
+            # Malformed non-finite JSON must not mask the primary rejection.
+            # Original bytes are already durable in the native exchange log.
+            summary = json.dumps({'schema': row['schema'], 'complete': False,
+                'error': row.get('error', 'Non-finite decoded witness'),
+                'raw_replies': row['raw_replies'], 'raw_identity_log': 'titan-native.jsonl',
+                'host_absence_verified': False, 'optical_verified': False}, indent=2)
+        with (Path(out) / 'titan-retained-witness.json').open('x') as log:
+            log.write(summary + '\n')
+
+
 def run_session(manifest, out, seconds, operation=None, *, deadline=None, operation_sha256=None, cancel_event=None):
     isolated = bool(manifest.get('isolated_qualification'))
     if isolated:
@@ -251,6 +330,16 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
                 raise ValueError('Raw capture differs from the admitted isolated scope')
     else:
         op = json.loads(Path(operation).read_text()) if operation else None
+    if op and 'retained_witness' in op:
+        if set(op) != {'retained_witness'}:
+            raise ValueError('Retained witness cannot combine with control, replay, completion, capture or SAVE')
+        prepare_retained_witness(op['retained_witness'])
+        if type(seconds) not in (int, float) or not math.isfinite(seconds) or not 1 <= seconds <= 120:
+            raise ValueError('Retained witness requires a bounded 1..120 second readout')
+        if deadline is not None and (type(deadline) not in (int, float) or not math.isfinite(deadline)):
+            raise ValueError('Invalid retained witness absolute deadline')
+        witness_cutoff = time.monotonic() + seconds
+        deadline = min(deadline, witness_cutoff) if deadline is not None else witness_cutoff
     if op and 'disconnect_check' in op:
         from ael.prism_disconnect import prepare
         if set(op) != {'disconnect_check'}:
@@ -347,10 +436,16 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
                 raise ValueError('Wrong native UID/schema')
             if info.get('build_source_sha256') != manifest['source_binding_hash']:
                 raise ValueError('Runtime source identity mismatch')
-            if info.get('initialisation_failed') is True: raise ValueError('Native initialisation failed')
+            if info.get('initialisation_failed') is True and not (op and 'retained_witness' in op):
+                raise ValueError('Native initialisation failed')
             boot = info['boot_id']
             if not isinstance(boot, int) or boot <= 0: raise ValueError('Invalid native boot identity')
             result = {'identity': info, 'controls': [], 'records': 0}
+            if op and 'retained_witness' in op:
+                result['retained_witness'] = retained_witness(exchange, manifest, out, info)
+                result['optical_verified'] = False
+                result['host_absence_verified'] = False
+                return result
             if operation:
                 exchange(0x50520001, bind_payload(boot))
                 if 'disconnect_check' in op:

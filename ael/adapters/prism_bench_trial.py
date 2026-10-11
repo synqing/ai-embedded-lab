@@ -247,6 +247,11 @@ def execute(cfg, ctx, facts):
     if cfg.get('native_request'):
         operation = json.loads(Path(cfg['native_request']).read_text())
         require('isolated_capture' not in operation, 'Raw capture can run only through the isolated gateway transaction')
+        if 'retained_witness' in operation:
+            from ael.prism_native import prepare_retained_witness
+            require(action == 'bench-trial-control' and backend == 'titan' and set(operation) == {'retained_witness'},
+                    'Retained witness requires an exclusive Titan control operation')
+            prepare_retained_witness(operation['retained_witness'])
         if 'disconnect_check' in operation:
             from ael.prism_disconnect import prepare
             require(action == 'bench-trial-control' and backend == 'titan' and set(operation) == {'disconnect_check'},
