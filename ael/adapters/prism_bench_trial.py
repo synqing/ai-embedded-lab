@@ -17,6 +17,7 @@ import time
 TARGETS = {
     'prism_rt1062_t40_bench128_diag': ('dualmcu', '20731830', 'teensy'),
     'prism_s3_ble_bench16_diag': ('dualmcu', '30:ED:A0:29:A1:C4', 's3'),
+    'titan-replacement': ('titan', '545433931bd25436593630352d068363', 'titan'),
     'titan-native': ('titan', '545433931bd25436593630352d068363', 'titan'),
 }
 RFP_BACKEND = Path('/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/scripts/programme_rfp_swd.py')
@@ -87,6 +88,9 @@ def validate_manifest(cfg, facts):
     expected_binding = record.get('source_binding_hash') if kind == 'dualmcu' else record.get('source_profile_sha256')
     require(m.get('source_binding_hash') == expected_binding and expected_binding, 'Runtime source binding mismatch')
     lane.validate_product_receipt(record, build.parent, source, kind, facts, bench_trial=True)
+    if target == 'titan-replacement':
+        from ael.titan_replacement_observer import validate_profile
+        validate_profile(m, record)
     image = bound_file(m['image'])
     relative = image.relative_to(build.parent).as_posix()
     require(record['artefacts'].get(relative) == m['image']['sha256'], 'Image absent from successful build binding')

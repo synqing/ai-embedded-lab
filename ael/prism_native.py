@@ -431,6 +431,14 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
                 log.flush()
         try:
             port.open()
+            if manifest.get("target") == "titan-replacement":
+                from ael import titan_replacement_observer as replacement
+                if not isolated or not op or set(op) != {"isolated_capture"}:
+                    raise ValueError("Replacement observer requires isolated acquisition admission")
+                info = json.loads(exchange(replacement.IDENTITY))
+                measured = replacement.acquire(exchange, manifest, op["isolated_capture"], out, info,
+                                               absolute_deadline=deadline)
+                return {"identity":info,"isolated_capture":measured,"optical_verified":False}
             info = json.loads(exchange(1))
             if info.get('uid') != UID or info.get('schema_sha256') != SCHEMA:
                 raise ValueError('Wrong native UID/schema')

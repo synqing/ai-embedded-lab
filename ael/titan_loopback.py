@@ -64,7 +64,11 @@ DIRECT_FIELDS = tuple(name.replace("gpt4_", "gpt12_").replace("irq27_cr", "gpt7_
 def verify_direct_configuration(s, *, complete=False, readiness=False):
     require(s["split_capability"] == 2 and s["reserved"] == 0 and
             all(s[f"reserved_{i}"] == 0 for i in range(137,144)), "Unknown direct capture capability")
-    require(s["ccr"] & (1 << 16) == 0 and s["mpu"] == 0,"Direct cache/MPU configuration mismatch")
+    if s["version"] == 4:
+        from ael.titan_replacement_observer import verify_memory
+        verify_memory(s)
+    else:
+        require(s["ccr"] & (1 << 16) == 0 and s["mpu"] == 0,"Direct cache/MPU configuration mismatch")
     expected_period=0xfffffffe if readiness else 0xffffffff
     require(s["gpt7_gtpr"] == s["gpt12_gtpr"] == expected_period,"Direct counter modulus mismatch")
     if not readiness:
@@ -81,16 +85,16 @@ def verify_direct_configuration(s, *, complete=False, readiness=False):
         require(s["gpt12_initial"] == s["gpt7_initial"] == 0 and s["start_mask"] == 0x1080,
                 "Direct timer initialisation/start mismatch")
     verify_dma_configuration(s,(0x1c0,0x1c1,0x1ed,0x1ee),
-                             (0x4032274c,0x40322750,0x40322c4c,0x40322c50),complete=complete)
+                             (0x4032274c,0x40322750,0x40322c4c,0x40322c50),complete=complete, capacity=s["capacity"])
 
 
 def stream_counts(s):
-    return ([s["words_"+n] for n in SPLIT_NAMES] if s["version"] in (2,3) else
+    return ([s["words_"+n] for n in SPLIT_NAMES] if s["version"] in (2,3,4) else
             [s["words_a"], s["words_b"]]) + [s["sof_rows"]*4]
 
 
 def verify_split_configuration(s, *, complete=False, readiness=False):
-    if s["version"] == 3:
+    if s["version"] in (3,4):
         return verify_direct_configuration(s,complete=complete,readiness=readiness)
     require(s["split_capability"] == 1 and s["reserved"] == 0, "Unknown split capture capability")
     require(s["ccr"] & (1 << 16) == 0 and s["mpu"] == 0,"Split cache/MPU configuration mismatch")
@@ -113,9 +117,9 @@ def verify_split_configuration(s, *, complete=False, readiness=False):
                              (0x4032244c,0x4032274c,0x40322450,0x40322750),complete=complete)
 
 
-def verify_dma_configuration(s, events, sources, *, complete):
+def verify_dma_configuration(s, events, sources, *, complete, capacity=SPLIT_CAPACITY):
     buffers=[s["buffer_"+n] for n in SPLIT_NAMES]
-    require(all(abs(a-b) >= 4*SPLIT_CAPACITY for i,a in enumerate(buffers) for b in buffers[i+1:]),
+    require(all(abs(a-b) >= 4*capacity for i,a in enumerate(buffers) for b in buffers[i+1:]),
             "Overlapping split DMA buffers")
     for name,event,source in zip(SPLIT_NAMES,events,sources):
         require(s["dmtmd_"+name] == 0x2201 and s["dmint_"+name] == 0 and
@@ -125,7 +129,7 @@ def verify_dma_configuration(s, events, sources, *, complete):
                 "Split DMA address mismatch: "+name)
         require(s["destination_"+name] == s["buffer_"+name] + 4*s["words_"+name],
                 "Split DMA destination/count mismatch: "+name)
-        require(s["remaining_"+name] + s["words_"+name] == SPLIT_CAPACITY,
+        require(s["remaining_"+name] + s["words_"+name] == capacity,
                 "Split DMA remaining/count mismatch: "+name)
         if complete:
             require(s["dmsts_"+name] == 0, "Split DMA not quiescent: "+name)
@@ -143,7 +147,7 @@ def verify_split_epoch(s, lane_raw, sof_raw, *, pattern, pulses=3840, diagnostic
     require(len(lane_raw) == 4, "Missing split polarity stream")
     require(s["configuration_low"] == s["initial_low"] == s["final_low"] == 3 and
             s["recording"] == 1, "Split capture LOW/recording evidence missing")
-    direct=s["version"] == 3
+    direct=s["version"] in (3,4)
     require(s["gpt12_gtst" if direct else "gpt4_gtst"] == s["gpt7_gtst"] == 0x8003 and
             s["gpt2_gtst"] == s["gpt3_gtst"] == 0x8000, "Split capture overflow/flags")
     require(s["edges_a"] == s["edges_b"] == s["words_a"] == s["words_b"] == 2*pulses,
@@ -174,7 +178,7 @@ def verify_split_epoch(s, lane_raw, sof_raw, *, pattern, pulses=3840, diagnostic
         require(((s[prefix+"leading_end"]-s[prefix+"leading_begin"]) & 0xffffffff) <= rises[0] and
                 falls[-1] <= ((s[prefix+"trailing_begin"]-s[prefix+"leading_begin"]) & 0xffffffff) < 0x80000000,
                 f"Lane {lane} first/last edge outside frame")
-        expected=diagnostic_payload(pattern,lane) if pulses==3840 else bytes(pulses//8)
+        expected=diagnostic_payload(pattern,lane,bytes_per_lane=pulses//8) if pulses in (3840,7680) else bytes(pulses//8)
         payload=bytearray(pulses//8); lane_widths=[]
         for bit,(rise,fall) in enumerate(zip(rises,falls)):
             require(rise < fall and (bit==pulses-1 or fall < rises[bit+1]),
@@ -303,7 +307,7 @@ def verify_epoch(status_raw, lane_raw, sof_raw, *, boot, epoch, pattern,
     them or reading a purported bound from an acquisition manifest.
     """
     s = parse_status(status_raw, boot, epoch)
-    if s["version"] in (2,3):
+    if s["version"] in (2,3,4):
         return verify_split_epoch(s,lane_raw,sof_raw,pattern=pattern)
     require(s["state"] == 6 and s["fault"] == s["first_fsp_error"] == 0,
             "Loopback did not complete cleanly")

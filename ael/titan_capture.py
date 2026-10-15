@@ -59,7 +59,7 @@ def read_only_status(endpoint, *, timeout=3):
 
 def isolated_preflight(m):
     q=m.get("isolated_qualification",{})
-    if q.get("backend") in ("titan-gpt7-external-loopback-v1", "titan-split-edge-loopback-v2", "titan-direct-gpt7-gpt12-loopback-v3"):
+    if q.get("backend") in ("titan-gpt7-external-loopback-v1", "titan-split-edge-loopback-v2", "titan-direct-gpt7-gpt12-loopback-v3", "titan-replacement-direct-loopback-v4"):
         from ael.titan_isolated import preflight
         return preflight(m)
     require(q.get("operation")=="titan-isolated-waveform-v1", "Missing isolated qualification operation")
@@ -74,6 +74,10 @@ def isolated_preflight(m):
 def consume_output_proof(m, proof):
     require(proof.get("schema")=="prism.titan.output-qualification.v2","Wrong raw qualification schema")
     capture=json.loads(bound(proof["capture_manifest"]))
+    if capture.get("schema")=="prism.titan.replacement-acquisition.v1":
+        from ael.titan_replacement_observer import verify_acquisition
+        verify_acquisition(capture,m)
+        raise RuntimeError("UNQUALIFIED_INPUT_CAPTURE_TIMING: replacement raw diagnostic cannot release product HOLD")
     if capture.get("schema")=="prism.titan.loopback-acquisition.v1":
         from ael.titan_loopback import verify_acquisition
         result=verify_acquisition(capture,m)

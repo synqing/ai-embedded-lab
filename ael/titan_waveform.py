@@ -76,17 +76,18 @@ def parse_esp32jtag_instant(raw):
     return raw[0], [x[0] for x in struct.iter_unpack(">H", raw[1:])]
 
 
-def diagnostic_payload(frame, lane):
+def diagnostic_payload(frame, lane, *, bytes_per_lane=480):
     """Independent host implementation of Kx pattern-set-v1; fixture-only.
 
     Never send these bytes to an attached product: frame1 is all ones.
     """
     require(type(frame) is int and 0 <= frame < 256 and lane in (0,1), "Invalid pattern identity")
+    require(bytes_per_lane in (480, 960), "Unsupported diagnostic geometry")
     if frame < 3:
-        return bytes([0 if frame==0 else 255 if frame==1 else (0xAA if lane==0 else 0x55)])*480
+        return bytes([0 if frame==0 else 255 if frame==1 else (0xAA if lane==0 else 0x55)])*bytes_per_lane
     x=(0x9e3779b9 ^ ((frame*0x85ebca6b)&0xffffffff) ^ ((lane*0xc2b2ae35)&0xffffffff))
     data=bytearray()
-    for _ in range(480):
+    for _ in range(bytes_per_lane):
         x ^= (x<<13)&0xffffffff
         x ^= x>>17
         x ^= (x<<5)&0xffffffff

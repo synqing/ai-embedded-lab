@@ -13,7 +13,7 @@ def main():
     p.add_argument('--source', required=True, type=Path)
     p.add_argument('--core-source', type=Path)
     p.add_argument('--action', required=True, choices=('discover', 'core-test', 'donor-build', 'donor-recover', 'observe', 'bench-build', 'product-build', 'product-test', 'regression', 'diagnose', 'build', 'flash', 'recover', 'bench-trial-plan', 'bench-trial-qualify-isolated', 'bench-trial-flash', 'bench-trial-recover', 'bench-trial-observe', 'bench-trial-control'))
-    p.add_argument('--target', choices=('rt1062_production', 'rt1062_k1_migration_t40_ws2812_128', 's3_radio_bridge_ble', 'prism_rt1062_t40_bench128_diag', 'prism_s3_ble_bench16_diag', 'titan-native'))
+    p.add_argument('--target', choices=('rt1062_production', 'rt1062_k1_migration_t40_ws2812_128', 's3_radio_bridge_ble', 'prism_rt1062_t40_bench128_diag', 'prism_s3_ble_bench16_diag', 'titan-native', 'titan-replacement'))
     p.add_argument('--deployment-manifest', type=Path)
     p.add_argument('--native-request', type=Path, help='Explicit Titan atomic control/save request; not Dual injection')
     p.add_argument('--donor-source', type=Path)

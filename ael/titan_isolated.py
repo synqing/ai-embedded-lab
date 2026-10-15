@@ -18,6 +18,7 @@ import time
 
 from ael.titan_waveform import UID, bound, digest, require
 from ael.titan_loopback import BACKEND, SPLIT_BACKEND, DIRECT_BACKEND
+from ael.titan_replacement_observer import BACKEND as REPLACEMENT_BACKEND
 
 JUMPERS = [["U18.7/P601", "U18.33/P603"], ["U18.12/P604", "U18.35/P602"]]
 DIRECT_JUMPERS = [["U18.7/P601", "U18.33/P603"], ["U18.12/P604", "U18.36/P714"]]
@@ -45,9 +46,12 @@ def _scope(m):
             "source_binding_hash":m["source_binding_hash"], "source_commit":m["source_commit"],
             "build_receipt_sha256":m["build_receipt"]["sha256"],
             "recovery_sha256":TITAN_RECOVERY_HEX_SHA256,
-            "jumpers":DIRECT_JUMPERS if m["isolated_qualification"].get("backend") == DIRECT_BACKEND else JUMPERS, "electrically_excluded":EXCLUSION,
+            "jumpers":DIRECT_JUMPERS if m["isolated_qualification"].get("backend") in (DIRECT_BACKEND,REPLACEMENT_BACKEND) else JUMPERS, "electrically_excluded":EXCLUSION,
             "operation":OPERATION, "frames":m["isolated_qualification"]["frames"],
             **({"backend":DIRECT_BACKEND,"capture_schema":3} if m["isolated_qualification"].get("backend") == DIRECT_BACKEND else {}),
+            **({"backend":REPLACEMENT_BACKEND,"capture_schema":4,"target":"titan-replacement",
+                "bits_each":7680,"bytes_each":960,"cache":"dcache-noncache-mpu"}
+               if m["isolated_qualification"].get("backend") == REPLACEMENT_BACKEND else {}),
             "maximum_interruption_seconds":120,
             **({"completion": {"kind": completion["kind"],
                                 "request_sha256": m["isolated_qualification"]["completion_request"]["sha256"]}}
@@ -122,9 +126,13 @@ def operator_record(row, schema, scope, *, physical_freshness=False):
 
 def preflight(m, *, consume=False, used_dir=None):
     q = m.get("isolated_qualification",{})
-    require(q.get("operation") == OPERATION and q.get("backend") in (BACKEND,SPLIT_BACKEND,DIRECT_BACKEND),
+    require(q.get("operation") == OPERATION and q.get("backend") in (BACKEND,SPLIT_BACKEND,DIRECT_BACKEND,REPLACEMENT_BACKEND),
             "BLOCKED_CAPTURE_CAPABILITY: unsupported isolated backend")
-    require(m.get("identity") == UID and m.get("target") == "titan-native", "Wrong isolated target")
+    replacement = q.get("backend") == REPLACEMENT_BACKEND
+    require(m.get("identity") == UID and m.get("target") == ("titan-replacement" if replacement else "titan-native"), "Wrong isolated target")
+    if replacement:
+        require("completion_request" not in q and "constant_timer_diagnostic" not in q,
+                "Replacement does not support legacy fixture/completion operations")
     require(type(q.get("frames")) is int and 100 <= q["frames"] <= 120, "Need100..120 bounded frames")
     require(q.get("maximum_interruption_seconds") == 120, "Unbounded isolated interruption")
     diagnostic=q.get("constant_timer_diagnostic")
@@ -152,6 +160,8 @@ def preflight(m, *, consume=False, used_dir=None):
     elif decision == "isolated-acquisition-with-prior-exact-image-readiness":
         # A prior generated acquisition must re-verify its raw observations.
         from ael.titan_loopback import verify_acquisition
+        if replacement:
+            raise RuntimeError("Replacement requires exact scoped bootstrap; prior readiness admission not yet qualified")
         prior = _record(q["prior_readiness"],"prism.titan.loopback-acquisition.v1")
         verify_acquisition(prior,m)
         require(prior.get("fixture_id") == fixture["fixture_id"], "Prior readiness fixture changed")
