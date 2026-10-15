@@ -113,7 +113,7 @@ def test_identity_refuses_before_stimulus(key,value):
 class Detector:
     def __init__(self):
         self.s,self.streams,self.sof=fixture();self.calls=[];self.drained=False
-    def exchange(self,opcode,payload=b''):
+    def exchange(self,opcode,payload=b'', *, absolute_deadline=None):
         self.calls.append(opcode)
         if opcode==observer.IDENTITY:return json.dumps(info()).encode()
         if opcode==observer.CONTROL_STATUS:return struct.pack('<4I',1,7,0,1)+UID.encode()+bytes(64)
@@ -172,7 +172,7 @@ def test_actual_framed_serial_owner_selects_replacement(tmp_path,monkeypatch):
 
 def test_drain_failure_retained_without_rearm(tmp_path):
     d=Detector()
-    def exchange(op,payload=b''):
+    def exchange(op,payload=b'', *, absolute_deadline=None):
         raw=d.exchange(op,payload)
         return raw[:-1] if op==loop.DRAIN else raw
     with pytest.raises(RuntimeError,match='Truncated'):
@@ -218,7 +218,7 @@ def test_wrong_runtime_memory_prevents_arm(tmp_path):
 
 def test_deadline_during_drain_does_not_rearm(tmp_path):
     d=Detector();now=[0.]
-    def exchange(op,payload=b''):
+    def exchange(op,payload=b'', *, absolute_deadline=None):
         raw=d.exchange(op,payload)
         if op==loop.DRAIN:now[0]=61
         return raw
@@ -229,9 +229,20 @@ def test_deadline_during_drain_does_not_rearm(tmp_path):
 
 def test_cancel_failure_is_not_success(tmp_path):
     d=Detector()
-    def exchange(op,payload=b''):
+    def exchange(op,payload=b'', *, absolute_deadline=None):
         if op==loop.CANCEL:raise OSError('mock cancel lost')
         return d.exchange(op,payload)
     with pytest.raises(OSError,match='cancel lost'):
         observer.acquire(exchange,manifest(),{'frames':100,'pattern':2,'budget_seconds':60},tmp_path,info(),absolute_deadline=time.monotonic()+60)
     assert not (tmp_path/'replacement-loopback/acquisition.json').exists()
+
+
+def test_transport_receives_capture_cutoff_and_cancel_keeps_outer_reserve(tmp_path):
+    d=Detector(); cutoffs=[]
+    def exchange(op,payload=b'', *, absolute_deadline=None):
+        cutoffs.append((op,absolute_deadline))
+        return d.exchange(op,payload)
+    observer.acquire(exchange,manifest(),{'frames':100,'pattern':2,'budget_seconds':60},
+                     tmp_path,info(),absolute_deadline=180,clock=lambda:100.)
+    assert cutoffs and all(cutoff==160 for op,cutoff in cutoffs if op!=loop.CANCEL)
+    assert cutoffs[-1]==(loop.CANCEL,180)

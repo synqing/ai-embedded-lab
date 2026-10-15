@@ -183,7 +183,7 @@ def acquire(exchange, manifest, spec, out, info, *, absolute_deadline, clock=tim
         return {"path": str(p.resolve()), "sha256": digest(raw)}
     def read(name, opcode, payload=b""):
         require(clock() < deadline, "Replacement capture/drain deadline; recovery reserve retained")
-        raw = exchange(opcode, payload)
+        raw = exchange(opcode, payload, absolute_deadline=deadline)
         row = save(name, raw)
         require(clock() < deadline, "Replacement reply exceeded capture deadline")
         return raw, row
@@ -243,7 +243,8 @@ def acquire(exchange, manifest, spec, out, info, *, absolute_deadline, clock=tim
             primary = sys.exc_info()[1]
             try:
                 require(clock() < absolute_deadline, "No candidate budget remains for cancellation")
-                save("cancel.bin", exchange(legacy.CANCEL, struct.pack("<2I", boot, current)))
+                save("cancel.bin", exchange(legacy.CANCEL, struct.pack("<2I", boot, current),
+                                            absolute_deadline=absolute_deadline))
             except Exception as exc:
                 save("cancel-error.json", json.dumps({"error": str(exc)}).encode())
                 if primary is None: raise
@@ -275,7 +276,7 @@ def main():
         require(receipt.get("artefacts", {}).get("titan-native.hex") == digest(image), "Wrong receipt image")
         result = verify_acquisition(json.loads(args.capture.read_text()), manifest) if args.capture else {
             "profile": "titan-replacement", "backend": BACKEND, "bits_each": BITS, "bytes_each": 960,
-            "firmware_dependency": "v4 fixture must be implemented and observed; health alone is insufficient",
+            "firmware_dependency": "Final candidate binding and runtime v4 readiness required; this offline check does not establish fixture capability",
             "hardware_access": False, "physical_qualification": False}
         print(json.dumps(result, indent=2)); return 0
     except (RuntimeError, ValueError, KeyError, TypeError, OSError) as exc:
