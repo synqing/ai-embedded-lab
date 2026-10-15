@@ -165,3 +165,21 @@ existing read-only validator with:
 
 These recovery bytes and historical range verification are not a current
 resident observation or evidence that the derived image has been programmed.
+
+## Host009 recovery admission (16 October)
+
+The additional exact-image recovery route admits host009 in-range HEX
+`715156513a4ebcccdcd72c50c460378a37d7bd979b2478a10fb4f5d3aa86649b`
+through its pinned original image, build and historical programming receipt.
+It preserves all 648,792 in-range bytes; only the four all-FF option bytes at
+0x02C9F040 are omitted, as in the existing range-restricted recovery mechanism.
+Historical target verification covers [0x02000000, 0x0209E660). This does not claim
+the derived image was programmed, nor establish current runtime/settings health.
+The earlier exact recovery routes retain their limits; the old selected recovery
+differs from the freshly exported host009 resident and must not be used for this
+transaction. New recovery selection requires a separately bound manifest and
+operator scope; physical observation times must not be restamped.
+
+Focused checks: `python -m pytest tests/test_titan_host009_recovery.py` plus the
+existing recovery-selected cases. Real retained evidence is required for the new
+checks; missing local evidence is reported as skipped, never an admission pass.

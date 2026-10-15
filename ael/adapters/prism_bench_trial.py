@@ -123,10 +123,107 @@ TITAN_RECOVERY_RECEIPT_SHA256 = 'ac4801e2666fe6fb03f47c438bcb32213d0cd978e4059b3
 TITAN_RECOVERY_BUILD = 'becb0186f0a66fbb04b0e0f4a79c0480b8b963db0fe3f518a91af9bb2dd2b5c7'
 
 
+TITAN_HOST009_RECOVERY_SOURCE_HEX_SHA256 = 'c2e927d986ccac7f58f16d88e10cfb7837e45c2547e0c88a3eebf6b05ab039f3'
+TITAN_HOST009_RECOVERY_HEX_SHA256 = '715156513a4ebcccdcd72c50c460378a37d7bd979b2478a10fb4f5d3aa86649b'
+TITAN_HOST009_RECOVERY_DERIVATION_SHA256 = '3c436c9ef346c433b422e1a51b38c2f799a07457220913c9d6befb046a681e67'
+TITAN_HOST009_RECOVERY_BUILD = 'fe4bf14a8a8e674f2962ad13e9b42b332da95208c2c4864b4ca9c92b6f4cfa9d'
+TITAN_HOST009_RECOVERY_SOURCE = '7f86939bd7c16c4a6dd5789813e9d551246ed134'
+TITAN_HOST009_RECOVERY_BUILD_RECEIPT_SHA256 = '5585fbfd9129d6c307851afb1ef6f2c052c72a90dc5aebcac5c5246f10e90441'
+TITAN_HOST009_RECOVERY_RECEIPT_SHA256 = 'ad150a1dc29d5b924a972d5fe16756e87a1e77a928105d1fa023f6e6bdb3aa49'
+
+def require_titan_host009_recovery(m, image):
+    """Admit derived recovery through exact source-byte/verified-range equivalence."""
+    import re
+    require(m.get('identity') == TITAN_RECOVERY_UID, 'Recovery wrong Titan UID')
+    recovery = m['recovery']
+    require(sha(image) == TITAN_HOST009_RECOVERY_HEX_SHA256, 'Wrong derived current donor')
+    source = bound_file(recovery['source_image'])
+    require(sha(source) == TITAN_HOST009_RECOVERY_SOURCE_HEX_SHA256, 'Wrong original donor image')
+    derivation_file = bound_file(recovery['derivation'])
+    require(sha(derivation_file) == TITAN_HOST009_RECOVERY_DERIVATION_SHA256,
+            'Unknown current donor derivation')
+    d = json.loads(derivation_file.read_text())
+    require(d.get('schema') == 'titan.recovery.inrange/1' and
+            d.get('source_sha256') == sha(source) and d.get('derived_sha256') == sha(image) and
+            d.get('build_id') == TITAN_HOST009_RECOVERY_BUILD and
+            d.get('uid') == TITAN_RECOVERY_UID and d.get('source_pin') == TITAN_HOST009_RECOVERY_SOURCE and
+            isinstance(d.get('source_hex'), str) and bool(d['source_hex']) and
+            isinstance(d.get('derived_hex'), str) and bool(d['derived_hex']) and
+            d.get('range') == '02000000-02C9F01F' and d.get('in_range_bytes') == 648792 and
+            d.get('dropped_records') == [':04F04000FFFFFFFFD0'] and
+            d.get('derived_image_programmed') is False and d.get('hardware_access') is False,
+            'Wrong derivation identity/provenance')
+    original, records = recovery_hex_bytes(source)
+    actual, _ = recovery_hex_bytes(image)
+    inside = {a:v for a,v in original.items() if 0x02000000 <= a < 0x02C9F020}
+    outside = {a:v for a,v in original.items() if a not in inside}
+    require(actual == inside and len(actual) == 648792 and
+            recovery_merged_spans(actual) == [[0x02000000,0x0209e658]],
+            'Derived recovery must preserve every in-range byte')
+    require(outside == {a:255 for a in range(0x02C9F040,0x02C9F044)} and
+            [line for line,kind,a,n in records if kind == 0 and n and
+             not (0x02000000 <= a and a+n <= 0x02C9F020)] == [':04F04000FFFFFFFFD0'],
+            'Unexpected excluded source bytes')
+    build_file = bound_file(recovery['build_receipt'])
+    require(sha(build_file) == TITAN_HOST009_RECOVERY_BUILD_RECEIPT_SHA256,
+            'Unknown current donor build receipt')
+    build = json.loads(build_file.read_text())
+    require(build.get('pass') is True and build.get('label') == 'PRE-SILICON' and
+            build.get('build_id') == TITAN_HOST009_RECOVERY_BUILD and
+            build.get('source_pin') == TITAN_HOST009_RECOVERY_SOURCE and
+            build.get('artifacts', {}).get('rtthread.hex') == sha(source),
+            'Current donor build must bind original source image')
+    receipt_file = bound_file(recovery['qualification_receipt'])
+    require(sha(receipt_file) == TITAN_HOST009_RECOVERY_RECEIPT_SHA256,
+            'Unknown original source programming receipt')
+    p = json.loads(receipt_file.read_text())
+    require(p.get('label') == 'RFP-SWD' and p.get('pass') is True and p.get('execute') is True and
+            p.get('dry_run') is False and type(p.get('returncode')) is int and p['returncode'] == 0,
+            'Original ranged programming did not succeed')
+    require(p.get('uid') == TITAN_RECOVERY_UID and p.get('build_id') == TITAN_HOST009_RECOVERY_BUILD and
+            p.get('source_pin') == TITAN_HOST009_RECOVERY_SOURCE and p.get('hex_sha256') == sha(source),
+            'Original programmed identity mismatch')
+    require(p.get('probe') == 'e2l:5AS079228B' and p.get('interface') == 'swd' and
+            p.get('speed_hz') == 1000000 and p.get('range') == '02000000,02c9f01f' and
+            p.get('flags') == ['-noquery', '-run'] and p.get('debug_mode') == 'none',
+            'Original programmer scope mismatch')
+    argv = p.get('command', [])
+    require(isinstance(argv, list) and len(argv) == 15 and Path(argv[0]).name == 'rfp-cli' and
+            argv[1:-1] == ['-d','RA','-t','e2l:5AS079228B','-if','swd','-s','1000000',
+                          '-noquery','-run','-range','02000000,02c9f01f','-pv'],
+            'Original actual command mismatch')
+    text = p.get('stdout', '')
+    require(text.startswith('Renesas Flash Programmer CLI V1.17\n') and
+            'Load: "'+argv[-1]+'"' in text and 'Emulator power supply: OFF' in text and
+            'Connected to R7KA8P1KFLCAC' in text and 'Tool: E2 emulator Lite (5AS079228B)' in text and
+            text.count('Writing data to the target device') == 1 and
+            text.count('Verifying data on the target device') == 1 and
+            text.rstrip().endswith('Operation successful') and
+            not re.search(r'\b(error|failed|failure)\b',text,re.I),
+            'Original programmer evidence mismatch')
+    verified = [[int(a,16),int(b,16)+1] for a,b in re.findall(
+        r'\[Code MRAM [12]\]\s+([0-9A-F]{8}) - ([0-9A-F]{8})',
+        text.split('Verifying data on the target device',1)[1])]
+    require(verified == [[0x02000000,0x0209e660]] and
+            all(any(a <= lo < hi <= b for a,b in verified) for lo,hi in hex_spans(image)),
+            'Historical verified ranges do not cover derived recovery')
+    require(d.get('historical_source_programming_receipt_sha256') == sha(receipt_file) and
+            d.get('historical_verified_ranges') == verified and
+            d.get('derived_spans') == recovery_merged_spans(actual),
+            'Derivation historical coverage provenance mismatch')
+    return {'image_sha256':sha(image),'source_image_sha256':sha(source),
+            'derivation_sha256':sha(derivation_file),'build_receipt_sha256':sha(build_file),
+            'execution_receipt_sha256':sha(receipt_file),'build_source_sha256':TITAN_HOST009_RECOVERY_BUILD,
+            'historical_source_verified_ranges':verified,'recovery_byte_equivalence_verified':True,
+            'derived_image_programmed':False,
+            'scope':'derived current donor recovery admission via original ranged-byte equivalence; no new device proof'}
+
 def require_titan_recovery(m):
     recovery = m.get('recovery', {})
     require(m.get('identity') == TITAN_RECOVERY_UID, 'Recovery wrong Titan UID')
     image = bound_file(recovery['image'])
+    if sha(image) == TITAN_HOST009_RECOVERY_HEX_SHA256:
+        return require_titan_host009_recovery(m, image)
     require(sha(image) == TITAN_RECOVERY_HEX_SHA256, 'Recovery must be exact known donor; candidate cannot bypass output HOLD')
     derivation_file = bound_file(recovery['derivation'])
     require(sha(derivation_file) == TITAN_RECOVERY_DERIVATION_SHA256, 'Unknown donor recovery derivation')
