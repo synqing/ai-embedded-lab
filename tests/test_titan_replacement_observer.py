@@ -181,6 +181,75 @@ def test_drain_failure_retained_without_rearm(tmp_path):
     assert (tmp_path/'replacement-loopback/failure.json').exists()
 
 
+@pytest.mark.parametrize('health_mode',['success','old_health','refusal','timeout','expired','local_expired','late_reply'])
+def test_fault_health_is_bounded_before_cancel_and_never_masks_capture(tmp_path,monkeypatch,health_mode):
+    d=Detector();now=[0.];cutoffs=[];health_calls=[];primary=[];secondary=[]
+    real_verify=observer.verify_epoch
+    def verify(*args,**kwargs):
+        try:return real_verify(*args,**kwargs)
+        except BaseException as exc:
+            primary.append(exc)
+            raise
+    monkeypatch.setattr(observer,'verify_epoch',verify)
+    health_raw=b'{"schema":"replacement-health-v1","first_failure":{"receiver_b_high":true}}\n'
+    if health_mode=='old_health':health_raw=b'{"schema":"replacement-health-v1"}\n'
+    def exchange(op,payload=b'', *, absolute_deadline=None):
+        cutoffs.append((op,absolute_deadline))
+        if op==observer.HEALTH:
+            health_calls.append(absolute_deadline)
+            if len(health_calls)>1:
+                if health_mode in ('refusal','timeout'):
+                    exc=RuntimeError('TEST ONLY health refused') if health_mode=='refusal' else TimeoutError('TEST ONLY health timeout')
+                    secondary.append(exc)
+                    raise exc
+                if health_mode=='late_reply':now[0]=absolute_deadline
+                d.calls.append(op)
+                return health_raw
+        raw=d.exchange(op,payload)
+        if op==loop.STATUS and struct.unpack('<2I',payload)[1]:
+            s=observer.status(raw,7,1)
+            s.update(state=7,fault=7,sof_rows=0,words_a=0,words_b=0)
+            for name in loop.SPLIT_NAMES:s['words_'+name]=0;s['cursor_'+name]=0
+            s['cursor_split_sof']=0
+            if health_mode=='expired':now[0]=80.
+            if health_mode=='local_expired':now[0]=61.
+            return packed(s)
+        return raw
+    with pytest.raises(RuntimeError) as caught:
+        observer.acquire(exchange,manifest(),{'frames':100,'pattern':2,'budget_seconds':60},
+                         tmp_path,info(),absolute_deadline=80,clock=lambda:now[0])
+    out=tmp_path/'replacement-loopback';failure=json.loads((out/'failure.json').read_text())
+    assert failure['error']==str(caught.value) and failure['physical_qualification'] is False
+    assert (out/'1-status-0.bin').exists() and not (out/'acquisition.json').exists()
+    assert d.calls.count(loop.ARM)==1
+    if health_mode in ('expired','local_expired'):
+        assert not primary and 'deadline' in str(caught.value)
+        assert health_calls==[60] and failure['health_failure']['outcome']=='skipped'
+        assert failure['health_failure']['deadline']==60 and not (out/'health-failure.json').exists()
+        assert not (out/'health-failure-error.json').exists()
+        assert d.calls.count(loop.CANCEL)==(0 if health_mode=='expired' else 1)
+        if health_mode=='expired':assert (out/'cancel-error.json').exists()
+    else:
+        assert caught.value is primary[0] and str(caught.value)=='Split loopback did not complete cleanly'
+        assert health_calls==[60,1.] and cutoffs[-1]==(loop.CANCEL,80)
+        assert d.calls.count(loop.CANCEL)==1
+        assert all((out/('1-stream'+str(i)+'.u32')).read_bytes()==b'' for i in range(5))
+        assert len(failure['epochs'])==1 and (out/'1-drained.bin').exists()
+        if health_mode in ('success','old_health','late_reply'):
+            assert (out/'health-failure.json').read_bytes()==health_raw
+            row=failure['health_failure']['raw']
+            assert row['sha256']==digest(health_raw) and failure['health_failure']['observation_only'] is True
+        if health_mode in ('refusal','timeout','late_reply'):
+            error=json.loads((out/'health-failure-error.json').read_text())
+            assert failure['health_failure_error']==error
+            if secondary:assert caught.value.__cause__ is secondary[0]
+            else:assert str(caught.value.__cause__)=='Failure health reply exceeded capture deadline'
+            assert error['error']==str(caught.value.__cause__)
+            assert error['exception_type']==type(caught.value.__cause__).__name__
+        else:
+            assert caught.value.__cause__ is None and not (out/'health-failure-error.json').exists()
+
+
 @pytest.mark.parametrize('field', ['image_sha256','source_commit','source_binding_hash','build_receipt_sha256'])
 def test_capture_prior_candidate_binding_refused(field):
     m=manifest()

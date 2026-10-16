@@ -235,7 +235,36 @@ def acquire(exchange, manifest, spec, out, info, *, absolute_deadline, clock=tim
         require(control_status(raw) == boot, "Replacement reboot during acquisition")
         _, health_after = read("health-after.json", HEALTH)
     except BaseException as exc:
-        save("failure.json", json.dumps({"error": str(exc), "epochs": epochs, "physical_qualification": False}).encode())
+        failure = {"error": str(exc), "epochs": epochs, "physical_qualification": False}
+        secondary = None
+        try:
+            now = clock()
+            if now >= deadline:
+                failure["health_failure"] = {"outcome": "skipped", "reason": "capture/candidate deadline exhausted",
+                                             "deadline": deadline, "observed_monotonic": now}
+            else:
+                health_deadline = min(deadline, now + 1.0)
+                raw = exchange(HEALTH, absolute_deadline=health_deadline)
+                row = save("health-failure.json", raw)
+                failure["health_failure"] = {"outcome": "retained", "raw": row,
+                                             "deadline": health_deadline, "observation_only": True}
+                require(clock() < health_deadline, "Failure health reply exceeded capture deadline")
+        except BaseException as health_error:
+            secondary = health_error
+            detail = {"error": str(health_error), "exception_type": type(health_error).__name__}
+            failure["health_failure_error"] = detail
+            exc.add_note("Failure health observation failed: " + str(health_error))
+            try:
+                save("health-failure-error.json", json.dumps(detail).encode())
+            except BaseException as save_error:
+                exc.add_note("Failure health error could not be retained: " + str(save_error))
+        try:
+            save("failure.json", json.dumps(failure).encode())
+        except BaseException as save_error:
+            exc.add_note("Capture failure record could not be retained: " + str(save_error))
+            if secondary is None: secondary = save_error
+        if secondary is not None:
+            raise exc from secondary
         raise
     finally:
         if current:
