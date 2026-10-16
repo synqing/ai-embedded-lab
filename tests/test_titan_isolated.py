@@ -20,6 +20,79 @@ def bind(tmp,name,data):
     return {'path':str(p),'sha256':digest(p.read_bytes())}
 
 
+@pytest.mark.parametrize('failure',['exit','timeout','exception','exit_recovery_timeout'])
+def test_program_process_receipt_precedes_validation_and_preserves_recovery(tmp_path,monkeypatch,failure):
+    from ael import prism_native
+    m=admission(tmp_path,monkeypatch)
+    now=[10.]; calls=[]; validated=[]; receipts={}; errors={}
+    real_preflight=isolated.preflight
+    monkeypatch.setattr(isolated,'preflight',lambda m,consume=False:
+        real_preflight(m,consume=consume,used_dir=tmp_path/'used'))
+    monkeypatch.setattr(isolated.time,'monotonic',lambda:now[0])
+    monkeypatch.setenv('K1_RFP_SWD_EXECUTE_OK','1')
+    monkeypatch.setattr(bench,'programmer_argv',lambda m,p,b,recover=False:['rfp','-run','-pv',str(p)])
+    monkeypatch.setattr(bench,'hex_spans',lambda p:[(0x2000000,0x2000010)])
+    monkeypatch.setattr(isolated,'usb_anchor',lambda *a,**kw:{'location':'TEST ONLY'})
+    forbidden=Mock(side_effect=AssertionError('Failed candidate must never reach capture/USB resolution'))
+    monkeypatch.setattr(isolated,'wait_for_native_interface',forbidden)
+    monkeypatch.setattr(prism_native,'run_session',forbidden)
+    real_verify=isolated.verify_program_log
+    def verify(raw,**kw):
+        name='candidate' if kw['image'].name=='candidate.hex' else 'donor-recovery'
+        receipt=json.loads((tmp_path/(name+'-process.json')).read_text())
+        assert receipt['returncode']==kw['returncode']
+        assert receipt['combined_output']['sha256']==digest(raw)
+        validated.append(name)
+        return real_verify(raw,**kw)
+    monkeypatch.setattr(isolated,'verify_program_log',verify)
+    def run(argv,stdout,timeout,**kw):
+        name='candidate' if argv[-1].endswith('candidate.hex') else 'donor-recovery'
+        calls.append(name)
+        assert timeout==(30 if name=='candidate' else 35)
+        assert kw=={'stderr':subprocess.STDOUT,'check':False}
+        stdout.write(rfp_log(Path(argv[-1])))
+        now[0]+=2
+        mode=failure if name=='candidate' else ('timeout' if failure=='exit_recovery_timeout' else 'success')
+        if mode in ('timeout','exception'):
+            exc=subprocess.TimeoutExpired(argv,timeout) if mode=='timeout' else OSError('TEST ONLY launch unavailable')
+            errors[name]=exc
+            raise exc
+        return SimpleNamespace(returncode=0 if name=='donor-recovery' else 23)
+    monkeypatch.setattr(isolated.subprocess,'run',run)
+    facts={}
+    expected_type={'timeout':subprocess.TimeoutExpired,'exception':OSError}.get(failure,RuntimeError)
+    with pytest.raises(expected_type) as caught:
+        isolated.execute(m,tmp_path,Path(m['image']['path']),SimpleNamespace(logs_dir=tmp_path),facts)
+    assert calls==['candidate','donor-recovery']
+    forbidden.assert_not_called()
+    for name,start,limit,deadline in [('candidate',10.,30,90.),('donor-recovery',12.,35,130.)]:
+        path=tmp_path/(name+'-process.json');r=json.loads(path.read_text());receipts[name]=r
+        assert facts[name+'_process_receipt']=={'path':str(path.resolve()),'sha256':digest(path.read_bytes())}
+        assert r['argv']==['rfp','-run','-pv',str(tmp_path/('candidate.hex' if name=='candidate' else 'donor.hex'))]
+        assert r['cwd']==str(Path.cwd()) and r['started_unix']==r['finished_unix']==1000.
+        assert r['started_monotonic']==start and r['finished_monotonic']==start+2
+        assert r['elapsed_seconds']==2 and r['timeout_seconds']==limit and r['deadline_monotonic']==deadline
+        assert r['combined_output']=={'path':str((tmp_path/(name+'.log')).resolve()),
+                                      'sha256':digest((tmp_path/(name+'.log')).read_bytes())}
+        if name in errors:
+            assert r['returncode'] is None and r['returncode_unavailable'] is True
+            assert r['exception_type']==type(errors[name]).__name__
+            assert r['exception_message']==str(errors[name])
+            assert r['outcome']==('timeout' if isinstance(errors[name],subprocess.TimeoutExpired) else 'exception')
+        else:
+            assert r['returncode']==(23 if name=='candidate' else 0) and r['outcome']=='returned'
+    assert validated==([n for n in calls if n not in errors])
+    assert facts['candidate_program_attempted'] and not facts['candidate_readback_verified']
+    assert facts['known_donor_program_and_verify_completed'] is (failure!='exit_recovery_timeout')
+    if failure in ('exit','exit_recovery_timeout'):
+        assert str(caught.value)=='Program/verify invocation did not complete'
+    else:
+        assert caught.value is errors['candidate']
+    if failure=='exit_recovery_timeout':
+        assert caught.value.__cause__ is errors['donor-recovery']
+    assert json.loads((tmp_path/'isolated-transaction.json').read_text())['primary_error']==str(caught.value)
+
+
 def admission(tmp,monkeypatch):
     monkeypatch.setattr(isolated.time,'time',lambda:1000.)
     monkeypatch.setattr(bench,'require_titan_recovery',lambda m:{'exact_donor':'TEST ONLY'})

@@ -320,8 +320,32 @@ def execute(m, source, image, ctx, facts):
             if name == "candidate":
                 attempted=True
                 facts.update(hardware_access=True, candidate_program_attempted=True)
-            result = subprocess.run(argv,stdout=out,stderr=subprocess.STDOUT,check=False,
-                                    timeout=min(30 if name=="candidate" else 35, remaining))
+            timeout=min(30 if name=="candidate" else 35, remaining)
+            process = {"argv":argv, "cwd":str(Path.cwd()), "started_unix":time.time(),
+                       "started_monotonic":time.monotonic(), "timeout_seconds":timeout,
+                       "deadline_monotonic":cutoff, "returncode":None}
+            process_error = None
+            try:
+                result = subprocess.run(argv,stdout=out,stderr=subprocess.STDOUT,check=False,
+                                        timeout=timeout)
+                process.update(outcome="returned", returncode=result.returncode)
+            except BaseException as exc:
+                process_error = exc
+                process.update(outcome="timeout" if isinstance(exc,subprocess.TimeoutExpired) else "exception",
+                               exception_type=type(exc).__name__, exception_message=str(exc),
+                               returncode_unavailable=True)
+                raise
+            finally:
+                process.update(finished_unix=time.time(), finished_monotonic=time.monotonic())
+                process["elapsed_seconds"]=process["finished_monotonic"]-process["started_monotonic"]
+                try:
+                    out.flush()
+                    process["combined_output"]={"path":str(log.resolve()),"sha256":digest(log.read_bytes())}
+                    facts[name+"_process_receipt"]=write_json(name+"-process.json",process)
+                except BaseException as receipt_error:
+                    if process_error is None:
+                        raise
+                    process_error.add_note("Programmer process receipt could not be retained: "+str(receipt_error))
         evidence = verify_program_log(log.read_bytes(),returncode=result.returncode,argv=argv,
                                      image=candidate,spans=bench.hex_spans(candidate))
         bench.bound_file(expected)
