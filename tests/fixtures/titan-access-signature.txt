@@ -1,0 +1,41 @@
+Renesas Flash Programmer CLI V1.17
+ Module Version: V3.24.00.000
+ Package Version: V3.24.00 [1 July 2026]
+
+Connecting the tool (E2 emulator Lite)
+Tool: E2 emulator Lite (5AS079228B)
+Interface: SWD
+Tool Firmware Version: V3.05.00.000
+
+Emulator power supply: OFF
+Connecting the target device
+Speed: 1,000,000 Hz
+Connected to R7KA8P1KFLCAC
+
+Signature:
+    Device: R7KA8P1KFLCAC
+    Boot Firmware Version: V6.8.20
+    Device Unique ID: 545433931BD25436593630352D068363
+    Device Code: 07
+    Current state: OEM(PL2)
+    Current Authentication Level: AL2
+    AL2 Key Injection: No
+    AL1 Key Injection: No
+    RMA Key Injection: No
+    OEM Root Public Key Injection: No, No, No, No
+
+Memory Info:
+    02000000 - 020FFFFF: Code MRAM 1 (Block Size: 1.0 MB)
+    12000000 - 120FFFFF: Code MRAM 2 (Block Size: 1.0 MB)
+    02C9F020 - 02C9F0AF: Config Area 1 (Block Size: 144)
+    02C9F0C0 - 02C9F3FF: Config Area 2 (Block Size: 832)
+    12C9F400 - 12C9F7FF: Config Area 3 (Block Size: 1 KB)
+    02E07600 - 02E076FF: Config OTP Area 1 (Block Size: 256)
+    02E17700 - 02E1777F: Config OTP Area 2 (Block Size: 128)
+    12E17780 - 12E177FF: Config OTP Area 3 (Block Size: 128)
+    02E17900 - 02E1792F: Config OTP Area 4 (Block Size: 48)
+
+
+Disconnecting the tool
+
+Operation successful
