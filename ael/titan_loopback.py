@@ -62,9 +62,13 @@ DIRECT_FIELDS = tuple(name.replace("gpt4_", "gpt12_").replace("irq27_cr", "gpt7_
 
 
 def verify_direct_configuration(s, *, complete=False, readiness=False):
-    require(s["split_capability"] == 2 and s["reserved"] == 0 and
+    if s.get("version") == 6:
+        from ael.titan_replacement_observer import verify_v6_configuration
+        return verify_v6_configuration(s, complete=complete, readiness=readiness)
+    paired = s["version"] == 5
+    require(s["split_capability"] == (3 if paired else 2) and s["reserved"] == 0 and
             all(s[f"reserved_{i}"] == 0 for i in range(137,144)), "Unknown direct capture capability")
-    if s["version"] == 4:
+    if s["version"] in (4, 5):
         from ael.titan_replacement_observer import verify_memory
         verify_memory(s)
     else:
@@ -78,14 +82,15 @@ def verify_direct_configuration(s, *, complete=False, readiness=False):
                 s["gpt2_gtupsr"] == 0x300000 and s["gpt3_gtupsr"] == 0xc00000,
                 "Direct edge counter/event mapping mismatch")
         require(s["gpt12_gtcr"] == s["gpt7_gtcr"] == s["gpt2_gtcr"] == s["gpt3_gtcr"] == 1 and
-                s["gpt12_gtior"] == s["gpt12_gtber"] == s["gtior"] == s["gtber"] == 0,
+                s["gpt12_gtior"] == s["gtior"] == 0 and
+                s["gpt12_gtber"] == s["gtber"] == (0x50000 if paired else 0),
                 "Direct timer mode/filter mismatch")
         require(s["p603_pfs"] & ~2 == s["p714_pfs"] & ~2 == 0x03010000,
                 "Direct physical pin configuration mismatch")
         require(s["gpt12_initial"] == s["gpt7_initial"] == 0 and s["start_mask"] == 0x1080,
                 "Direct timer initialisation/start mismatch")
     verify_dma_configuration(s,(0x1c0,0x1c1,0x1ed,0x1ee),
-                             (0x4032274c,0x40322750,0x40322c4c,0x40322c50),complete=complete, capacity=s["capacity"])
+                             (0x4032274c,0x40322750,0x40322c4c,0x40322c50),complete=complete, capacity=s["capacity"], paired=paired)
 
 
 def stream_counts(s):
@@ -94,7 +99,7 @@ def stream_counts(s):
 
 
 def verify_split_configuration(s, *, complete=False, readiness=False):
-    if s["version"] in (3,4):
+    if s["version"] in (3,4,5,6):
         return verify_direct_configuration(s,complete=complete,readiness=readiness)
     require(s["split_capability"] == 1 and s["reserved"] == 0, "Unknown split capture capability")
     require(s["ccr"] & (1 << 16) == 0 and s["mpu"] == 0,"Split cache/MPU configuration mismatch")
@@ -117,17 +122,18 @@ def verify_split_configuration(s, *, complete=False, readiness=False):
                              (0x4032244c,0x4032274c,0x40322450,0x40322750),complete=complete)
 
 
-def verify_dma_configuration(s, events, sources, *, complete, capacity=SPLIT_CAPACITY):
+def verify_dma_configuration(s, events, sources, *, complete, capacity=SPLIT_CAPACITY, paired=False):
     buffers=[s["buffer_"+n] for n in SPLIT_NAMES]
-    require(all(abs(a-b) >= 4*capacity for i,a in enumerate(buffers) for b in buffers[i+1:]),
+    row_bytes = (2 * capacity + 8) * 4 if paired else 4 * capacity
+    require(all(abs(a-b) >= row_bytes for i,a in enumerate(buffers) for b in buffers[i+1:]),
             "Overlapping split DMA buffers")
     for name,event,source in zip(SPLIT_NAMES,events,sources):
-        require(s["dmtmd_"+name] == 0x2201 and s["dmint_"+name] == 0 and
+        require(s["dmtmd_"+name] == (0x9201 if paired else 0x2201) and s["dmint_"+name] == 0 and
                 s["event_"+name] == event, "Split DMA ownership mismatch: "+name)
         require(s["source_"+name] == s["expected_source_"+name] == source and
                 s["source_"+name] != 0 and s["buffer_"+name] != 0,
                 "Split DMA address mismatch: "+name)
-        require(s["destination_"+name] == s["buffer_"+name] + 4*s["words_"+name],
+        require(s["destination_"+name] == s["buffer_"+name] + (8 if paired else 4)*s["words_"+name],
                 "Split DMA destination/count mismatch: "+name)
         require(s["remaining_"+name] + s["words_"+name] == capacity,
                 "Split DMA remaining/count mismatch: "+name)
@@ -147,14 +153,23 @@ def verify_split_epoch(s, lane_raw, sof_raw, *, pattern, pulses=3840, diagnostic
     require(len(lane_raw) == 4, "Missing split polarity stream")
     require(s["configuration_low"] == s["initial_low"] == s["final_low"] == 3 and
             s["recording"] == 1, "Split capture LOW/recording evidence missing")
-    direct=s["version"] in (3,4)
+    direct=s["version"] in (3,4,5,6)
     require(s["gpt12_gtst" if direct else "gpt4_gtst"] == s["gpt7_gtst"] == 0x8003 and
             s["gpt2_gtst"] == s["gpt3_gtst"] == 0x8000, "Split capture overflow/flags")
-    require(s["edges_a"] == s["edges_b"] == s["words_a"] == s["words_b"] == 2*pulses,
-            "Missing/extra independent edge count")
+    if s["version"] == 6:
+        require(s["edges_a"] == s["edges_b"] == 2*pulses,
+                "Missing/extra independent edge count")
+    else:
+        require(s["edges_a"] == s["edges_b"] == s["words_a"] == s["words_b"] == 2*pulses,
+                "Missing/extra independent edge count")
     streams=[]
     for stream,(name,raw) in enumerate(zip(SPLIT_NAMES,lane_raw)):
-        require(s["words_"+name] == pulses, "Missing/extra polarity edges: "+name)
+        if s["version"] == 6:
+            require(s.get("history_unresolved_"+name)
+                    or s["words_"+name] + s["recovered_"+name] - s.get("duplicates_"+name, 0) == pulses,
+                    "Missing/extra polarity edges: "+name)
+        else:
+            require(s["words_"+name] == pulses, "Missing/extra polarity edges: "+name)
         origin=s["b_leading_begin" if direct and stream>=2 else "leading_begin"]
         ticks=[(tick-origin) & 0xffffffff for tick in parse_words(raw,pulses)]
         for index,(a,b) in enumerate(zip(ticks,ticks[1:])):

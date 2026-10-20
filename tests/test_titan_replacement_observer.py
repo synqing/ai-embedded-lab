@@ -136,7 +136,7 @@ class Detector:
             values=(self.streams+[sum(self.sof,[])])[stream][offset:offset+n]
             if stream==4:self.drained=True
             return payload+struct.pack('<'+'I'*len(values),*values)
-        if opcode==loop.CANCEL:return b''
+        if opcode==loop.CANCEL:return packed(self.s)
         raise AssertionError(hex(opcode))
 
 
@@ -177,7 +177,8 @@ def test_drain_failure_retained_without_rearm(tmp_path):
         return raw[:-1] if op==loop.DRAIN else raw
     with pytest.raises(RuntimeError,match='Truncated'):
         observer.acquire(exchange,manifest(),{'frames':100,'pattern':2,'budget_seconds':60},tmp_path,info(),absolute_deadline=time.monotonic()+60)
-    assert d.calls.count(loop.ARM)==1 and d.calls[-1]==loop.CANCEL
+    after=d.calls[d.calls.index(loop.CANCEL)+1:]
+    assert d.calls.count(loop.ARM)==1 and after==[observer.IDENTITY,observer.CONTROL_STATUS]
     assert (tmp_path/'replacement-loopback/failure.json').exists()
 
 
@@ -293,7 +294,9 @@ def test_deadline_during_drain_does_not_rearm(tmp_path):
         return raw
     with pytest.raises(RuntimeError,match='deadline'):
         observer.acquire(exchange,manifest(),{'frames':100,'pattern':2,'budget_seconds':60},tmp_path,info(),absolute_deadline=80,clock=lambda:now[0])
-    assert d.calls.count(loop.ARM)==1 and d.calls[-1]==loop.CANCEL
+    after=d.calls[d.calls.index(loop.CANCEL)+1:]
+    # Only read-only leave reads may follow CANCEL (20 Oct 2026); never another ARM.
+    assert d.calls.count(loop.ARM)==1 and after==[observer.IDENTITY,observer.CONTROL_STATUS]
 
 
 def test_cancel_failure_is_not_success(tmp_path):
@@ -315,3 +318,55 @@ def test_transport_receives_capture_cutoff_and_cancel_keeps_outer_reserve(tmp_pa
                      tmp_path,info(),absolute_deadline=180,clock=lambda:100.)
     assert cutoffs and all(cutoff==160 for op,cutoff in cutoffs if op!=loop.CANCEL)
     assert cutoffs[-1]==(loop.CANCEL,180)
+
+
+@pytest.mark.parametrize('budget,accepted',[(60,True),(70,True),(70.01,False),(71,False)])
+def test_collector_budget_cap_is_70_seconds(tmp_path,budget,accepted):
+    # Captain ruling 20 Oct 2026: v6 frames take 0.63 s, so 100 need ~63 s. Above 70 s stays refused.
+    d=Detector()
+    spec={'frames':100,'pattern':2,'budget_seconds':budget}
+    if accepted:
+        observer.acquire(d.exchange,manifest(),spec,tmp_path,info(),absolute_deadline=time.monotonic()+80)
+        assert d.calls.count(loop.ARM)==1
+    else:
+        with pytest.raises(RuntimeError,match='Unbounded replacement collector'):
+            observer.acquire(d.exchange,manifest(),spec,tmp_path,info(),absolute_deadline=time.monotonic()+80)
+        assert not d.calls
+
+
+def _stop_on_deadline(tmp_path, d):
+    now=[0.]
+    def exchange(op,payload=b'', *, absolute_deadline=None):
+        raw=d.exchange(op,payload)
+        if op==loop.DRAIN:now[0]=61
+        return raw
+    with pytest.raises(RuntimeError,match='deadline') as caught:
+        observer.acquire(exchange,manifest(),{'frames':100,'pattern':2,'budget_seconds':60},tmp_path,info(),absolute_deadline=80,clock=lambda:now[0])
+    return caught.value
+
+
+def test_cancelled_stop_writes_a_revalidated_leave_proof(tmp_path):
+    # 20 Oct 2026: the v6d campaign stopped on the collector budget and left no leave proof,
+    # so the next guarded deploy could not qualify the board.
+    d=Detector(); exc=_stop_on_deadline(tmp_path,d)
+    assert d.calls[-1]==observer.CONTROL_STATUS and loop.CANCEL in d.calls
+    proof=observer.revalidate_leave_proof(tmp_path/'replacement-loopback'/'leave-proof.json')
+    assert proof['classification']=='cancelled_after_stop' and exc.leave_proof
+    assert proof['terminal_epoch']==1 and proof['identity']['uid']==UID
+
+
+def test_cancelled_stop_with_capture_still_active_is_refused(tmp_path):
+    d=Detector(); _stop_on_deadline(tmp_path,d)
+    path=tmp_path/'replacement-loopback'/'leave-proof.json'
+    proof=json.loads(path.read_text()); cancel=tmp_path/'replacement-loopback'/'cancel.bin'
+    raw=bytearray(cancel.read_bytes()); struct.pack_into('<I',raw,12,3)  # state: still emitting
+    cancel.write_bytes(raw); proof['cancel_raw']['sha256']=digest(bytes(raw))
+    proof['terminal_status_raw']=proof['cancel_raw']; path.write_text(json.dumps(proof))
+    with pytest.raises(RuntimeError,match='Cancel leaves capture active'):
+        observer.revalidate_leave_proof(path)
+
+
+def test_cancelled_stop_is_not_accepted_as_a_capture_result_by_the_ael_route(tmp_path):
+    from ael import titan_isolated as iso
+    d=Detector(); exc=_stop_on_deadline(tmp_path,d)
+    assert iso._take_leave_proof(tmp_path, exc) is None
