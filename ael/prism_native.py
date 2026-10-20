@@ -5,6 +5,7 @@ No donor telemetry, scanning, reset, retry or implicit serial-owner takeover.
 import base64
 import json
 import math
+import os
 from pathlib import Path
 import struct
 import subprocess
@@ -14,6 +15,7 @@ import zlib
 
 SCHEMA = '5dda123060c60de0ff6777b63ab6c3cdc96ddd2ab4298b2501d781c8ab20c0b1'
 UID = '545433931bd25436593630352d068363'
+OWNER_LEASE_PATH = Path('/tmp/k1-show-20261018-TITAN.lock/owner.json')
 
 
 def request(opcode, payload=b'', sequence=1, cookie=1):
@@ -303,7 +305,7 @@ def retained_witness(exchange, manifest, out, initial):
             log.write(summary + '\n')
 
 
-def run_session(manifest, out, seconds, operation=None, *, deadline=None, operation_sha256=None, cancel_event=None):
+def run_session(manifest, out, seconds, operation=None, *, deadline=None, operation_sha256=None, cancel_event=None, exchange_override=None):
     isolated = bool(manifest.get('isolated_qualification'))
     if isolated:
         from ael.titan_isolated import preflight, completion_request
@@ -325,8 +327,15 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
             raw = op.get('isolated_capture', {})
             expected = {'frames':q['frames'], 'budget_seconds':raw.get('budget_seconds'),
                         **{k:q[k] for k in ('pattern','constant_timer_diagnostic') if k in q}}
+            if q.get('repair_session'):
+                start = raw.get('start_epoch', None)
+                if type(start) is not int or start < 0:
+                    raise ValueError('Repair capture epoch lineage invalid')
+                expected['start_epoch'] = start
+            elif 'start_epoch' in raw:
+                raise ValueError('Epoch lineage requires the bound repair session')
             budget = raw.get('budget_seconds')
-            if raw != expected or type(budget) not in (int,float) or not math.isfinite(budget) or not 0 < budget <= 60:
+            if raw != expected or type(budget) not in (int,float) or not math.isfinite(budget) or not 0 < budget <= 70:  # Captain ruling 20 Oct: v6 needs ~63 s
                 raise ValueError('Raw capture differs from the admitted isolated scope')
     else:
         op = json.loads(Path(operation).read_text()) if operation else None
@@ -365,6 +374,16 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
         raise InterruptedError('Native session cancelled before opening owner')
     if deadline is not None and (type(deadline) not in (int,float) or not math.isfinite(deadline) or deadline<=time.monotonic()):
         raise ValueError('Native session requires a finite future absolute deadline')
+    if isolated and (manifest.get('broker_socket') or exchange_override is not None):
+        if manifest.get('target') != 'titan-replacement' or not op or set(op) != {'isolated_capture'}:
+            raise ValueError('Broker capture supports only the granted replacement isolated collector; historical collector unsupported')
+        if exchange_override is not None:
+            from ael import titan_replacement_observer as replacement
+            info = json.loads(exchange_override(replacement.IDENTITY, absolute_deadline=deadline))
+            measured = replacement.acquire(exchange_override, manifest, op['isolated_capture'], out, info,
+                                           absolute_deadline=deadline)
+            return {'identity': info, 'isolated_capture': measured, 'optical_verified': False}
+        return broker_capture(manifest, out, operation, operation_sha256, deadline)
     import serial
     # Caller holds AEL's hardware transaction lock and validates sole ownership.
     port = serial.Serial(port=None, baudrate=115200, timeout=.2, write_timeout=1)
@@ -537,3 +556,165 @@ def run_session(manifest, out, seconds, operation=None, *, deadline=None, operat
             return result
         finally:
             port.close()
+
+
+def broker_capture(manifest, out, operation, operation_sha256, deadline):
+    """Whole granted collector on the existing serial owner; never raw serial."""
+    import socket
+    import hashlib
+    from ael.titan_waveform import bound
+    binding = manifest.get('broker_manifest')
+    if not isinstance(binding, dict):
+        raise ValueError('Immutable broker manifest binding missing')
+    frozen = json.loads(bound(binding))
+    if frozen != {k: v for k, v in manifest.items() if k not in ('broker_manifest', 'broker_socket')}:
+        raise ValueError('Broker manifest changed after binding')
+    admission = Path(manifest['deployment']['admission'])
+    request = {'op': 'native_isolated_capture', 'manifest': binding,
+               'operation': {'path': str(Path(operation).resolve()), 'sha256': operation_sha256},
+               'output': str(Path(out).resolve()), 'deadline': deadline,
+               'admission_sha256': hashlib.sha256(admission.read_bytes()).hexdigest()}
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    finished = False
+    stream = None
+    try:
+        # Two seconds is only for the broker's completion acknowledgement; it
+        # cannot extend the collector deadline or the transaction's120s limit.
+        sock.settimeout(max(.01, deadline + 2 - time.monotonic()))
+        # A newly restored broker can briefly replace its socket after readiness.
+        # Retry only before any request bytes; never replay a capture request.
+        import errno
+        connect_deadline = min(deadline, time.monotonic() + 2)
+        while True:
+            try:
+                sock.connect(manifest['broker_socket'])
+                break
+            except OSError as error:
+                if error.errno not in (errno.ENOENT, errno.ECONNREFUSED) or time.monotonic() >= connect_deadline:
+                    raise
+                sock.close()
+                time.sleep(min(.02, max(0, connect_deadline - time.monotonic())))
+                sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                sock.settimeout(max(.01, deadline + 2 - time.monotonic()))
+        stream = sock.makefile('rwb')
+        def call(row):
+            stream.write((json.dumps(row) + '\n').encode()); stream.flush()
+            raw = stream.readline(1024 * 1024)
+            if not raw.endswith(b'\n'): raise ValueError('Broker collector reply missing/truncated')
+            return json.loads(raw)
+        require_current_owner(manifest)
+        hello = call({'op': 'hello', 'maintenance': {
+            'owner_lease_sha256': manifest['owner_lease']['sha256']}})
+        expected = hello.get('bound') or {}
+        if hello.get('ok') is not True or expected.get('uid') != UID or expected.get('build') != manifest['source_binding_hash']:
+            raise ValueError('Broker collector owner identity mismatch')
+        request['session'] = hello['session']
+        reply = call(request)
+        finished = reply.get('capture_finished') is True
+        if reply.get('ok') is not True or not finished:
+            failure = ValueError('Broker collector failed: ' + str(reply.get('error')))
+            failure.collector_quiesced = finished
+            proof = Path(out) / 'replacement-loopback' / 'leave-proof.json'
+            if finished and proof.is_file():
+                failure.leave_proof_path = str(proof)
+            raise failure
+        return reply['result']
+    except BaseException as exc:
+        exc.collector_quiesced = getattr(exc, 'collector_quiesced', finished)
+        raise
+    finally:
+        if stream is not None:
+            stream.close()
+        sock.close()
+
+
+def validate_broker_capture(request, admitted, current):
+    """Validate the separate isolated grant before opening any collector path."""
+    import hashlib
+    from ael.titan_waveform import bound
+    from ael.titan_isolated import preflight, completion_request
+    manifest = json.loads(bound(request['manifest']))
+    operation = json.loads(bound(request['operation']))
+    if set(operation) != {'isolated_capture'}:
+        raise ValueError('Historical/completion collector unsupported on broker route')
+    facts = preflight(manifest, consume=False)
+    validate_isolated_grant(manifest, admitted, current, facts)
+    deadline = request.get('deadline')
+    if type(deadline) not in (float, int) or not math.isfinite(deadline) or not time.monotonic() < deadline <= time.monotonic() + 80:
+        raise ValueError('Isolated deadline invalid')
+    out = Path(request['output']).resolve()
+    if (not out.is_dir() or Path(request['manifest']['path']).resolve().parent != out
+            or Path(request['operation']['path']).resolve().parent != out):
+        raise ValueError('Isolated output is not bound operation directory')
+    owner = manifest.get('owner_lease') or {}
+    owner_path = OWNER_LEASE_PATH
+    if owner.get('path') != str(owner_path):
+        raise ValueError('Canonical transaction owner lease missing')
+    owner_bytes = bound(owner)
+    lease = json.loads(owner_bytes)
+    if (admitted['isolated_capture_grant'].get('owner_lease_sha256') != owner.get('sha256')
+            or type(lease.get('pid')) is not int or lease['pid'] <= 0):
+        raise ValueError('Isolated grant owner lease mismatch')
+    os.kill(lease['pid'], 0)  # Existence check only; never a signal or takeover.
+    event = manifest.get('isolated_programming_event') or {}
+    event_sha = event.get('sha256')
+    if not isinstance(event_sha, str) or len(event_sha) != 64:
+        raise ValueError('Bound programming event missing')
+    bound(event)
+    claim_key = hashlib.sha256(json.dumps(admitted['isolated_capture_grant'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    claim = owner_path.parent / ('capture-' + claim_key + '.claim')
+    with claim.open('x') as stream:
+        json.dump({'manifest': request['manifest'], 'operation': request['operation'], 'session': request['session']}, stream)
+    return manifest, out
+
+
+def validate_isolated_grant(manifest, admitted, current, facts):
+    import hashlib
+    from ael.titan_isolated import completion_request
+    grant = admitted.get('isolated_capture_grant')
+    if not isinstance(grant, dict) or grant.get('kind') != 'replacement-isolated-v4':
+        raise ValueError('Separate exact isolated capture grant missing')
+    if manifest.get('target') != 'titan-replacement' or completion_request(manifest) is not None:
+        raise ValueError('Historical/completion collector unsupported on broker route')
+    if (current.get('protocol') != 'titan-native' or manifest.get('identity') != UID
+            or admitted.get('uid') != UID or current.get('uid') != UID
+            or manifest.get('source_binding_hash') != current.get('build')
+            or admitted.get('build') != current.get('build')
+            or manifest.get('image', {}).get('sha256') != admitted.get('hex_sha256')):
+        raise ValueError('Isolated grant target/build/image mismatch')
+    scope_sha = hashlib.sha256(json.dumps(facts['scope'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+    if grant.get('scope_sha256') != scope_sha or grant.get('fixture_id') != facts['fixture_id']:
+        raise ValueError('Isolated grant scope/fixture mismatch')
+    repair = facts['scope'].get('repair_session')
+    if repair:
+        lineage = grant.get('epoch_lineage')
+        resident = manifest.get('resident_epoch', 0)
+        if type(lineage) is not int or lineage < 0 or lineage != resident:
+            raise ValueError('Stale or missing repair epoch lineage')
+        if repair.get('leave_state') != 'verified-responsive-candidate':
+            raise ValueError('Repair grant leave-state mismatch')
+        boot_lineage = grant.get('boot_lineage')
+        if (resident > 0 or boot_lineage is not None) and (type(boot_lineage) is not int or boot_lineage != manifest.get('resident_boot')):
+            raise ValueError('Repair boot lineage does not match resident boot')
+    owner = manifest.get('owner_lease') or {}
+    if grant.get('owner_lease_sha256') != owner.get('sha256') or not owner.get('sha256'):
+        raise ValueError('Exact transaction owner lease grant missing')
+    if admitted.get('revoked') not in (None, False):
+        raise ValueError('Isolated admission revoked')
+    expires = grant.get('expires_at')
+    if type(expires) not in (float, int) or not math.isfinite(expires) or expires <= time.time():
+        raise ValueError('Isolated grant expired or unbounded')
+
+
+def require_current_owner(manifest, *, caller=False):
+    from ael.titan_waveform import bound
+    owner = manifest.get('owner_lease') or {}
+    if owner.get('path') != str(OWNER_LEASE_PATH):
+        raise ValueError('Canonical transaction owner lease missing')
+    lease = json.loads(bound(owner))
+    if type(lease.get('pid')) is not int or lease['pid'] <= 0:
+        raise ValueError('Transaction owner PID invalid')
+    if caller and lease['pid'] != os.getpid():
+        raise ValueError('Current caller does not own the transaction lease')
+    os.kill(lease['pid'], 0)
+    return lease
