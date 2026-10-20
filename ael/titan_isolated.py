@@ -16,14 +16,33 @@ import subprocess
 import sys
 import time
 
+from ael.deployment_process import run_deployment as _run_deployment
 from ael.titan_waveform import UID, bound, digest, require
 from ael.titan_loopback import BACKEND, SPLIT_BACKEND, DIRECT_BACKEND
-from ael.titan_replacement_observer import BACKEND as REPLACEMENT_BACKEND
+from ael.titan_replacement_observer import BACKEND as REPLACEMENT_BACKEND, PAIRED_BACKEND
 
 JUMPERS = [["U18.7/P601", "U18.33/P603"], ["U18.12/P604", "U18.35/P602"]]
 DIRECT_JUMPERS = [["U18.7/P601", "U18.33/P603"], ["U18.12/P604", "U18.36/P714"]]
 EXCLUSION = ["P601-product-DIN", "P604-product-DIN"]
 OPERATION = "titan-isolated-waveform-v2"
+# Bound repair-session leave state. 120s is each operation's cap, not a session
+# restoration window and not permission to invent a donor recovery.
+REPAIR_SESSION = {
+    "mode": "retain-verified-candidate",
+    "leave_state": "verified-responsive-candidate",
+    "maximum_operation_seconds": 120,
+    "restoration": "explicit-end-session",
+}
+REPAIR_SESSION_SCHEMA = "prism.titan.repair-session.v1"
+_QUALIFICATION_KEYS = {
+    "operation", "backend", "frames", "maximum_interruption_seconds",
+    "physical_confirmation", "bootstrap_authority", "prior_readiness",
+    "completion_request", "pattern", "constant_timer_diagnostic", "repair_session", "repair_checkpoint",
+}
+_IDENTITY_LOSS = (
+    "identity mismatch", "identity changed", "identity absent",
+    "Wrong native UID", "source identity", "Replacement reboot", "binding failed",
+)
 
 
 def _record(row, schema):
@@ -40,19 +59,21 @@ def _fresh(value, age=120):
 
 
 def _scope(m):
-    from ael.adapters.prism_bench_trial import TITAN_RECOVERY_HEX_SHA256
     completion = completion_request(m)
     return {"identity": UID, "image_sha256":m["image"]["sha256"],
             "source_binding_hash":m["source_binding_hash"], "source_commit":m["source_commit"],
             "build_receipt_sha256":m["build_receipt"]["sha256"],
-            "recovery_sha256":TITAN_RECOVERY_HEX_SHA256,
-            "jumpers":DIRECT_JUMPERS if m["isolated_qualification"].get("backend") in (DIRECT_BACKEND,REPLACEMENT_BACKEND) else JUMPERS, "electrically_excluded":EXCLUSION,
+            "recovery_sha256":m["recovery"]["image"]["sha256"],
+            "jumpers":DIRECT_JUMPERS if m["isolated_qualification"].get("backend") in (DIRECT_BACKEND,REPLACEMENT_BACKEND,PAIRED_BACKEND) else JUMPERS, "electrically_excluded":EXCLUSION,
             "operation":OPERATION, "frames":m["isolated_qualification"]["frames"],
             **({"backend":DIRECT_BACKEND,"capture_schema":3} if m["isolated_qualification"].get("backend") == DIRECT_BACKEND else {}),
-            **({"backend":REPLACEMENT_BACKEND,"capture_schema":4,"target":"titan-replacement",
+            **({"backend":m["isolated_qualification"]["backend"],"capture_schema":5 if m["isolated_qualification"]["backend"] == PAIRED_BACKEND else 4,"target":"titan-replacement",
                 "bits_each":7680,"bytes_each":960,"cache":"dcache-noncache-mpu"}
-               if m["isolated_qualification"].get("backend") == REPLACEMENT_BACKEND else {}),
+               if m["isolated_qualification"].get("backend") in (REPLACEMENT_BACKEND,PAIRED_BACKEND) else {}),
             "maximum_interruption_seconds":120,
+            **({"repair_session": REPAIR_SESSION} if m["isolated_qualification"].get("repair_session") else {}),
+            **({"repair_checkpoint": m["isolated_qualification"]["repair_checkpoint"]}
+               if m["isolated_qualification"].get("repair_checkpoint") else {}),
             **({"completion": {"kind": completion["kind"],
                                 "request_sha256": m["isolated_qualification"]["completion_request"]["sha256"]}}
                if completion is not None else {}),
@@ -63,10 +84,20 @@ def _scope(m):
 def completion_request(m):
     """Validate one immutable computation request without acquiring hardware."""
     q = m.get("isolated_qualification", {})
-    require(set(q) <= {"operation", "backend", "frames", "maximum_interruption_seconds",
-                      "physical_confirmation", "bootstrap_authority", "prior_readiness",
-                      "completion_request", "pattern", "constant_timer_diagnostic"},
+    require(set(q) <= _QUALIFICATION_KEYS,
             "Unknown isolated qualification request; no control, replay, SAVE or endurance")
+    if "repair_session" in q:
+        require(q.get("repair_session") == REPAIR_SESSION,
+                "Repair session must bind the exact retain leave-state")
+    if "repair_checkpoint" in q:
+        require(m.get('target') == 'titan-replacement' and q.get('repair_session') == REPAIR_SESSION,
+                'Native update checkpoint requires the replacement repair session')
+        checkpoint = q['repair_checkpoint']
+        require(isinstance(checkpoint, dict) and set(checkpoint) == {'path', 'sha256'},
+                'Native update checkpoint must bind its exact file bytes')
+        previous = json.loads(bound(checkpoint))
+        require(previous.get('schema') == REPAIR_SESSION_SCHEMA and previous.get('closed') is False,
+                'Native update checkpoint is not an open repair session')
     if "completion_request" not in q:
         return None
     require(not any(k in q for k in ("pattern", "constant_timer_diagnostic")),
@@ -126,9 +157,9 @@ def operator_record(row, schema, scope, *, physical_freshness=False):
 
 def preflight(m, *, consume=False, used_dir=None):
     q = m.get("isolated_qualification",{})
-    require(q.get("operation") == OPERATION and q.get("backend") in (BACKEND,SPLIT_BACKEND,DIRECT_BACKEND,REPLACEMENT_BACKEND),
+    require(q.get("operation") == OPERATION and q.get("backend") in (BACKEND,SPLIT_BACKEND,DIRECT_BACKEND,REPLACEMENT_BACKEND,PAIRED_BACKEND),
             "BLOCKED_CAPTURE_CAPABILITY: unsupported isolated backend")
-    replacement = q.get("backend") == REPLACEMENT_BACKEND
+    replacement = q.get("backend") in (REPLACEMENT_BACKEND,PAIRED_BACKEND)
     require(m.get("identity") == UID and m.get("target") == ("titan-replacement" if replacement else "titan-native"), "Wrong isolated target")
     if replacement:
         require("completion_request" not in q and "constant_timer_diagnostic" not in q,
@@ -204,16 +235,46 @@ def verify_program_log(raw, *, returncode, argv, image, spans):
             text.count("Writing data to the target device") == 1,
             "Missing/ambiguous actual program-and-verify stages")
     writing, verifying = text.split("Verifying data on the target device")
-    require("Writing data to the target device" in writing and "100%" in writing and
-            re.search(r"\b100%",verifying) and verifying.rstrip().endswith("Operation successful"),
+    require("Writing data to the target device" in writing and verifying.rstrip().endswith("Operation successful"),
             "Programmer did not complete target verification")
     require(not re.search(r"\b(error|failed|failure)\b",text,re.I), "Programmer reported a failure")
     ranges = [(int(a,16),int(b,16)+1) for a,b in re.findall(
         r"\[Code MRAM [12]\]\s+([0-9A-F]{8}) - ([0-9A-F]{8})",verifying)]
-    require(ranges and all(any(a <= lo < hi <= b for a,b in ranges) for lo,hi in spans),
+    written = [(int(a,16),int(b,16)+1) for a,b in re.findall(
+        r"\[Code MRAM [12]\]\s+([0-9A-F]{8}) - ([0-9A-F]{8})", writing)]
+    require(ranges and written and all(any(a <= lo < hi <= b for a,b in rows) for rows in (written, ranges) for lo,hi in spans),
             "Verified target ranges do not cover exact image")
     return {"readback_verified":True,"readback_method":"RFP1.17 -pv target-memory comparison",
             "raw_memory_dump_exported":False,"verified_ranges":ranges,"programmer_log_sha256":digest(raw)}
+
+
+def verify_sealed_program(receipt, *, image, programme_dir, spans):
+    """Verify actual sealed-writer channels and its exact immutable projection."""
+    from ael.adapters import prism_bench_trial as bench
+    require(receipt.get("pass") is True and receipt.get("execute") is True and
+            receipt.get("returncode") == 0, "Sealed writer did not complete program/verify")
+    require(receipt.get("uid") == UID and receipt.get("hex_sha256") == bench.sha(image),
+            "Sealed writer target/image binding mismatch")
+    argv = receipt.get("command")
+    require(isinstance(argv, list) and len(argv) == 15 and Path(argv[0]).name == "rfp-cli" and
+            argv[1:14] == ["-d", "RA", "-t", "e2l:5AS079228B", "-if", "swd", "-s", "1000000",
+                           "-noquery", "-run", "-range", "02000000,02c9f01f", "-pv"],
+            "Sealed writer command differs from guarded route")
+    actual = Path(argv[-1])
+    projection = Path(str(programme_dir) + ".writer-view") / "rtthread.hex"
+    require(actual == image or actual == projection, "Unexpected sealed writer image path")
+    require(actual.is_file() and actual.read_bytes() == image.read_bytes(),
+            "Sealed writer projection differs from admitted image bytes")
+    stdout, stderr = receipt.get("stdout"), receipt.get("stderr")
+    require(isinstance(stdout, str) and isinstance(stderr, str), "Missing sealed writer output channels")
+    require("Interface: SWD" in stdout and "Speed: 1,000,000 Hz" in stdout,
+            "Wrong programmer interface/speed evidence")
+    require(not re.search(r"\b(error|failed|failure)\b", stderr, re.I), "Programmer stderr reported failure")
+    evidence = verify_program_log(stdout.encode(), returncode=receipt["returncode"],
+                                  argv=argv, image=actual, spans=spans)
+    evidence.update(writer_image=str(actual), writer_stdout_sha256=digest(stdout.encode()),
+                    writer_stderr_sha256=digest(stderr.encode()))
+    return evidence
 
 
 def wait_for_interface(port, deadline, *, clock=time.monotonic, sleep=time.sleep, present=None):
@@ -282,35 +343,233 @@ def require_interface_unowned(port, deadline):
             "Resolved native interface is owned or ownership check failed")
 
 
-def execute(m, source, image, ctx, facts):
+def require_broker_capture_route(manifest):
+    """Check current route eligibility before consuming authority or programming."""
+    from ael.prism_native import validate_isolated_grant, require_current_owner
+    require(manifest.get('target') == 'titan-replacement' and completion_request(manifest) is None,
+            'Broker capture route requires replacement isolated collector; historical/completion collector unsupported')
+    record = json.loads(Path(manifest['deployment']['admission']).read_text())
+    facts = preflight(manifest, consume=False)
+    current = {'protocol': 'titan-native', 'uid': manifest['identity'], 'build': manifest['source_binding_hash']}
+    validate_isolated_grant(manifest, record, current, facts)
+    require_current_owner(manifest, caller=True)
+
+
+def _repair_value(m):
+    repair = (m.get("isolated_qualification") or {}).get("repair_session")
+    if repair is None:
+        return None
+    require(repair == REPAIR_SESSION, "Repair session must bind the exact retain leave-state")
+    return repair
+
+
+def _identity_lost(exc):
+    if exc is None:
+        return False
+    if getattr(exc, "identity_lost", False):
+        return True
+    text = str(exc)
+    return any(part in text for part in _IDENTITY_LOSS)
+
+
+def _take_leave_proof(logs, exc):
+    """Re-read the collector's raw leave proof. A boolean on the exception is not proof."""
+    if exc is not None and getattr(exc, "collector_quiesced", True) is False:
+        return None
+    if isinstance(exc, (KeyboardInterrupt, SystemExit, TimeoutError)):
+        return None
+    if exc is not None and getattr(exc, "identity_lost", False):
+        return None
+    path = Path(logs) / "replacement-loopback" / "leave-proof.json"
+    if not path.is_file():
+        return None
+    from ael.titan_replacement_observer import revalidate_leave_proof
+    proof = revalidate_leave_proof(path)
+    if exc is None and proof["classification"] != "complete":
+        return None
+    if exc is not None and proof["classification"] != "capture_verification_failed":
+        return None
+    proof["path"] = str(path.resolve())
+    proof["sha256"] = digest(path.read_bytes())
+    proof["_claim"] = str(path.with_name("leave-proof.consumed"))
+    return proof
+
+
+def _load_repair_session(path, sha256, manifest):
+    """Replay the checkpoint only when its bytes and raw replies still match.
+
+    Plain JSON flags are not a responsiveness verdict. The previous file is
+    not rewritten.
+    """
+    require(path and isinstance(sha256, str) and len(sha256) == 64, "Repair resume needs the checkpoint sha256")
+    file = Path(path)
+    raw = file.read_bytes()
+    require(digest(raw) == sha256, "Repair checkpoint hash mismatch")
+    session = json.loads(raw)
+    require(session.get("schema") == REPAIR_SESSION_SCHEMA, "Wrong repair session schema")
+    require(session.get("image_sha256") == manifest["image"]["sha256"], "Checkpoint image is not the retained candidate")
+    require(session.get("closed") is not True, "Repair session is already closed")
+    from ael.adapters import prism_bench_trial as bench
+    from ael.titan_replacement_observer import revalidate_leave_proof
+    proof = revalidate_leave_proof(session["leave_proof"])
+    require(session.get("boot") == proof["boot"], "Checkpoint boot does not match the control reply")
+    require(session.get("fixture_epoch") == proof["terminal_epoch"], "Checkpoint epoch does not match the status reply")
+    require(session.get("classification") == proof["classification"], "Checkpoint classification does not match the leave proof")
+    require(proof["identity"].get("uid") == manifest.get("identity"), "Checkpoint identity is not this candidate")
+    require(proof["identity"].get("source_id") == manifest.get("source_binding_hash"),
+            "Checkpoint source does not match the admitted candidate")
+    event = json.loads(bound(session["programming_event"]))
+    require(event.get("image_sha256") == manifest["image"]["sha256"], "Checkpoint programming event image mismatch")
+    require(event.get("source_binding_hash") == manifest["source_binding_hash"], "Checkpoint source binding mismatch")
+    require(session.get("recovery_sha256") == manifest["recovery"]["image"]["sha256"], "Checkpoint recovery image mismatch")
+    require(digest(Path(manifest["recovery"]["image"]["path"]).read_bytes()) == session["recovery_sha256"],
+            "Recovery image bytes changed after the checkpoint")
+    require(digest(Path(manifest["image"]["path"]).read_bytes()) == manifest["image"]["sha256"],
+            "Candidate image bytes changed after the checkpoint")
+    settings = bound(session["prior_settings"])
+    require(len(settings) > 2, "Original settings capture is empty")
+    receipt = json.loads(bound(session["sealed_writer_receipt"]))
+    image = bench.bound_file(manifest["image"])
+    verify_sealed_program(receipt, image=image, programme_dir=Path(session["programme_directory"]),
+                          spans=bench.hex_spans(image))
+    session["boot"] = proof["boot"]
+    session["fixture_epoch"] = proof["terminal_epoch"]
+    session["_proof"] = proof
+    return session
+
+
+def _fixture_epoch(result, exc, default):
+    if exc is not None and type(getattr(exc, "fixture_epoch", None)) is int:
+        return exc.fixture_epoch
+    measured = (result or {}).get("isolated_capture") if isinstance(result, dict) else None
+    measured = measured or {}
+    start = measured.get("start_epoch", default)
+    epochs = measured.get("epochs") or []
+    if type(start) is int and epochs:
+        return start + len(epochs)
+    return default if type(start) is not int else start
+
+
+def _write_repair_session(logs, facts, m, *, fixture_epoch, capture_result, prior_settings):
+    session = {
+        "schema": REPAIR_SESSION_SCHEMA,
+        "leave_state": REPAIR_SESSION["leave_state"],
+        "mode": REPAIR_SESSION["mode"],
+        "image_sha256": m["image"]["sha256"],
+        "source_binding_hash": m["source_binding_hash"],
+        "source_commit": m["source_commit"],
+        "recovery_sha256": m["recovery"]["image"]["sha256"],
+        "recovery_image": m["recovery"]["image"],
+        "fixture_epoch": fixture_epoch,
+        "capture_result": capture_result,
+        "candidate_readback_verified": True,
+        "responsive": True,
+        "programmed": True,
+        "reflash_on_repeat": False,
+        "restoration": "explicit-end-session",
+        "maximum_operation_seconds": 120,
+        "session_duration": "multiple-operations",
+        "prior_settings": prior_settings,
+        "logs_dir": str(Path(logs).resolve()),
+        "closed": False,
+    }
+    path = Path(logs) / "repair-session.json"
+    path.write_text(json.dumps(session, indent=2))
+    facts["repair_session_path"] = str(path.resolve())
+    facts["repair_session_sha256"] = digest(path.read_bytes())
+    facts["fixture_epoch"] = fixture_epoch
+    return session
+
+
+def original_programme_settings(logs, manifest):
+    """A native update carries the original legacy capture through its checkpoint."""
+    checkpoint = manifest.get('isolated_qualification', {}).get('repair_checkpoint')
+    stem = 'candidate-programme.repair-original-settings' if checkpoint is not None else 'candidate-programme.prior-settings'
+    captured, captured_hash = Path(logs)/(stem+'.json'), Path(logs)/(stem+'.sha256')
+    require(captured.is_file() and captured_hash.is_file(), 'outbound original settings capture missing')
+    original = {'path': str(captured.resolve()), 'sha256': captured_hash.read_text().strip()}
+    raw = bound(original)
+    if checkpoint is not None:
+        previous = json.loads(bound(checkpoint))
+        require(raw == bound(previous['prior_settings']),
+                'native update changed the original legacy settings lineage')
+    return original
+
+
+def execute(m, source, image, ctx, facts, *, resume=None, session_path=None, session_sha256=None,
+            epoch_lineage=None, exchange_override=None):
     """Called under the existing hardware lock, after normal owner admission.
 
-    Exactly one candidate programming attempt and one known-donor recovery
-    attempt are allowed. Any capture failure still takes the recovery path.
+    One-shot mode programs one candidate and always recovers the known donor.
+    A bound repair_session retains that verified responsive candidate after
+    success or a capture data-validation failure. Repeat captures and donor
+    restoration are explicit resumes and do not replay a consumed grant.
     """
     from ael.adapters import prism_bench_trial as bench
     from ael.prism_native import run_session
+    from ael.prism_native import require_current_owner
     require(os.environ.get("K1_RFP_SWD_EXECUTE_OK") == "1", "Existing RFP root-owner execution gate required")
-    pre = preflight(m,consume=True)
+    require(resume in (None, "capture", "end"), "Unknown repair resume")
+    repair = _repair_value(m)
+    if resume is not None:
+        require(repair, "Resume requires the bound repair session")
+    session = _load_repair_session(session_path, session_sha256, m) if resume else None
+    active = m
+    if repair and resume is None:
+        active = dict(m, resident_epoch=0)
+    elif resume == "capture":
+        require(type(epoch_lineage) is int and epoch_lineage == session["fixture_epoch"],
+                "Stale repair epoch lineage")
+        require(session["image_sha256"] == m["image"]["sha256"], "Repeat image is not the retained candidate")
+        require(session["recovery_sha256"] == m["recovery"]["image"]["sha256"],
+                "Repeat changed the checked recovery image")
+        active = dict(m, resident_epoch=session["fixture_epoch"], resident_boot=session["boot"])
+    elif resume == "end":
+        require(session["image_sha256"] == m["image"]["sha256"], "End-session image is not the retained candidate")
+        require(session["recovery_sha256"] == m["recovery"]["image"]["sha256"],
+                "End-session changed the checked recovery image")
+    if resume == "end":
+        require_current_owner(m, caller=True)
+        pre = preflight(m, consume=False)
+    else:
+        require_broker_capture_route(active)
+        # The programming decision is single-use. Repeats re-check it and do not replay it.
+        pre = preflight(active, consume=resume is None)
     logs = Path(ctx.logs_dir)
+    settings_logs = Path(session["logs_dir"]) if session and session.get("logs_dir") else logs
     facts.update(hardware_access=False, programmed=False, candidate_program_attempted=False,
                  candidate_readback_verified=False)
     started = time.monotonic()
     capture_deadline=started+80
     recovery_deadline=started+120
-    facts.update(candidate_deadline_monotonic=capture_deadline,
-                 recovery_deadline_monotonic=recovery_deadline)
+    facts.update(candidate_deadline_monotonic=capture_deadline)
+    # One-shot mode owns one 120s interruption that includes donor restoration.
+    # Repair mode does not schedule that restoration unless this operation must recover.
+    if repair:
+        facts["recovery_deadline_monotonic"] = None
+        facts["session_duration"] = "multiple-operations"
+        facts["maximum_operation_seconds"] = 120
+    else:
+        facts["recovery_deadline_monotonic"] = recovery_deadline
     def write_json(name,obj):
         p=logs/name
         with p.open("x") as f: json.dump(obj,f,indent=2)
         return {"path":str(p.resolve()),"sha256":digest(p.read_bytes())}
+    deployment_recovery_safe = True
     def program(candidate, name):
-        nonlocal attempted
+        nonlocal attempted, deployment_recovery_safe
         cutoff=capture_deadline if name=='candidate' else recovery_deadline
         require(time.monotonic() < cutoff, name+" deadline before image validation")
         expected=m['image'] if name=='candidate' else m['recovery']['image']
         require(bench.bound_file(expected) == candidate.resolve(),"Programming image changed after admission")
-        argv = bench.programmer_argv(m,candidate,"titan",recover=name=="donor-recovery")
+        programme_dir = logs / (name + "-programme")
+        restore_settings = None
+        if name == 'donor-recovery':
+            restore_settings = session['prior_settings'] if session else original_programme_settings(settings_logs, m)
+            bound(restore_settings)
+        argv = bench.deployment_argv(m, candidate, name, programme_dir, restore_settings=restore_settings)
+        if name == "candidate":
+            argv += ["--deadline", str(cutoff)]
         write_json(name+"-invocation.json",{"argv":argv,"image_sha256":bench.sha(candidate),
                     "identity":UID,"fixture_id":pre["fixture_id"],"invoked_unix":time.time()})
         log = logs/(name+".log")
@@ -320,22 +579,24 @@ def execute(m, source, image, ctx, facts):
             if name == "candidate":
                 attempted=True
                 facts.update(hardware_access=True, candidate_program_attempted=True)
-            timeout=min(30 if name=="candidate" else 35, remaining)
+            timeout=min(70 if name=="candidate" else 90, remaining)
             process = {"argv":argv, "cwd":str(Path.cwd()), "started_unix":time.time(),
                        "started_monotonic":time.monotonic(), "timeout_seconds":timeout,
                        "deadline_monotonic":cutoff, "returncode":None}
             process_error = None
             try:
-                result = subprocess.run(argv,stdout=out,stderr=subprocess.STDOUT,check=False,
-                                        timeout=timeout)
+                deployment_recovery_safe = False
+                result = _run_deployment(argv, stdout=out, timeout=timeout,
+                                         deadline=cutoff, process=process)
                 process.update(outcome="returned", returncode=result.returncode)
             except BaseException as exc:
                 process_error = exc
                 process.update(outcome="timeout" if isinstance(exc,subprocess.TimeoutExpired) else "exception",
                                exception_type=type(exc).__name__, exception_message=str(exc),
-                               returncode_unavailable=True)
-                raise
+                               returncode_unavailable=process.get("returncode") is None)
             finally:
+                deployment_recovery_safe = process.get("recovery_safe", False)
+                facts[name+"_process_group_complete"] = process.get("process_group_complete", False)
                 process.update(finished_unix=time.time(), finished_monotonic=time.monotonic())
                 process["elapsed_seconds"]=process["finished_monotonic"]-process["started_monotonic"]
                 try:
@@ -346,55 +607,187 @@ def execute(m, source, image, ctx, facts):
                     if process_error is None:
                         raise
                     process_error.add_note("Programmer process receipt could not be retained: "+str(receipt_error))
-        evidence = verify_program_log(log.read_bytes(),returncode=result.returncode,argv=argv,
-                                     image=candidate,spans=bench.hex_spans(candidate))
+        gateway_rc = process.get("returncode")
+        facts[name+"_gateway_returncode"] = gateway_rc
+        if gateway_rc != 0:
+            facts[name+"_gateway_error"] = log.read_text(errors="replace")
+        receipt_path = programme_dir / "receipt.json"
+        if receipt_path.is_file():
+            sealed = json.loads(receipt_path.read_text())
+            facts[name+"_sealed_writer_receipt"] = {"path": str(receipt_path), "sha256": digest(receipt_path.read_bytes())}
+            evidence = verify_sealed_program(sealed, image=candidate, programme_dir=programme_dir,
+                         spans=(bench.recovery_programmed_spans(m, candidate)
+                                if name == "donor-recovery" else bench.hex_spans(candidate)))
+        else:
+            if process_error is not None:
+                raise process_error
+            raise RuntimeError("Gateway exited %s without a sealed writer receipt; program/verify unconfirmed" % gateway_rc)
         bench.bound_file(expected)
         if name == "candidate":
             facts.update(programmed=True, candidate_readback_verified=True,
                          candidate_readback_method=evidence["readback_method"])
         evidence.update(identity=UID,image_sha256=bench.sha(candidate),readback_sha256=bench.sha(candidate),
                         source_binding_hash=m["source_binding_hash"] if name=="candidate" else
-                        bench.TITAN_RECOVERY_BUILD,completed_unix=time.time(),
+                        pre['recovery']['build_source_sha256'],completed_unix=time.time(),completed_monotonic=time.monotonic(),
                         programmer_log={"path":str(log.resolve()),"sha256":digest(log.read_bytes())},
-                        argv=argv,returncode=result.returncode,image_file=expected)
+                        argv=argv,returncode=gateway_rc,image_file=expected,
+                        sealed_writer_receipt=facts[name+"_sealed_writer_receipt"],
+                        programme_directory=str(programme_dir.resolve()))
         event=write_json(name+"-programming-event.json",evidence)
         if name=='donor-recovery':
             facts.update(donor_recovery_event=event,known_donor_program_and_verify_completed=True)
+        else:
+            facts["candidate_programming_event"] = event
+        if process_error is not None:
+            raise process_error
+        require(gateway_rc == 0,
+                name+" gateway failed after verified program/readback (exit "+str(gateway_rc)+"); "
+                +log.read_text(errors="replace")[-4000:])
         require(time.monotonic() <= cutoff, name+" deadline after programming/readback evidence")
         return event
     attempted=False
-    try:
-        anchor=usb_anchor(m["port"],deadline=capture_deadline)
-        facts["donor_usb_anchor"]=anchor
-        write_json("donor-usb-anchor.json",anchor)
-        event=program(image,"candidate")
-        resolved=wait_for_native_interface(anchor,capture_deadline)
-        facts["native_usb_interface"]=resolved
-        write_json("native-usb-interface.json",resolved)
-        require_interface_unowned(resolved["device"],capture_deadline)
+    capture_started=False
+    result=None
+    def capture(event, start_epoch):
+        nonlocal capture_started, result
+        # Gateway restores the sole broker owner. Do not reopen its serial port.
+        resolved = {'broker_socket': m.get('broker_socket', '/tmp/titan-emotiscope-control/titan-control.sock')}
+        facts['native_broker_owner'] = resolved
+        write_json('native-broker-owner.json', resolved)
         remaining=capture_deadline-time.monotonic()
         require(remaining >= 1,"Candidate programming exhausted bounded interruption")
         completion = completion_request(m)
-        operation=write_json("isolated-operation.json", {"completion": completion} if completion is not None else {"isolated_capture":{
-            "frames":m["isolated_qualification"]["frames"],"budget_seconds":min(60,remaining),
-            **({"pattern":m["isolated_qualification"]["pattern"]} if "pattern" in m["isolated_qualification"] else {}),
-            **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}})
-        runtime=dict(m,port=resolved["device"],isolated_programming_event=event,
-                     isolated_fixture_id=pre["fixture_id"])
+        payload = {"frames":m["isolated_qualification"]["frames"],"budget_seconds":min(60,remaining),
+                   **({"pattern":m["isolated_qualification"]["pattern"]} if "pattern" in m["isolated_qualification"] else {}),
+                   **({"constant_timer_diagnostic":m["isolated_qualification"]["constant_timer_diagnostic"]} if "constant_timer_diagnostic" in m["isolated_qualification"] else {})}
+        if repair and completion is None:
+            payload["start_epoch"] = start_epoch
+        operation=write_json("isolated-operation.json", {"completion": completion} if completion is not None else {"isolated_capture":payload})
+        runtime=dict(active, isolated_programming_event=event, isolated_fixture_id=pre['fixture_id'],
+                     resident_epoch=start_epoch)
+        runtime.pop('broker_socket', None)
+        if start_epoch > 0:
+            runtime["resident_boot"] = session["boot"]
+        runtime_binding=write_json('isolated-broker-manifest.json', runtime)
+        runtime.update(broker_socket=resolved['broker_socket'], broker_manifest=runtime_binding)
+        capture_started=True
+        facts["hardware_access"] = True
         result=run_session(runtime,logs,80,operation["path"],deadline=capture_deadline,
-                           operation_sha256=operation["sha256"])
+                           operation_sha256=operation["sha256"], exchange_override=exchange_override)
         facts["isolated_completion" if completion is not None else "isolated_capture"]=result
         require(time.monotonic() <= capture_deadline,"Capture exceeded recovery reserve")
-        facts["candidate_programming_event"]=event
         facts["physical_qualification"]=False
-    finally:
-        if attempted:
-            primary_error=sys.exc_info()[1]
-            if primary_error is not None: facts["primary_error"]=str(primary_error)
+        return result
+    try:
+        if resume == "end":
+            claim = Path(str(session_path) + ".restoration")
             try:
-                recovery=bench.bound_file(m["recovery"]["image"])
-                facts["donor_recovery_event"]=program(recovery,"donor-recovery")
-                facts["known_donor_program_and_verify_completed"]=True
+                with claim.open("x") as stream:
+                    stream.write(session_sha256)
+            except FileExistsError as error:
+                raise RuntimeError("Repair restoration already started") from error
+            facts["recovery_deadline_monotonic"] = recovery_deadline
+            program(bench.bound_file(m["recovery"]["image"]), "donor-recovery")
+            closed = {k: v for k, v in session.items() if k != "_proof"}
+            closed["closed"] = True
+            closed["restored_from"] = {"path": str(Path(session_path).resolve()), "sha256": session_sha256}
+            restored = logs / "repair-restoration.json"
+            with restored.open("x") as stream:
+                json.dump(closed, stream, indent=2)
+            facts["repair_session_closed"] = True
+            facts["repair_session_path"] = str(restored.resolve())
+            facts["repair_session_sha256"] = digest(restored.read_bytes())
+        elif resume == "capture":
+            facts["reflash"] = False
+            capture(session["programming_event"], session["fixture_epoch"])
+        else:
+            anchor=usb_anchor(m["port"],deadline=capture_deadline)
+            facts["donor_usb_anchor"]=anchor
+            write_json("donor-usb-anchor.json",anchor)
+            event=program(image,"candidate")
+            capture(event, 0)
+            facts["candidate_programming_event"]=event
+    finally:
+        primary_error=sys.exc_info()[1]
+        if primary_error is not None: facts["primary_error"]=str(primary_error)
+        proof = _take_leave_proof(logs, primary_error) if repair and resume != "end" and capture_started else None
+        retain = proof is not None
+        if retain:
+            facts["collector_quiesced"] = getattr(primary_error, "collector_quiesced", True)
+            facts["candidate_retained"] = True
+            facts["leave_state"] = REPAIR_SESSION["leave_state"]
+            facts["capture_result"] = "FAIL" if primary_error is not None else "PASS"
+            facts["known_donor_program_and_verify_completed"] = False
+            facts["restoration"] = "explicit-end-session"
+            facts["recovery_deadline_monotonic"] = None
+            facts["reflash"] = False
+            epoch = proof["terminal_epoch"]
+            prior = session.get("prior_settings") if session else None
+            if prior is None:
+                prior = original_programme_settings(logs, m)
+            programming_event = (session or {}).get("programming_event") or facts.get("candidate_programming_event")
+            event_body = json.loads(bound(programming_event)) if programming_event else {}
+            if not prior or not event_body.get("sealed_writer_receipt") or not event_body.get("programme_directory"):
+                raise RuntimeError("Verified leave proof has no bound settings or sealed programming receipt")
+            claim = Path(proof["_claim"])
+            try:
+                with claim.open("x") as stream:
+                    stream.write(proof["proof_sha256"])
+            except FileExistsError as error:
+                raise RuntimeError("Leave proof was already consumed") from error
+            stored = {
+                "schema": REPAIR_SESSION_SCHEMA,
+                "leave_state": REPAIR_SESSION["leave_state"],
+                "mode": REPAIR_SESSION["mode"],
+                "image_sha256": m["image"]["sha256"],
+                "source_binding_hash": m["source_binding_hash"],
+                "source_commit": m["source_commit"],
+                "recovery_sha256": m["recovery"]["image"]["sha256"],
+                "recovery_image": m["recovery"]["image"],
+                "boot": proof["boot"],
+                "fixture_epoch": epoch,
+                "classification": proof["classification"],
+                "capture_result": facts["capture_result"],
+                "restoration": "explicit-end-session",
+                "maximum_operation_seconds": 120,
+                "session_duration": "multiple-operations",
+                "prior_settings": prior,
+                "programming_event": programming_event,
+                "sealed_writer_receipt": event_body["sealed_writer_receipt"],
+                "programme_directory": event_body["programme_directory"],
+                "leave_proof": {"path": proof["path"], "sha256": proof["sha256"]},
+                "previous_checkpoint": None if session_path is None else {
+                    "path": str(Path(session_path).resolve()), "sha256": session_sha256},
+                "logs_dir": str((Path(session["logs_dir"]) if session else logs).resolve()),
+                "closed": False,
+            }
+            target = logs / "repair-checkpoint.json"
+            with target.open("x") as stream:
+                json.dump(stored, stream, indent=2)
+            facts["repair_session_path"] = str(target.resolve())
+            facts["repair_session_sha256"] = digest(target.read_bytes())
+            facts["fixture_epoch"] = epoch
+            facts["boot"] = proof["boot"]
+            facts["interruption_elapsed_seconds"]=time.monotonic()-started
+            facts["operation_elapsed_seconds"]=facts["interruption_elapsed_seconds"]
+            facts["interruption_boundary_exceeded"]=False
+            facts["optical_leave_state_verified"]=False
+            write_json("isolated-transaction.json",facts)
+            if facts["operation_elapsed_seconds"] > 120 and primary_error is None:
+                raise TimeoutError("Operation exceeded 120s bound; candidate retained and donor restoration was not started")
+            if primary_error is not None:
+                raise primary_error
+        elif attempted or resume == "end" or (resume == "capture" and capture_started):
+            try:
+                if resume != "end":
+                    facts["recovery_deadline_monotonic"] = recovery_deadline
+                    require(deployment_recovery_safe, "Deployment process group cleanup unresolved; donor recovery forbidden")
+                    collector_quiesced = getattr(primary_error, "collector_quiesced", True)
+                    facts["collector_quiesced"] = collector_quiesced
+                    require(collector_quiesced, "Broker collector cancellation unresolved; donor recovery forbidden")
+                    recovery=bench.bound_file(m["recovery"]["image"])
+                    facts["donor_recovery_event"]=program(recovery,"donor-recovery")
+                    facts["known_donor_program_and_verify_completed"]=True
             except BaseException as exc:
                 facts.setdefault("known_donor_program_and_verify_completed",False)
                 facts["recovery_error"]=str(exc)

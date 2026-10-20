@@ -352,3 +352,115 @@ def test_candidate_disguised_as_recovery_never_queries_owner_or_invokes_hardware
     with pytest.raises(RuntimeError, match='exact known donor'):
         bench.execute({'action': 'bench-trial-recover'}, SimpleNamespace(logs_dir=tmp_path, run_dir=tmp_path), {})
     never.assert_not_called()
+
+import os
+import tempfile
+import unittest
+from unittest import mock
+
+def recovery_test_fixture():
+    """AEL_TITAN_RECOVERY_FIXTURE selects immutable rows; mutations use per-test temp."""
+    config = os.environ.get('AEL_TITAN_RECOVERY_FIXTURE')
+    required = os.environ.get('AEL_TITAN_RECOVERY_FIXTURE_REQUIRED') == '1'
+    if not config:
+        if required:
+            raise RuntimeError('Supplied recovery fixture is required')
+        raise unittest.SkipTest('Optional immutable recovery fixture not configured')
+    path = Path(config).resolve()
+    if not path.is_file():
+        raise RuntimeError('Configured recovery fixture is missing')
+    data = json.loads(path.read_text())
+    if data.get('schema') != 'titan.recovery.test-fixture.v1':
+        raise RuntimeError('Wrong recovery test fixture schema')
+    result = {}
+    for branch in ['current', 'legacy']:
+        result[branch] = {'identity':bench.TITAN_RECOVERY_UID, 'recovery':{}}
+        for name, row in data[branch].items():
+            f = (path.parent / row['path']).resolve()
+            if not f.is_file() or bench.sha(f) != row['sha256']:
+                raise RuntimeError('Missing/changed immutable recovery fixture: '+branch+'/'+name)
+            result[branch]['recovery'][name] = {'path':str(f),'sha256':row['sha256']}
+    return result
+
+class TestCurrentRangeRecovery(unittest.TestCase):
+    def setUp(self):
+        self.m = copy.deepcopy(recovery_test_fixture()['current'])
+        temporary = tempfile.TemporaryDirectory(prefix='ael-recovery-')
+        self.addCleanup(temporary.cleanup)
+        self.tmp = Path(temporary.name)
+
+    def test_genuine_source_coverage_equivalence(self):
+        result = bench.require_titan_recovery(self.m)
+        self.assertTrue(result['recovery_byte_equivalence_verified'])
+        self.assertFalse(result['derived_image_programmed'])
+        self.assertEqual(result['historical_source_verified_ranges'],[[0x02000000,0x02082720]])
+
+    def test_original_full_image_is_not_admitted(self):
+        self.m['recovery']['image'] = self.m['recovery']['source_image']
+        with self.assertRaises(RuntimeError):
+            bench.require_titan_recovery(self.m)
+
+    def test_wrong_uid_is_refused(self):
+        self.m['identity']='wrong'
+        with self.assertRaisesRegex(RuntimeError,'UID'):
+            bench.require_titan_recovery(self.m)
+
+    def test_changed_bound_records_are_refused(self):
+        for key in self.m['recovery']:
+            with self.subTest(key=key):
+                original=self.m['recovery'][key]
+                path=self.tmp/('changed-'+key)
+                path.write_bytes(Path(original['path']).read_bytes()+b'\n')
+                self.m['recovery'][key]={'path':str(path),'sha256':bench.sha(path)}
+                with self.assertRaises(RuntimeError):
+                    bench.require_titan_recovery(self.m)
+                self.m['recovery'][key]=original
+
+    def test_derivation_semantics_fail_closed(self):
+        cases=[('build_id','wrong'),('uid','wrong'),('source_pin','wrong'),
+               ('in_range_bytes',534303),('range','all'),('dropped_records',[]),
+               ('derived_image_programmed',True),('hardware_access',True),
+               ('historical_verified_ranges',[[0x02000000,0x02082710]]),
+               ('historical_source_programming_receipt_sha256','wrong')]
+        original=self.m['recovery']['derivation']
+        data=json.loads(Path(original['path']).read_text())
+        for key,value in cases:
+            with self.subTest(key=key):
+                altered=dict(data);altered[key]=value
+                path=self.tmp/'fault-derivation.json';path.write_text(json.dumps(altered))
+                self.m['recovery']['derivation']={'path':str(path),'sha256':bench.sha(path)}
+                with mock.patch.object(bench,'TITAN_CURRENT_RECOVERY_DERIVATION_SHA256',bench.sha(path)):
+                    with self.assertRaises(RuntimeError):
+                        bench.require_titan_recovery(self.m)
+        self.m['recovery']['derivation']=original
+
+    def test_original_receipt_semantics_fail_closed(self):
+        cases=[('execute',False),('dry_run',True),('returncode',False),
+               ('hex_sha256','wrong'),('range','all'),('flags',['-erase']),
+               ('debug_mode','gdb'),('stdout','Operation successful')]
+        original=self.m['recovery']['qualification_receipt']
+        data=json.loads(Path(original['path']).read_text())
+        for key,value in cases:
+            with self.subTest(key=key):
+                altered=dict(data);altered[key]=value
+                path=self.tmp/'fault-programming.json';path.write_text(json.dumps(altered))
+                self.m['recovery']['qualification_receipt']={'path':str(path),'sha256':bench.sha(path)}
+                with mock.patch.object(bench,'TITAN_CURRENT_RECOVERY_RECEIPT_SHA256',bench.sha(path)):
+                    with self.assertRaises(RuntimeError):
+                        bench.require_titan_recovery(self.m)
+        self.m['recovery']['qualification_receipt']=original
+
+    def test_checksum_eof_overlap_and_address_validation(self):
+        original=Path(self.m['recovery']['image']['path']).read_text()
+        lines=original.splitlines()
+        malformed={
+            'checksum':lines[0][:-2]+'00\n'+'\n'.join(lines[1:])+'\n',
+            'missing-eof':'\n'.join(lines[:-1])+'\n',
+            'post-eof':original+':00000001FF\n',
+            'overlap':'\n'.join([lines[0],lines[1],lines[1],*lines[2:]])+'\n',
+            'address':':020001040200F7\n'+ '\n'.join(lines[1:])+'\n'}
+        for key,text in malformed.items():
+            with self.subTest(key=key):
+                path=self.tmp/('malformed-'+key+'.hex');path.write_text(text)
+                with self.assertRaises(RuntimeError):
+                    bench.recovery_hex_bytes(path)

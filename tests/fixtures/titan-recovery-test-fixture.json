@@ -1,0 +1,47 @@
+{
+  "schema": "titan.recovery.test-fixture.v1",
+  "current": {
+    "image": {
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/lightwave_native_20261012/runs/hardware-capture-preflight-20261013T141800Z/permitted/recovery-r3/fixtures/current.hex",
+      "sha256": "ed2322e2fe376dfcd0ab28069bc9f86261138b83d4f5ab525ce87751268717d2"
+    },
+    "source_image": {
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/lightwave_native_20261012/runs/hardware-capture-preflight-20261013T141800Z/permitted/recovery-r3/fixtures/source.hex",
+      "sha256": "e28ccf18733a077c0cce86c723e2c073934d06e78d961004cdfb2b72a9aeb3e8"
+    },
+    "derivation": {
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/lightwave_native_20261012/runs/hardware-capture-preflight-20261013T141800Z/permitted/recovery-r3/fixtures/current-derivation.json",
+      "sha256": "922ac1d56343b99f29f673e65604e3126990007ccf665d4f0c31b9ebc6cadc41"
+    },
+    "build_receipt": {
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/lightwave_native_20261012/runs/hardware-capture-preflight-20261013T141800Z/permitted/recovery-r3/fixtures/build.json",
+      "sha256": "8f150784b1cae1836f137b15ab1ba8eabdc7f8984dc77914c22acd552f271a75"
+    },
+    "qualification_receipt": {
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-PRISM/Kx-Titan/_scratch/lightwave_native_20261012/runs/hardware-capture-preflight-20261013T141800Z/permitted/recovery-r3/fixtures/programming.json",
+      "sha256": "b5e240419ef1820e5e8f5ff5635f87dbd137a2b3c1672e10016f8dbf044a0c16"
+    }
+  },
+  "legacy": {
+    "image": {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/packet_c_execution_20261016/host009-inrange.hex",
+      "sha256": "715156513a4ebcccdcd72c50c460378a37d7bd979b2478a10fb4f5d3aa86649b"
+    },
+    "source_image": {
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/_scratch/waveform-migration-001/arm-p6-v9-host-009-randpal/rtthread.hex",
+      "sha256": "c2e927d986ccac7f58f16d88e10cfb7837e45c2547e0c88a3eebf6b05ab039f3"
+    },
+    "derivation": {
+      "path": "/Users/spectrasynq/ai-embedded-lab/_scratch/packet_c_execution_20261016/host009-derivation.json",
+      "sha256": "3c436c9ef346c433b422e1a51b38c2f799a07457220913c9d6befb046a681e67"
+    },
+    "build_receipt": {
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/_scratch/waveform-migration-001/arm-p6-v9-host-009-randpal/receipt.json",
+      "sha256": "5585fbfd9129d6c307851afb1ef6f2c052c72a90dc5aebcac5c5246f10e90441"
+    },
+    "qualification_receipt": {
+      "path": "/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/_scratch/waveform-migration-001/programme-host009-boot3-182855/receipt.json",
+      "sha256": "ad150a1dc29d5b924a972d5fe16756e87a1e77a928105d1fa023f6e6bdb3aa49"
+    }
+  }
+}

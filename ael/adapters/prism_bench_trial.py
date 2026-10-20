@@ -123,6 +123,152 @@ TITAN_RECOVERY_RECEIPT_SHA256 = 'ac4801e2666fe6fb03f47c438bcb32213d0cd978e4059b3
 TITAN_RECOVERY_BUILD = 'becb0186f0a66fbb04b0e0f4a79c0480b8b963db0fe3f518a91af9bb2dd2b5c7'
 
 
+
+TITAN_CURRENT_RECOVERY_SOURCE_HEX_SHA256 = 'e28ccf18733a077c0cce86c723e2c073934d06e78d961004cdfb2b72a9aeb3e8'
+TITAN_CURRENT_RECOVERY_HEX_SHA256 = 'ed2322e2fe376dfcd0ab28069bc9f86261138b83d4f5ab525ce87751268717d2'
+TITAN_CURRENT_RECOVERY_DERIVATION_SHA256 = '922ac1d56343b99f29f673e65604e3126990007ccf665d4f0c31b9ebc6cadc41'
+TITAN_CURRENT_RECOVERY_BUILD = 'a43e4842b3a7cf8b5150787f613b575551dc090d80779dae6474784de59cd606'
+TITAN_CURRENT_RECOVERY_SOURCE = '7f86939bd7c16c4a6dd5789813e9d551246ed134'
+TITAN_CURRENT_RECOVERY_BUILD_RECEIPT_SHA256 = '8f150784b1cae1836f137b15ab1ba8eabdc7f8984dc77914c22acd552f271a75'
+TITAN_CURRENT_RECOVERY_RECEIPT_SHA256 = 'b5e240419ef1820e5e8f5ff5635f87dbd137a2b3c1672e10016f8dbf044a0c16'
+
+def recovery_hex_bytes(path):
+    """Validate records and retain unique absolute-address bytes."""
+    base = 0
+    memory = {}
+    rows = []
+    eof = False
+    for number, line in enumerate(Path(path).read_text().splitlines(), 1):
+        require(line.startswith(':'), 'Invalid HEX line')
+        try:
+            row = bytes.fromhex(line[1:])
+        except ValueError as exc:
+            raise RuntimeError('Invalid HEX encoding') from exc
+        require(len(row) >= 5 and len(row) == row[0] + 5 and sum(row) % 256 == 0,
+                'HEX checksum/length')
+        require(not eof, 'HEX record after EOF')
+        count, address, kind = row[0], int.from_bytes(row[1:3], 'big'), row[3]
+        require(address + count <= 0x10000, 'HEX record crosses address page')
+        if kind == 0:
+            for i, byte in enumerate(row[4:4+count]):
+                absolute = base + address + i
+                require(absolute not in memory, 'HEX overlap')
+                memory[absolute] = byte
+            rows.append((line, kind, base + address, count))
+        elif kind in (2, 4):
+            require(count == 2 and address == 0, 'Invalid HEX extended address')
+            base = int.from_bytes(row[4:6], 'big') << (4 if kind == 2 else 16)
+            rows.append((line, kind, None, count))
+        elif kind == 1:
+            require(count == 0 and address == 0, 'Invalid HEX EOF')
+            eof = True
+            rows.append((line, kind, None, count))
+        elif kind in (3, 5):
+            require(count == 4 and address == 0, 'Invalid HEX start address')
+            rows.append((line, kind, None, count))
+        else:
+            raise RuntimeError('Unsupported HEX record')
+    require(eof and memory, 'Incomplete/empty HEX')
+    return memory, rows
+
+
+def recovery_merged_spans(memory):
+    ranges = []
+    for address in sorted(memory):
+        if ranges and ranges[-1][1] == address:
+            ranges[-1][1] += 1
+        else:
+            ranges.append([address, address + 1])
+    return ranges
+
+
+def require_titan_current_recovery(m, image):
+    """Admit derived recovery through exact source-byte/verified-range equivalence."""
+    import re
+    require(m.get('identity') == TITAN_RECOVERY_UID, 'Recovery wrong Titan UID')
+    recovery = m['recovery']
+    require(sha(image) == TITAN_CURRENT_RECOVERY_HEX_SHA256, 'Wrong derived current donor')
+    source = bound_file(recovery['source_image'])
+    require(sha(source) == TITAN_CURRENT_RECOVERY_SOURCE_HEX_SHA256, 'Wrong original donor image')
+    derivation_file = bound_file(recovery['derivation'])
+    require(sha(derivation_file) == TITAN_CURRENT_RECOVERY_DERIVATION_SHA256,
+            'Unknown current donor derivation')
+    d = json.loads(derivation_file.read_text())
+    require(d.get('schema') == 'titan.recovery.inrange/1' and
+            d.get('source_sha256') == sha(source) and d.get('derived_sha256') == sha(image) and
+            d.get('build_id') == TITAN_CURRENT_RECOVERY_BUILD and
+            d.get('uid') == TITAN_RECOVERY_UID and d.get('source_pin') == TITAN_CURRENT_RECOVERY_SOURCE and
+            isinstance(d.get('source_hex'), str) and bool(d['source_hex']) and
+            isinstance(d.get('derived_hex'), str) and bool(d['derived_hex']) and
+            d.get('range') == '02000000-02C9F01F' and d.get('in_range_bytes') == 534304 and
+            d.get('dropped_records') == [':04F04000FFFFFFFFD0'] and
+            d.get('derived_image_programmed') is False and d.get('hardware_access') is False,
+            'Wrong derivation identity/provenance')
+    original, records = recovery_hex_bytes(source)
+    actual, _ = recovery_hex_bytes(image)
+    inside = {a:v for a,v in original.items() if 0x02000000 <= a < 0x02C9F020}
+    outside = {a:v for a,v in original.items() if a not in inside}
+    require(actual == inside and len(actual) == 534304 and
+            recovery_merged_spans(actual) == [[0x02000000,0x02082720]],
+            'Derived recovery must preserve every in-range byte')
+    require(outside == {a:255 for a in range(0x02C9F040,0x02C9F044)} and
+            [line for line,kind,a,n in records if kind == 0 and n and
+             not (0x02000000 <= a and a+n <= 0x02C9F020)] == [':04F04000FFFFFFFFD0'],
+            'Unexpected excluded source bytes')
+    build_file = bound_file(recovery['build_receipt'])
+    require(sha(build_file) == TITAN_CURRENT_RECOVERY_BUILD_RECEIPT_SHA256,
+            'Unknown current donor build receipt')
+    build = json.loads(build_file.read_text())
+    require(build.get('pass') is True and build.get('label') == 'PRE-SILICON' and
+            build.get('build_id') == TITAN_CURRENT_RECOVERY_BUILD and
+            build.get('source_pin') == TITAN_CURRENT_RECOVERY_SOURCE and
+            build.get('artifacts', {}).get('rtthread.hex') == sha(source),
+            'Current donor build must bind original source image')
+    receipt_file = bound_file(recovery['qualification_receipt'])
+    require(sha(receipt_file) == TITAN_CURRENT_RECOVERY_RECEIPT_SHA256,
+            'Unknown original source programming receipt')
+    p = json.loads(receipt_file.read_text())
+    require(p.get('label') == 'RFP-SWD' and p.get('pass') is True and p.get('execute') is True and
+            p.get('dry_run') is False and type(p.get('returncode')) is int and p['returncode'] == 0,
+            'Original ranged programming did not succeed')
+    require(p.get('uid') == TITAN_RECOVERY_UID and p.get('build_id') == TITAN_CURRENT_RECOVERY_BUILD and
+            p.get('source_pin') == TITAN_CURRENT_RECOVERY_SOURCE and p.get('hex_sha256') == sha(source),
+            'Original programmed identity mismatch')
+    require(p.get('probe') == 'e2l:5AS079228B' and p.get('interface') == 'swd' and
+            p.get('speed_hz') == 1000000 and p.get('range') == '02000000,02c9f01f' and
+            p.get('flags') == ['-noquery', '-run'] and p.get('debug_mode') == 'none',
+            'Original programmer scope mismatch')
+    argv = p.get('command', [])
+    require(isinstance(argv, list) and len(argv) == 15 and Path(argv[0]).name == 'rfp-cli' and
+            argv[1:-1] == ['-d','RA','-t','e2l:5AS079228B','-if','swd','-s','1000000',
+                          '-noquery','-run','-range','02000000,02c9f01f','-pv'],
+            'Original actual command mismatch')
+    text = p.get('stdout', '')
+    require(text.startswith('Renesas Flash Programmer CLI V1.17\n') and
+            'Load: "'+argv[-1]+'"' in text and 'Emulator power supply: OFF' in text and
+            'Connected to R7KA8P1KFLCAC' in text and 'Tool: E2 emulator Lite (5AS079228B)' in text and
+            text.count('Writing data to the target device') == 1 and
+            text.count('Verifying data on the target device') == 1 and
+            text.rstrip().endswith('Operation successful') and
+            not re.search(r'\b(error|failed|failure)\b',text,re.I),
+            'Original programmer evidence mismatch')
+    verified = [[int(a,16),int(b,16)+1] for a,b in re.findall(
+        r'\[Code MRAM [12]\]\s+([0-9A-F]{8}) - ([0-9A-F]{8})',
+        text.split('Verifying data on the target device',1)[1])]
+    require(verified == [[0x02000000,0x02082720]] and
+            all(any(a <= lo < hi <= b for a,b in verified) for lo,hi in hex_spans(image)),
+            'Historical verified ranges do not cover derived recovery')
+    require(d.get('historical_source_programming_receipt_sha256') == sha(receipt_file) and
+            d.get('historical_verified_ranges') == verified and
+            d.get('derived_spans') == recovery_merged_spans(actual),
+            'Derivation historical coverage provenance mismatch')
+    return {'image_sha256':sha(image),'source_image_sha256':sha(source),
+            'derivation_sha256':sha(derivation_file),'build_receipt_sha256':sha(build_file),
+            'execution_receipt_sha256':sha(receipt_file),'build_source_sha256':TITAN_CURRENT_RECOVERY_BUILD,
+            'historical_source_verified_ranges':verified,'recovery_byte_equivalence_verified':True,
+            'derived_image_programmed':False,
+            'scope':'derived current donor recovery admission via original ranged-byte equivalence; no new device proof'}
+
 TITAN_HOST009_RECOVERY_SOURCE_HEX_SHA256 = 'c2e927d986ccac7f58f16d88e10cfb7837e45c2547e0c88a3eebf6b05ab039f3'
 TITAN_HOST009_RECOVERY_HEX_SHA256 = '715156513a4ebcccdcd72c50c460378a37d7bd979b2478a10fb4f5d3aa86649b'
 TITAN_HOST009_RECOVERY_DERIVATION_SHA256 = '3c436c9ef346c433b422e1a51b38c2f799a07457220913c9d6befb046a681e67'
@@ -218,12 +364,102 @@ def require_titan_host009_recovery(m, image):
             'derived_image_programmed':False,
             'scope':'derived current donor recovery admission via original ranged-byte equivalence; no new device proof'}
 
+# Exact installed June19 show for normal broker-present return only. This is
+# deliberately separate from the gateway's absent-USB recovery allowlist.
+TITAN_INSTALLED_SHOW_RECOVERY = {
+    'build': 'aadd38b2f452393a3105b3307c345487cc54b8f7dabd6dc1cacbdf5ab2fd2030',
+    'image': '5d8c45d9c358506e7e19de89f33eaf23cba549035f206e26f765f0bef15d8d3d',
+    'elf': '1aeb20e7af4b39074f3ac82b6e3a12a7c742823c28e240071d26d25ca0fe6d7e',
+    'source': '7f86939bd7c16c4a6dd5789813e9d551246ed134',
+    'schema': 'e99c1ec147288a7beaed728fc91e42530efc91c26f223164e03d07745b68c2da',
+    'admission': 'd49f29cab4b225d0963bcc3f7feda2fc2e0a77929383eb0c5685bdbbfdb0ca36',
+    'build_receipt': 'b937b5b69b5842b69fbbf5a31391240f0a52a7d2c84925740399deb05fa79f3b',
+    'qualification_receipt': '3e0394c5c54495f05c5d270e38d2fe834c58d29601fd4376053b41ad48a55996',
+}
+
+
+def require_titan_installed_show_recovery(m, image):
+    """Validate the exact already-programmed show; never grant absent-USB recovery."""
+    import re
+    pins = TITAN_INSTALLED_SHOW_RECOVERY
+    recovery = m['recovery']
+    require(m.get('identity') == TITAN_RECOVERY_UID and sha(image) == pins['image'],
+            'Installed show recovery target/image mismatch')
+    build_file = bound_file(recovery['build_receipt'])
+    receipt_file = bound_file(recovery['qualification_receipt'])
+    deployment = recovery['deployment']
+    build_dir = Path(deployment['build_dir']).resolve()
+    admission_file = Path(deployment['admission']).resolve()
+    require(build_file == build_dir / 'receipt.json' and image.resolve() == build_dir / 'rtthread.hex',
+            'Installed show recovery deployment differs from bound build/image')
+    for key, path in [('build_receipt', build_file), ('qualification_receipt', receipt_file), ('admission', admission_file)]:
+        require(sha(path) == pins[key], 'Installed show recovery changed ' + key)
+    helper = Path('/Users/spectrasynq/Workspace_Management/Software/agent-skills/skills/smc-titan-mixer/scripts/deploy_admission.py')
+    spec = importlib.util.spec_from_file_location('deploy_admission', helper)
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    build = json.loads(build_file.read_text())
+    binding = checker.legacy_binding(build_dir, build)
+    expected = (pins['build'], pins['image'], pins['elf'], pins['source'], pins['schema'])
+    require(tuple(binding[k] for k in ('build_id','hex_sha256','elf_sha256','source','schema')) == expected
+            and checker.CURRENT_SHOW_RECOVERY == expected, 'Installed show differs from normal gateway return binding')
+    checker.check_admission(json.loads(admission_file.read_text()), binding)
+    data, _ = recovery_hex_bytes(image)
+    inside = {a:v for a,v in data.items() if 0x02000000 <= a < 0x02C9F020}
+    outside = {a:v for a,v in data.items() if a not in inside}
+    spans = recovery_merged_spans(inside)
+    require(spans == [[0x02000000, 0x020A6300]] and len(inside) == 680704
+            and outside == {a:255 for a in range(0x02C9F040,0x02C9F044)},
+            'Installed show bytes differ from verified programming range')
+    receipt = json.loads(receipt_file.read_text())
+    require(receipt.get('pass') is True and receipt.get('execute') is True and receipt.get('dry_run') is False
+            and type(receipt.get('returncode')) is int and receipt['returncode'] == 0,
+            'Installed show programming did not succeed')
+    require(receipt.get('uid') == TITAN_RECOVERY_UID and receipt.get('build_id') == pins['build']
+            and receipt.get('source_pin') == pins['source'] and receipt.get('hex_sha256') == pins['image']
+            and receipt.get('elf_sha256') == pins['elf'], 'Installed show programming identity mismatch')
+    command = receipt.get('command', [])
+    require(isinstance(command,list) and len(command) == 15 and Path(command[0]).name == 'rfp-cli'
+            and command[1:-1] == ['-d','RA','-t','e2l:5AS079228B','-if','swd','-s','1000000',
+                                  '-noquery','-run','-range','02000000,02c9f01f','-pv']
+            and receipt.get('probe') == 'e2l:5AS079228B' and receipt.get('interface') == 'swd'
+            and receipt.get('speed_hz') == 1000000 and receipt.get('range') == '02000000,02c9f01f'
+            and receipt.get('flags') == ['-noquery','-run'] and receipt.get('debug_mode') == 'none',
+            'Installed show programming scope mismatch')
+    text = receipt.get('stdout','')
+    require(text.startswith('Renesas Flash Programmer CLI V1.17\n') and 'Load: "'+command[-1]+'"' in text
+            and 'Emulator power supply: OFF' in text and 'Connected to R7KA8P1KFLCAC' in text
+            and 'Tool: E2 emulator Lite (5AS079228B)' in text
+            and text.count('Writing data to the target device') == 1
+            and text.count('Verifying data on the target device') == 1
+            and text.rstrip().endswith('Operation successful') and not re.search(r'\b(error|failed|failure)\b',text,re.I),
+            'Installed show programming evidence mismatch')
+    verified = [[int(a,16),int(b,16)+1] for a,b in re.findall(
+        r'\[Code MRAM [12]\]\s+([0-9A-F]{8}) - ([0-9A-F]{8})',text.split('Verifying data on the target device',1)[1])]
+    require(verified == spans, 'Installed show verified ranges mismatch')
+    return {'image_sha256':pins['image'], 'build_source_sha256':pins['build'],
+            'build_receipt_sha256':sha(build_file), 'execution_receipt_sha256':sha(receipt_file),
+            'admission_sha256':sha(admission_file), 'programmed_spans':spans,
+            'scope':'exact installed show normal return; absent-USB recovery not admitted'}
+
+
+def recovery_programmed_spans(m, image):
+    """Only this exact normal return excludes the writer's out-of-range FF record."""
+    if sha(image) == TITAN_INSTALLED_SHOW_RECOVERY['image']:
+        return require_titan_installed_show_recovery(m, image)['programmed_spans']
+    return hex_spans(image)
+
+
 def require_titan_recovery(m):
     recovery = m.get('recovery', {})
     require(m.get('identity') == TITAN_RECOVERY_UID, 'Recovery wrong Titan UID')
     image = bound_file(recovery['image'])
+    if sha(image) == TITAN_INSTALLED_SHOW_RECOVERY['image']:
+        return require_titan_installed_show_recovery(m, image)
     if sha(image) == TITAN_HOST009_RECOVERY_HEX_SHA256:
         return require_titan_host009_recovery(m, image)
+    if sha(image) == TITAN_CURRENT_RECOVERY_HEX_SHA256:
+        return require_titan_current_recovery(m, image)
     require(sha(image) == TITAN_RECOVERY_HEX_SHA256, 'Recovery must be exact known donor; candidate cannot bypass output HOLD')
     derivation_file = bound_file(recovery['derivation'])
     require(sha(derivation_file) == TITAN_RECOVERY_DERIVATION_SHA256, 'Unknown donor recovery derivation')
@@ -334,6 +570,70 @@ def programmer_argv(m, image, backend, *, recover=False):
             'write_flash', '--flash_size', 'keep', '0x10000', str(image)]
 
 
+DEPLOY_SCRIPT = Path('/Users/spectrasynq/.claude/skills/smc-titan-mixer/scripts/deploy_titan_image.sh')
+
+
+def deployment_argv(m, image, name, programme_dir, *, restore_settings=None):
+    """Return the guarded deploy command for a Titan candidate or recovery write.
+
+    This does not call the sealed writer. Absent-USB recovery stays inside the
+    gateway and is not requested from here, so an unpinned image cannot be
+    forced through --recover-known-image.
+    """
+    selected = m['recovery']['deployment'] if name == 'donor-recovery' else m['deployment']
+    build = Path(selected['build_dir']).resolve()
+    admission = Path(selected['admission']).resolve()
+    programme_dir = Path(programme_dir)
+    require(build.is_dir() and (build / 'receipt.json').is_file(), 'deployment build receipt missing')
+    require(admission.is_file(), 'deployment admission missing')
+    require(not programme_dir.exists(), 'programme directory must not exist yet')
+    require(Path(image).is_file(), 'programming image missing')
+    helper = Path('/Users/spectrasynq/Workspace_Management/Software/agent-skills/skills/smc-titan-mixer/scripts/deploy_admission.py')
+    spec = importlib.util.spec_from_file_location('deploy_admission', helper)
+    checker = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(checker)
+    try:
+        checker.image_matches_build(build, Path(image).resolve(), admission)
+    except checker.Refusal as exc:
+        raise RuntimeError(str(exc)) from exc
+    argv = ['/bin/bash', str(DEPLOY_SCRIPT), str(build), str(admission), str(programme_dir)]
+    checkpoint = m.get('isolated_qualification', {}).get('repair_checkpoint')
+    if checkpoint is not None and name == 'candidate':
+        require(m.get('target') == 'titan-replacement' and
+                m.get('isolated_qualification', {}).get('repair_session'),
+                'Retained candidate update requires the bound repair session')
+        checkpoint_path = bound_file(checkpoint)
+        argv += ['--repair-checkpoint', str(checkpoint_path),
+                 '--repair-checkpoint-sha', checkpoint['sha256']]
+    if restore_settings is None and name == 'donor-recovery':
+        restore_settings = selected.get('restore_settings')
+    if restore_settings is not None:
+        settings_path = Path(restore_settings['path']).resolve()
+        require(settings_path.is_file() and sha(settings_path) == restore_settings['sha256'], 'original settings capture changed or missing')
+        argv += ['--restore-settings', str(settings_path), '--restore-settings-sha', restore_settings['sha256']]
+    require(Path(argv[1]).name == 'deploy_titan_image.sh' , 'Titan write left the guarded gateway')
+    require(not any(part.endswith('rfp-cli') or part.endswith('programme_rfp_swd.py') for part in argv),
+            'Titan write leg invoked the sealed writer directly')
+    return argv
+
+
+def require_gateway_broker_owner(port, socket_path):
+    """Verify one existing broker owns both endpoints; no stop or takeover."""
+    def owners(path):
+        got = subprocess.run(['lsof', '-t', path], capture_output=True, text=True, check=False, timeout=3)
+        require(got.returncode == 0 and not got.stderr.strip(), 'Expected broker endpoint owner unavailable')
+        values = set(got.stdout.split())
+        require(len(values) == 1 and next(iter(values)).isdigit(), 'Expected exactly one broker owner')
+        return next(iter(values))
+    pid = owners(port)
+    require(owners(socket_path) == pid, 'Serial and control socket have different owners')
+    command = subprocess.run(['ps', '-p', pid, '-o', 'command='], capture_output=True, text=True, check=False, timeout=3)
+    expected = '/Users/spectrasynq/Workspace_Management/Software/SpectraSynq-K1-RA8P1-Firmware/.worktrees/titan-emotiscope-port-001/tools/serial-studio/titan_broker.py'
+    require(command.returncode == 0 and not command.stderr.strip() and expected in command.stdout.split(),
+            'Endpoint owner is not the existing Titan broker')
+    return {'pid': int(pid), 'socket': socket_path, 'serial': port}
+
+
 def execute(cfg, ctx, facts):
     m, source, image, backend = validate_manifest(cfg, facts)
     action = cfg['action']
@@ -386,7 +686,10 @@ def execute(cfg, ctx, facts):
     lockpath.parent.mkdir(exist_ok=True)
     with lockpath.open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        if backend != 'teensy' or not write:
+        if backend == 'titan' and write:
+            require(isinstance(m.get('port'), str) and m['port'].startswith('/dev/cu.') and '*' not in m['port'], 'Explicit interface required')
+            facts['gateway_broker_owner'] = require_gateway_broker_owner(m['port'], m.get('broker_socket', '/tmp/titan-emotiscope-control/titan-control.sock'))
+        elif backend != 'teensy' or not write:
             require(isinstance(m.get('port'), str) and m['port'].startswith('/dev/cu.') and '*' not in m['port'], 'Explicit interface required')
             owner = subprocess.run(['lsof', '-t', m['port']], capture_output=True, text=True, check=False, timeout=3)
             require(owner.returncode == 1 and not owner.stdout.strip() and not owner.stderr.strip(),
@@ -403,8 +706,14 @@ def execute(cfg, ctx, facts):
             if action == 'bench-trial-recover':
                 image = bound_file(m['recovery']['image'])
                 lo, hi = m['permitted_range']
-                if backend != 's3': require(all(lo <= a < b <= hi for a, b in hex_spans(image)), 'Recovery HEX range')
-            argv = programmer_argv(m, image, backend, recover=action.endswith('recover'))
+                if backend != 's3':
+                    spans = recovery_programmed_spans(m, image) if backend == 'titan' else hex_spans(image)
+                    require(all(lo <= a < b <= hi for a, b in spans), 'Recovery HEX range')
+            if backend == 'titan':
+                role = 'donor-recovery' if action.endswith('recover') else 'candidate'
+                argv = deployment_argv(m, image, role, ctx.logs_dir / (role + '-programme'))
+            else:
+                argv = programmer_argv(m, image, backend, recover=action.endswith('recover'))
             # Invocation receipt is durable before any consequential action.
             facts.update(argv=argv, invoked_image_sha256=sha(image), hardware_access=True, programmed=False)
             (ctx.logs_dir / 'native-invocation.json').write_text(json.dumps(facts, indent=2))
