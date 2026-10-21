@@ -790,3 +790,55 @@ def test_transaction_uses_recovery_spans_only_on_return_leg(tmp_path, monkeypatc
     monkeypatch.setattr(bench, 'recovery_programmed_spans', recovery_spans)
     test_actual_transaction_runs_one_attempt_and_recovers_on_failure(tmp_path, monkeypatch, None, None)
     assert calls == ['donor.hex']
+
+
+# Scope geometry (21 Oct 2026). Status v7 sources declare 80 px lanes: 3840 bits, 480 bytes.
+# Golden hashes were computed from the pre-change _scope (HEAD a manifest without bits_each),
+# so an absent field must still produce those exact scope bytes and retained grants stay valid.
+SCOPE_GOLDEN = {
+    isolated.REPLACEMENT_BACKEND: ("5d9f13d6128affa3d3f2d1d718753303283d9fb9db32fd822ea411cb74f0411d",
+                                   "3cab17f76c78cd0c7a58d0f3418769dc85d89a69f4c8aa05ce1ff849ff4f92a0"),
+    isolated.PAIRED_BACKEND: ("1016055660f678b630fdd2005f3bfeb9a0c6bce561e861e2cadf2b015aa400c1",
+                              "d16ce61adfdbfeeb3ce1056b5756511cfe6c3021cbb7a82ce6583e18e2d7c01d"),
+}
+
+
+def scope_manifest(backend, **qualification):
+    return {'target':'titan-replacement','identity':UID,'source_binding_hash':'b'*64,'source_commit':'c'*40,
+            'image':{'path':'/nonexistent/candidate.hex','sha256':'a'*64},'build_receipt':{'sha256':'d'*64},
+            'recovery':{'image':{'path':'/nonexistent/donor.hex','sha256':'e'*64}},
+            'isolated_qualification':dict({'operation':isolated.OPERATION,'backend':backend,'frames':100,
+                                           'maximum_interruption_seconds':120}, **qualification)}
+
+
+@pytest.mark.parametrize('backend', sorted(SCOPE_GOLDEN))
+def test_scope_without_bits_each_is_byte_identical_to_the_retained_scope(backend):
+    import hashlib
+    scope = isolated._scope(scope_manifest(backend))
+    insertion, canonical = SCOPE_GOLDEN[backend]
+    assert hashlib.sha256(json.dumps(scope).encode()).hexdigest() == insertion
+    assert hashlib.sha256(json.dumps(scope, sort_keys=True, separators=(',', ':')).encode()).hexdigest() == canonical
+    assert (scope['bits_each'], scope['bytes_each']) == (7680, 960)
+
+
+@pytest.mark.parametrize('backend', sorted(SCOPE_GOLDEN))
+def test_v7_scope_declares_3840_bit_480_byte_lanes(backend):
+    old = isolated._scope(scope_manifest(backend))
+    new = isolated._scope(scope_manifest(backend, bits_each=3840))
+    assert (new['bits_each'], new['bytes_each']) == (3840, 480)
+    assert list(new) == list(old)  # same keys, same order; only the geometry values move
+    assert {k: v for k, v in new.items() if k not in ('bits_each', 'bytes_each')} == \
+           {k: v for k, v in old.items() if k not in ('bits_each', 'bytes_each')}
+    # An explicit 7680 is the same scope as an absent field.
+    assert isolated._scope(scope_manifest(backend, bits_each=7680)) == old
+
+
+@pytest.mark.parametrize('bits', [1920, 3841, 960, 0, -3840, '3840', 3840.0, True, None])
+def test_scope_refuses_unknown_lane_geometry(bits):
+    with pytest.raises(RuntimeError, match='bits_each must be 3840 or 7680'):
+        isolated._scope(scope_manifest(isolated.PAIRED_BACKEND, bits_each=bits))
+
+
+def test_scope_bits_each_is_refused_outside_the_replacement_backends():
+    with pytest.raises(RuntimeError, match='only to the replacement capture backends'):
+        isolated._scope(scope_manifest(isolated.BACKEND, bits_each=3840))

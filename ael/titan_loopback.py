@@ -21,6 +21,9 @@ SPLIT_BACKEND = "titan-split-edge-loopback-v2"
 DIRECT_BACKEND = "titan-direct-gpt7-gpt12-loopback-v3"
 ARM, STATUS, DRAIN, CANCEL = range(0x50524601, 0x50524605)
 CAPACITY, EDGE_COUNT, MIN_SOF_ROWS = 7744, 7680, 128
+# History-capture bits per lane by status version (equals observer.BITS_BY_VERSION).
+# v7 (21 Oct 2026) lanes are 80 GRB48 pixels: 3840 bits.
+HISTORY_PULSES = {6: 7680, 7: 3840}
 USB_SOURCE = {
     "url": "https://www.usb.org/sites/default/files/usb_20_20250603.zip",
     "member": "usb_20.pdf",
@@ -62,7 +65,7 @@ DIRECT_FIELDS = tuple(name.replace("gpt4_", "gpt12_").replace("irq27_cr", "gpt7_
 
 
 def verify_direct_configuration(s, *, complete=False, readiness=False):
-    if s.get("version") == 6:
+    if s.get("version") in (6, 7):
         from ael.titan_replacement_observer import verify_v6_configuration
         return verify_v6_configuration(s, complete=complete, readiness=readiness)
     paired = s["version"] == 5
@@ -99,7 +102,7 @@ def stream_counts(s):
 
 
 def verify_split_configuration(s, *, complete=False, readiness=False):
-    if s["version"] in (3,4,5,6):
+    if s["version"] in (3,4,5,6,7):
         return verify_direct_configuration(s,complete=complete,readiness=readiness)
     require(s["split_capability"] == 1 and s["reserved"] == 0, "Unknown split capture capability")
     require(s["ccr"] & (1 << 16) == 0 and s["mpu"] == 0,"Split cache/MPU configuration mismatch")
@@ -153,10 +156,12 @@ def verify_split_epoch(s, lane_raw, sof_raw, *, pattern, pulses=3840, diagnostic
     require(len(lane_raw) == 4, "Missing split polarity stream")
     require(s["configuration_low"] == s["initial_low"] == s["final_low"] == 3 and
             s["recording"] == 1, "Split capture LOW/recording evidence missing")
-    direct=s["version"] in (3,4,5,6)
+    direct=s["version"] in (3,4,5,6,7)
     require(s["gpt12_gtst" if direct else "gpt4_gtst"] == s["gpt7_gtst"] == 0x8003 and
             s["gpt2_gtst"] == s["gpt3_gtst"] == 0x8000, "Split capture overflow/flags")
-    if s["version"] == 6:
+    if s["version"] in (6, 7):
+        # v7 keeps the v6 history fields; only its frame geometry (3840 bits) differs.
+        require(pulses == HISTORY_PULSES[s["version"]], "Pulse count does not match the status version geometry")
         require(s["edges_a"] == s["edges_b"] == 2*pulses,
                 "Missing/extra independent edge count")
     else:
@@ -164,7 +169,7 @@ def verify_split_epoch(s, lane_raw, sof_raw, *, pattern, pulses=3840, diagnostic
                 "Missing/extra independent edge count")
     streams=[]
     for stream,(name,raw) in enumerate(zip(SPLIT_NAMES,lane_raw)):
-        if s["version"] == 6:
+        if s["version"] in (6, 7):
             require(s.get("history_unresolved_"+name)
                     or s["words_"+name] + s["recovered_"+name] - s.get("duplicates_"+name, 0) == pulses,
                     "Missing/extra polarity edges: "+name)

@@ -38,6 +38,7 @@ _QUALIFICATION_KEYS = {
     "operation", "backend", "frames", "maximum_interruption_seconds",
     "physical_confirmation", "bootstrap_authority", "prior_readiness",
     "completion_request", "pattern", "constant_timer_diagnostic", "repair_session", "repair_checkpoint",
+    "bits_each",
 }
 _IDENTITY_LOSS = (
     "identity mismatch", "identity changed", "identity absent",
@@ -58,8 +59,22 @@ def _fresh(value, age=120):
             "Stale/future physical authority or readiness record")
 
 
+def _scope_bits(q):
+    """Replacement wire bits per lane. Absent means 7680 so retained scopes keep their bytes.
+
+    v7 sources (80 px per lane, 21 Oct 2026) declare 3840; nothing else is admitted.
+    """
+    bits = q.get("bits_each", 7680)
+    require(type(bits) is int and bits in (3840, 7680),
+            "Isolated scope bits_each must be 3840 or 7680 bits per lane")
+    require("bits_each" not in q or q.get("backend") in (REPLACEMENT_BACKEND, PAIRED_BACKEND),
+            "Isolated scope bits_each applies only to the replacement capture backends")
+    return bits
+
+
 def _scope(m):
     completion = completion_request(m)
+    bits = _scope_bits(m["isolated_qualification"])
     return {"identity": UID, "image_sha256":m["image"]["sha256"],
             "source_binding_hash":m["source_binding_hash"], "source_commit":m["source_commit"],
             "build_receipt_sha256":m["build_receipt"]["sha256"],
@@ -68,7 +83,7 @@ def _scope(m):
             "operation":OPERATION, "frames":m["isolated_qualification"]["frames"],
             **({"backend":DIRECT_BACKEND,"capture_schema":3} if m["isolated_qualification"].get("backend") == DIRECT_BACKEND else {}),
             **({"backend":m["isolated_qualification"]["backend"],"capture_schema":5 if m["isolated_qualification"]["backend"] == PAIRED_BACKEND else 4,"target":"titan-replacement",
-                "bits_each":7680,"bytes_each":960,"cache":"dcache-noncache-mpu"}
+                "bits_each":bits,"bytes_each":bits // 8,"cache":"dcache-noncache-mpu"}
                if m["isolated_qualification"].get("backend") in (REPLACEMENT_BACKEND,PAIRED_BACKEND) else {}),
             "maximum_interruption_seconds":120,
             **({"repair_session": REPAIR_SESSION} if m["isolated_qualification"].get("repair_session") else {}),

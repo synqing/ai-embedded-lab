@@ -208,10 +208,11 @@ def test_paired_layout_reads_the_version_word_and_rejects_anything_else():
     v6 = observer.status(packed(v6_status), v6_status["boot"], v6_status["epoch"])
     assert v6["version"] == 6 and v6["recovered_a_fall"] == 0
     assert v6["rise_record_words"] == 2 and v6["fall_record_words"] == 3
-    with pytest.raises(RuntimeError, match="not 5 or 6"):
+    with pytest.raises(RuntimeError, match="not 5, 6 or 7"):
         observer.paired_layout(struct.pack("<I", 4))
-    with pytest.raises(RuntimeError, match="not 5 or 6"):
-        observer.paired_layout(struct.pack("<I", 7))
+    # 7 is accepted since the 21 Oct 2026 v7 contract (test_titan_observer_v7.py); 8 is not.
+    with pytest.raises(RuntimeError, match="not 5, 6 or 7"):
+        observer.paired_layout(struct.pack("<I", 8))
 
 
 def test_idle_v6_bootstrap_checks_dma_geometry_without_requiring_open_gtber():

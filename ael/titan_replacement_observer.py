@@ -19,7 +19,11 @@ BACKEND = "titan-replacement-direct-loopback-v4"
 PAIRED_BACKEND = "titan-replacement-buffered-loopback-v5"
 IDENTITY, CONTROL_STATUS, HEALTH = 0x50524200, 0x50524201, 0x50524205
 CAPACITY = 7712
-BITS = 7680
+BITS = 7680  # v4-v6 wire frame per lane; kept for those contracts only.
+# Bits (= edges per polarity stream) per lane, keyed by the status version word.
+# v7 (Phase 1, 21 Oct 2026) drives 80 GRB48 pixels per lane: 3,840 bits, 480 bytes.
+# Never infer one version's geometry from another's.
+BITS_BY_VERSION = {4: 7680, 5: 7680, 6: 7680, 7: 3840}
 WORDS_PER_RECORD = 2
 RISE_RECORD_WORDS = 2
 FALL_RECORD_WORDS = 3
@@ -97,6 +101,21 @@ def control_status(raw):
     return boot
 
 
+def frame_bits(s):
+    """Wire bits per lane for this status version. An unknown version is refused."""
+    version = s.get("version")
+    require(version in BITS_BY_VERSION, "No frame geometry for replacement status version")
+    return BITS_BY_VERSION[version]
+
+
+def require_scope_geometry(s, manifest):
+    """The decoded status version's lane bits must equal the scope's bits_each (absent: 7680)."""
+    scoped = manifest.get("isolated_qualification", {}).get("bits_each", BITS)
+    bits = frame_bits(s)
+    require(bits == scoped, f"Status geometry disagrees with scope: v{s['version']} status has "
+            f"{bits} bits per lane, scope declares {scoped}")
+
+
 def verify_memory(s):
     require(s["ccr"] & (1 << 16) and s["mpu"] & 1, "Replacement D-cache/MPU disabled")
     begin, end = s["dma_begin"], s["dma_end"]
@@ -112,7 +131,7 @@ def verify_memory(s):
             and s["drain_max_words"] == 1000, "Inadequate replacement capture/drain configuration")
     protected = [(s[name+"_begin"], s[name+"_end"]) for name in ("microphone", "led")]
     require(all(begin <= lo < hi <= end for lo,hi in protected), "Missing protected DMA spans")
-    if s["version"] == 6:
+    if s["version"] in (6, 7):
         row_words = CAPACITY * FALL_RECORD_WORDS + 8
     elif s["version"] == 5:
         row_words = CAPACITY * WORDS_PER_RECORD + 8
@@ -133,15 +152,15 @@ def verify_memory(s):
 def status(raw, boot, epoch, *, layout=None):
     """Decode one replacement status. layout None accepts the length that matches the version word.
 
-    v4 remains exactly 640 bytes. v5 and v6 are exactly 768 bytes and are told apart by the
-    version word. Passing the other length is a refusal, never a conversion of one contract
-    into the other.
+    v4 remains exactly 640 bytes. v5, v6 and v7 are exactly 768 bytes and are told apart by
+    the version word. v7 is the v6 field map with 3,840-bit lanes (BITS_BY_VERSION). Passing
+    the other length is a refusal, never a conversion of one contract into the other.
     """
     if layout is None:
         require(len(raw) in (640, 768), "Replacement status requires 160 or 192 words")
         layout = 5 if len(raw) == 768 else 4
-        if layout == 5 and struct.unpack_from("<I", raw)[0] == 6:
-            layout = 6
+        if layout == 5 and struct.unpack_from("<I", raw)[0] in (6, 7):
+            layout = struct.unpack_from("<I", raw)[0]
     if layout == 4:
         require(len(raw) == 640, "Replacement v4 status requires 160 words")
         words = struct.unpack("<160I", raw)
@@ -161,14 +180,15 @@ def status(raw, boot, epoch, *, layout=None):
         s.update(zip(EXTENSION, words[144:159]))
         s.update(zip(V5_EXTENSION, words[160:192]))
         require(s["words_per_record"] == WORDS_PER_RECORD, "Paired record width mismatch")
-    elif layout == 6:
-        require(len(raw) == 768, "Replacement v6 status requires 192 words")
+    elif layout == 6 or layout == 7:
+        # v7 keeps every v6 word; only the frame geometry differs (frame_bits).
+        require(len(raw) == 768, f"Replacement v{layout} status requires 192 words")
         words = struct.unpack("<192I", raw)
-        require(words[:3] == (6, boot, epoch), "Stale replacement version/boot/epoch")
-        require(words[63] == 0 and words[107] == 4 and words[159] == 0, "Unknown replacement v6 layout")
+        require(words[:3] == (layout, boot, epoch), "Stale replacement version/boot/epoch")
+        require(words[63] == 0 and words[107] == 4 and words[159] == 0, f"Unknown replacement v{layout} layout")
         require(words[190] == RISE_RECORD_WORDS and words[191] == FALL_RECORD_WORDS,
-                "Replacement v6 record widths mismatch")
-        require(words[143] == 0, "Unknown replacement v6 reserved word")
+                f"Replacement v{layout} record widths mismatch")
+        require(words[143] == 0, f"Unknown replacement v{layout} reserved word")
         s = dict(zip(legacy.STATUS_FIELDS, words[:63]))
         s.update(zip(legacy.DIRECT_FIELDS, words[64:144]))
         s.update(zip(EXTENSION, words[144:159]))
@@ -248,11 +268,11 @@ def record_dmcra(stream):
 
 
 def paired_layout(raw_status):
-    """Return 5 or 6 from the raw paired version word. Any other version is refused."""
+    """Return 5, 6 or 7 from the raw paired version word. Any other version is refused."""
     require(isinstance(raw_status, (bytes, bytearray)) and len(raw_status) >= 4,
             "Paired status has no version word")
     version = struct.unpack_from("<I", raw_status)[0]
-    require(version in (5, 6), "Paired status version is not 5 or 6")
+    require(version in (5, 6, 7), "Paired status version is not 5, 6 or 7")
     return version
 
 
@@ -316,8 +336,10 @@ def _history_record(record, width):
 
 
 def verify_v6_configuration(s, *, complete=False, readiness=False):
-    """v6 block capture. Fall DMA blocks are three words. Completed blocks may be under 7680."""
-    require(s["version"] == 6, "v6 configuration requires status version 6")
+    """v6/v7 block capture. Fall DMA blocks are three words. Completed blocks may be under
+    the frame's bits (7680 for v6, 3840 for v7)."""
+    require(s["version"] in (6, 7), "v6 configuration requires status version 6 or 7")
+    bits = frame_bits(s)
     require(s["split_capability"] == 4 and s["reserved"] == 0 and s["reserved_143"] == 0,
             "Unknown v6 capture capability")
     require(s["rise_record_words"] == RISE_RECORD_WORDS and s["fall_record_words"] == FALL_RECORD_WORDS,
@@ -369,21 +391,21 @@ def verify_v6_configuration(s, *, complete=False, readiness=False):
                 "Raw-word cursor exceeds captured records: " + name)
         if complete:
             require(s.get("history_unresolved_" + name)
-                    or s["words_" + name] + s["recovered_" + name] - s.get("duplicates_" + name, 0) == BITS,
-                    "v6 DMA blocks plus recovered history are not 7680: " + name)
+                    or s["words_" + name] + s["recovered_" + name] - s.get("duplicates_" + name, 0) == bits,
+                    f"v{s['version']} DMA blocks plus recovered history are not {bits}: " + name)
             require(s["dmcrb_" + name] == s["remaining_" + name],
                     "Frozen DMCRB is not the remaining block count: " + name)
             require(s["dmsts_" + name] == 0, "Paired DMA not quiescent: " + name)
         elif readiness:
             require(s["dmcrb_" + name] == CAPACITY, "Ready DMCRB is not 7712 blocks: " + name)
     if complete:
-        require(s["edges_a"] == s["edges_b"] == 2 * BITS,
-                "Combined v6 hardware edge count is not 15360 per lane")
+        require(s["edges_a"] == s["edges_b"] == 2 * bits,
+                f"Combined v{s['version']} hardware edge count is not {2 * bits} per lane")
 
 
 def verify_paired_configuration(s, *, complete=False, readiness=False):
     """v5 block-mode DMA. Record counts live in words_*; raw cursors are cursor_raw_*."""
-    if s.get("version") == 6:
+    if s.get("version") in (6, 7):
         return verify_v6_configuration(s, complete=complete, readiness=readiness)
     legacy.verify_direct_configuration(s, complete=complete, readiness=readiness)
     require(s["version"] == 5, "Paired configuration requires status version 5")
@@ -452,8 +474,12 @@ def verify_paired_epoch(s, streams, pattern):
 
 
 def verify_v6_epoch(s, streams, pattern):
-    """Rebuild each v6 stream from its history records, then use the existing pulse oracle."""
+    """Rebuild each v6/v7 stream from its history records, then use the existing pulse oracle.
+
+    The expected edge count per stream is the version's frame bits: 7680 (v6) or 3840 (v7).
+    """
     require(len(streams) == 5, "Missing v6 raw stream")
+    bits = frame_bits(s)
     require(s["fault"] != HISTORY_FAULT, "Inconsistent history chain")
     require(s["state"] == 6 and s["fault"] == s["first_fsp_error"] == 0, "v6 loopback did not complete cleanly")
     require(s["pattern"] == pattern, "Wrong diagnostic frame index")
@@ -477,21 +503,21 @@ def verify_v6_epoch(s, streams, pattern):
         require(s.get("history_unresolved_" + name)
                 or (count == s["recovered_" + name] and dups == s["duplicates_" + name]),
                 "Host/firmware recovered-count mismatch: " + name)
-        require(blocks + count - dups == BITS and len(ticks) == BITS,
-                "Rebuilt edge stream is not 7680 ticks: " + name)
+        require(blocks + count - dups == bits and len(ticks) == bits,
+                f"Rebuilt edge stream is not {bits} ticks: " + name)
         rebuilt.append(ticks)
         recovered.append(count)
-    require(s["edges_a"] == s["edges_b"] == 2 * BITS,
-            "Combined v6 hardware edge count is not 15360 per lane")
-    single = [struct.pack("<" + "I" * BITS, *ticks) for ticks in rebuilt]
-    result = legacy.verify_split_epoch(s, single, streams[4], pattern=pattern, pulses=BITS)
+    require(s["edges_a"] == s["edges_b"] == 2 * bits,
+            f"Combined v{s['version']} hardware edge count is not {2 * bits} per lane")
+    single = [struct.pack("<" + "I" * bits, *ticks) for ticks in rebuilt]
+    result = legacy.verify_split_epoch(s, single, streams[4], pattern=pattern, pulses=bits)
     result["recovered_edges"] = recovered
     result["physical_qualification"] = False
     return result
 
 
 def verify_epoch(s, streams, pattern):
-    if s.get("version") == 6:
+    if s.get("version") in (6, 7):
         return verify_v6_epoch(s, streams, pattern)
     if s.get("version") == 5:
         return verify_paired_epoch(s, streams, pattern)
@@ -615,6 +641,7 @@ def verify_acquisition(a, candidate):
     ready_raw = bound(a["ready"])
     ready_layout = paired_layout(ready_raw) if backend == PAIRED_BACKEND else 4
     ready = status(ready_raw, boot, epoch_base, layout=ready_layout)
+    require_scope_geometry(ready, candidate)
     if epoch_base == 0:
         require(ready["state"] == ready["fault"] == ready["first_fsp_error"] == 0, "Detector not ready")
         if backend == PAIRED_BACKEND:
@@ -640,6 +667,7 @@ def verify_acquisition(a, candidate):
         drained_raw = bound(row["drained_status"])
         layout = paired_layout(status_raw) if backend == PAIRED_BACKEND else 4
         s = status(status_raw, boot, expect, layout=layout)
+        require_scope_geometry(s, candidate)
         final = status(drained_raw, boot, expect, layout=paired_layout(drained_raw) if backend == PAIRED_BACKEND else 4)
         require(all(final[k] == s[k] for k in s if not k.startswith("cursor_")), "Changed drained capture")
         require([final["cursor_"+n] for n in legacy.SPLIT_NAMES] + [final["cursor_split_sof"]]
@@ -652,10 +680,10 @@ def verify_acquisition(a, candidate):
 def stream_counts(s):
     """v4 raw files are one word per edge. v5 raw files are two words per completed record.
 
-    v6 drain length is the record width times completed DMA blocks. Recovered history
+    v6/v7 drain length is the record width times completed DMA blocks. Recovered history
     edges are not extra DMA words.
     """
-    if s.get("version") == 6:
+    if s.get("version") in (6, 7):
         return [record_words(index) * s["words_" + name]
                 for index, name in enumerate(legacy.SPLIT_NAMES)] + [s["sof_rows"] * 4]
     if s.get("version") == 5:
@@ -712,10 +740,12 @@ def acquire(exchange, manifest, spec, out, info, *, absolute_deadline, clock=tim
     if backend == PAIRED_BACKEND:
         layout = paired_layout(ready)
     s = status(ready, boot, start_epoch, layout=layout)
+    # Fixed for the session: every later status is decoded with this same layout.
+    require_scope_geometry(s, manifest)
     start_epoch = s["epoch"]
     if start_epoch == 0:
         require(s["state"] == s["fault"] == s["first_fsp_error"] == 0, "Replacement detector not ready")
-        if layout in (5, 6):
+        if layout in (5, 6, 7):
             verify_paired_configuration(s, readiness=True)
         else:
             legacy.verify_direct_configuration(s, readiness=True)
@@ -904,7 +934,7 @@ def main():
         require(receipt.get("artefacts", {}).get("titan-native.hex") == digest(image), "Wrong receipt image")
         result = verify_acquisition(json.loads(args.capture.read_text()), manifest) if args.capture else {
             "profile": "titan-replacement", "backend": BACKEND, "paired_backend": PAIRED_BACKEND,
-            "bits_each": BITS, "bytes_each": 960,
+            "bits_each": BITS, "bytes_each": 960, "bits_by_status_version": BITS_BY_VERSION,
             "firmware_dependency": "Final candidate binding and runtime readiness required; this offline check does not establish fixture capability",
             "hardware_access": False, "physical_qualification": False}
         print(json.dumps(result, indent=2)); return 0
